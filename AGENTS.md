@@ -23,6 +23,7 @@ content into new files — update the source.
 | How is the 3D scene written? | `99 System/AI/Rules/Code/threejs-r3f.md` in the My OS vault |
 | Where does element geometry come from? | `tools/glyph-kit/README.md` |
 | Why is something the way it is? | `docs/DECISIONS.md` |
+| Who is working on what right now? | `docs/STATUS.md` |
 
 `WORLD_ELEMENTS.md` also carries **ownership** and the **numbered requests** between
 agents. That is the coordination channel — use it rather than assuming another agent
@@ -47,21 +48,61 @@ record the outcome in `docs/DECISIONS.md`.
 7. **The state palette has exactly one definition**, `lib/tokens/state.ts`, which
    generates the CSS custom properties and is imported by the scene. Never add a second.
 
-## Working protocol
+## How we communicate
 
-Three writers share this repo — a Claude 3D/design session, a Claude UI-shell session,
-and ChatGPT. There is no CI. So:
+Three agents share this repo — a Claude session on the 3D/design layer, a Claude session
+on the UI shell, and ChatGPT. **None of us can see the others' chat conversations.** If it
+is not in the repo, it does not exist. Four channels, each with one job:
 
-- **Working branch: `mirror/core-four-world`.** `main` is not current.
-- **`git pull --rebase` before you start and again before you commit.** Never merge.
-- **Small, single-purpose commits.** A commit that touches one owner's paths survives a
+| You want to... | Write it in | When |
+|---|---|---|
+| say what you are about to touch, so nobody collides | `docs/STATUS.md` | start and end of every work session |
+| record why something was decided, so it is not reopened | `docs/DECISIONS.md` | whenever you decide something non-obvious |
+| ask for a change in a file you do not own | `WORLD_ELEMENTS.md` (numbered request, with the exact diff) | instead of editing that file |
+| explain what a change does and why | the commit message | every commit |
+
+Do not invent a fifth channel. If none of these fits, it probably belongs in a commit
+message.
+
+## Sync discipline
+
+The branch is `mirror/core-four-world` (it is the repo default; `main` is stale). Because
+three writers share it and there is no CI, **the only thing keeping us consistent is that
+everyone pushes early and pulls often.**
+
+Start of a work session:
+
+```bash
+npm run sync          # git pull --rebase --autostash, then typecheck + lint
+```
+
+Then claim your paths in `docs/STATUS.md`.
+
+Every time you finish a coherent piece of work:
+
+```bash
+npm run check         # tsc --noEmit && oxlint
+git add -A <your paths>
+git commit            # explain WHY; the what is in the diff
+git pull --rebase     # someone may have landed while you worked
+git push              # ← do not skip. unpushed work is invisible work
+```
+
+**Push after every commit, not at the end of the session.** An unpushed commit is a commit
+the other two agents cannot see, cannot build on, and will eventually conflict with. If you
+are about to stop working, push even if the piece feels unfinished — a pushed
+work-in-progress is far cheaper than a silent divergence.
+
+Other rules that follow from three writers and no CI:
+
+- **Rebase, never merge.** `npm run sync` does the right thing.
+- **Small, single-purpose commits.** One that touches a single owner's paths survives a
   rebase; a sweeping one does not.
-- **Stay inside your ownership zone** (declared in `WORLD_ELEMENTS.md`). If you need a
-  change outside it, add a numbered request there with the exact diff rather than
-  editing the file.
-- **Never commit `tsconfig.tsbuildinfo`** or any build output. It is gitignored.
-- **Explain *why* in the commit message.** The what is in the diff.
+- **Stay inside your ownership zone** (declared in `WORLD_ELEMENTS.md`).
+- **Never commit `tsconfig.tsbuildinfo`** or build output. It is gitignored.
 - After pulling, `git log --oneline -- <your paths>` shows whether someone swept your work.
+- If a push is rejected, **pull --rebase and push again**. Never `push --force` on this
+  branch — it is how another agent's work disappears.
 
 ## Before you finish
 
