@@ -13,6 +13,7 @@ import { StudioEnvironment } from './world/StudioEnvironment';
 import { SceneEffects } from './effects/SceneEffects';
 import { SceneBudget } from './effects/SceneBudget';
 import type { WorldDomain } from './nodes/NodeState';
+import type { RecordRef } from '@/lib/model/record';
 import { world } from './tokens/sceneColors';
 
 function usePrefersReducedMotion() {
@@ -31,11 +32,18 @@ export function CompanyWorld({
   domains,
   selectedId,
   onSelect,
+  onSelectRecord,
   running,
 }: {
   domains: WorldDomain[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  /**
+   * Fired with the exact record clicked — a workflow, decision, exception or
+   * agent — resolved from the merged geometry by the pick table. Optional while
+   * the product surface still tracks a bare domain id; see request 10.
+   */
+  onSelectRecord?: (ref: RecordRef) => void;
   running: boolean;
 }) {
   const reducedMotion = usePrefersReducedMotion();
@@ -109,6 +117,7 @@ export function CompanyWorld({
               // A drag is not a click: rotating past an island must not select it.
               if (!wasDrag()) onSelect(id);
             }}
+            onSelectRecord={(r) => { if (!wasDrag()) onSelectRecord?.(r); }}
             running={running}
             reducedMotion={reducedMotion}
             orbit={orbit}

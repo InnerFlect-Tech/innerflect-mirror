@@ -7,6 +7,23 @@ Keep entries short: what was decided, why, and what it rules out. Link the commi
 
 ---
 
+## 2026-09-13 — OPEN: `healthy` and `active` read identically to a user
+
+**Found:** `stateLabel` maps BOTH `healthy` and `active` to "Healthy". They are distinct
+scene states with distinct colours (`#42c8bd` vs `#55cbbb`), and the design route renders a
+state switcher with two buttons both reading "Healthy" — which is how this became visible.
+
+**Not decided, deliberately.** `stateLabel` is product copy: `PracticalTable` prints it in a
+table cell and an aria-label. Renaming a state from inside a design tool would change what
+the product says to a user, which is a product call.
+
+**The options:** give `active` its own label ("Active" — work is flowing, versus "Healthy" —
+nothing needs you), or accept that they are one state and collapse them. Two states that look
+the same and read the same are one state with extra steps.
+
+**Meanwhile:** `/design/elements` shows the state KEY rather than the label, so the design
+surface is honest about which state it is rendering without pre-empting the product decision.
+
 ## 2026-09-13 — Gate pylons stand for Decisions; hotspots stand for Exceptions
 
 **Decided:** a gate pylon is drawn once per `Decision` record whose `workflowId` matches, and

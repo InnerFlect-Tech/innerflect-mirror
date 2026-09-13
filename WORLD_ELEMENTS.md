@@ -229,7 +229,7 @@ Numbers are never reused, so a reference to "request 5" always means the same th
    path would make motion mean "this happened" rather than "time is passing",
    which is what the contract asks of motion.
 
-5. **A route for the design system.** The element sheet and the floor become real routes
+5. ✅ **DONE — A route for the design system.** The element sheet and the floor become real routes
    so they are built from the same components the product uses and cannot drift from it.
    The components are exported from `components/company-world/`; the route files are three
    lines each and live in `app/`, which this session does not own:
@@ -308,7 +308,10 @@ Numbers are never reused, so a reference to "request 5" always means the same th
    or the asset should go and the boundary be drawn from the authority record's scope. Raised
    rather than silently resolved, because it is the review's own rule.
 
-10. **Widen selection to a `RecordRef`.** `DomainIsland` now resolves a click to the exact
+10. ⏳ **PARTLY DONE — Widen selection to a `RecordRef`.** `CompanyWorld` now accepts and
+    forwards `onSelectRecord`, and `/design/floor` consumes it, so the mechanism is visible
+    there. Still open: `CompanyWorkspace` on the product surface tracks a bare `focusedId`
+    string, so clicking a pylon on the home page still selects only the island. Original note: `DomainIsland` now resolves a click to the exact
     record under the cursor — a workflow, a decision, an exception, an agent — and calls
     `onSelectRecord(ref)`. Nothing consumes it yet: `CompanyWorkspace` tracks a `focusedId`
     string and does `domains.find((d) => d.id === focusedId)`, so a click on a gate pylon

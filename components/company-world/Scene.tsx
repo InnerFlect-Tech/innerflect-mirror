@@ -14,12 +14,14 @@ import type { WorldDomain } from './nodes/NodeState';
 import { CompanyLabel, WorldLabel } from './labels/WorldLabel';
 import { companyLayout } from './layouts/companyLayout';
 import { worldRecords } from '@/data/world-records';
+import type { RecordRef } from '@/lib/model/record';
 import { stateTokens } from './tokens/sceneStates';
 
 export function Scene({
   domains,
   selectedId,
   onSelect,
+  onSelectRecord,
   running,
   reducedMotion,
   orbit,
@@ -27,6 +29,7 @@ export function Scene({
   domains: WorldDomain[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  onSelectRecord?: (ref: RecordRef) => void;
   running: boolean;
   reducedMotion: boolean;
   orbit: RefObject<OrbitState>;
@@ -82,6 +85,7 @@ export function Scene({
           selected={i === selectedIndex}
           subdued={hasSelection && i !== selectedIndex}
           onSelect={() => onSelect(domain.id)}
+          onSelectRecord={onSelectRecord}
           reducedMotion={reducedMotion}
         />
       ))}

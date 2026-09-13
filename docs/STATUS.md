@@ -17,7 +17,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
-| Claude · 3D/design | Phase 9 — design routes | `components/company-world/design/**`, `app/design/**` | 2026-09-13 |
+| Claude · 3D/design | — idle — | — | 2026-09-13 |
 | Claude · UI shell | unknown (has not adopted this board yet) | `app/**`, `components/company/**` | — |
 | ChatGPT | landed the V2 fifteen-element kit (`8acb18d`) | `tools/glyph-kit/**`, `public/models/**`, `lib/design/**` | 2026-09-13 |
 
@@ -38,9 +38,8 @@ proposing anything structural; it records what was decided, why, and what each r
 out, so settled questions are not reopened and measurements are not re-derived.
 
 Cross-boundary asks are numbered requests in `WORLD_ELEMENTS.md`. Three have landed (✅);
-**five are open: 2, 3, 4, 5, 6, 9, 10**. Request 5 (the design routes) is the single blocker
-on seeing any of the last five phases, and request 9 is addressed to ChatGPT about its own
-rule.
+**open: 2, 3, 4, 6, 9, and the rest of 10**. Request 9 is addressed to ChatGPT about its own
+rule (it shipped `permission-boundary.glb` despite writing that boundaries are procedural).
 
 Verify with one command: `npm run check` — six gates (tsc, oxlint, token parity, glyph
 manifest drift, no-fabrication, pick contract). It passes on the current commit.
@@ -56,13 +55,11 @@ scene holds **61 draw calls / 19,479 triangles** against a budget of 120.
   belongs to the UI-shell session — raised as a numbered request in `WORLD_ELEMENTS.md`:
   delete tiers 1 and 2 from `app/tokens.css` now that `lib/tokens` emits every one of
   those 65 declarations with an identical value. Tier 3 stays hand-authored.
-- **Phase 9 — the design routes.** `ElementSheet` over the fifteen glyphs, and `/design/floor`
-  rendering the real `<CompanyWorld>`. Both route files are three lines in `app/design/**` —
-  request 5, outstanding since Phase 0 and now the last blocker. Owner: Claude · 3D/design
-  (components), UI-shell session (route files).
-- **`onSelectRecord` is wired but nothing consumes it.** `DomainIsland` resolves a click to a
-  `RecordRef` and calls the prop; `CompanyWorkspace` still only takes a domain id. Widening
-  that is request 10.
+- **Decide `healthy` vs `active`.** They are distinct states with distinct colours but
+  `stateLabel` maps both to "Healthy". See `docs/DECISIONS.md`. Product call, not a design one.
+- **Finish request 10.** `/design/floor` consumes `onSelectRecord`; the product surface still
+  tracks a bare id, so a click on a gate pylon there selects only the island.
+- **Requests 2, 3, 4, 6** remain from earlier passes.
 - **Phase 4 — `/design/elements`.** One Canvas, ten glyphs from the registry, a state
   switcher, and each element's conform stats and `drivenBy` shown beside it. Needs the
   three-line route file in `app/`, raised as request 5 in `WORLD_ELEMENTS.md`.
