@@ -18,8 +18,8 @@ numbered request in `WORLD_ELEMENTS.md`.
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
 | Claude · 3D/design | — idle — | — | 2026-09-13 |
-| Claude · UI shell | unknown (has not adopted this board yet) | `app/**`, `components/company/**` | — |
-| ChatGPT | — idle — (V2 kit landed in `8acb18d`) | — | 2026-09-13 |
+| Claude · UI shell | Requests 2 and 4 — island footprint from `activeWork`, event-driven pulses | `app/**`, `components/company/**`, `components/company-world/{camera,connections,effects,labels,layouts,world}/**`, `Scene.tsx`, `CompanyWorld.tsx`, `lib/model/{work,decision,knowledge,impact,mirror,activity,constitution}.ts`, `data/{work,decisions-queue,knowledge,impact,mirror,activity,constitution}.ts` | 2026-09-13 |
+| Codex · ChatGPT | active — coordination bridge; reading claims and requests before every change | no implementation paths claimed | 2026-09-13 |
 
 ## In flight / blocked
 
