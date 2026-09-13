@@ -1,10 +1,11 @@
 import { AppShell } from '@/components/company/AppShell';
 import { SurfaceHead } from '@/components/company/SurfaceHead';
 import { SurfaceSummary } from '@/components/company/SurfaceSummary';
-import { MirrorView } from '@/components/company/MirrorView';
+import { MirrorSurface } from '@/components/company/MirrorSurface';
 import { companyHeadline } from '@/components/company/Hero';
 import { company, domains } from '@/data/company';
 import { mirrorCaveat, mirrorDeltas, mirrorRows, workedExample } from '@/data/mirror';
+import { activity } from '@/data/activity';
 import { worstState } from '@/lib/model/state';
 
 /**
@@ -37,10 +38,11 @@ export default function MirrorPage() {
           { value: 'Projection', label: 'Right column is not measured', tone: 'attention' },
         ]}
       />
-      <MirrorView
+      <MirrorSurface
         rows={mirrorRows}
         deltas={mirrorDeltas}
         example={workedExample}
+        events={activity}
         caveat={mirrorCaveat}
       />
     </AppShell>

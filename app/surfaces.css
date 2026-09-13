@@ -720,3 +720,82 @@ a.panel-cta{text-decoration:none}
   .chain{flex-wrap:wrap;gap:2px}
   .worked-chain{justify-content:flex-start}
 }
+
+/* ── Radial mirror ───────────────────────────────────────────────────────────
+   The company at the centre, its departments around it. Position carries
+   meaning: a card sits on the left while a person still carries the work and
+   moves across once it runs itself, so the layout is a progress bar you read
+   at a glance rather than a decorative arrangement. */
+.mirror-switch{display:flex;justify-content:center;margin:0 var(--space-6) var(--space-3)}
+.radial{margin:0 var(--space-6) var(--space-6)}
+.radial-heads{display:flex;justify-content:space-between;gap:var(--space-4);margin-bottom:var(--space-3)}
+.radial-heads small{display:block;font-size:var(--fs-xs);color:var(--text-faint);margin-top:var(--space-1)}
+.radial-heads .is-reflected{text-align:right}
+.radial-heads .is-reflected .eyebrow{color:var(--text-accent)}
+
+.radial-stage{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 190px minmax(0,1fr);gap:var(--space-4);align-items:center;
+  border:1px solid var(--panel-border);border-radius:var(--panel-radius);background:var(--panel-bg);padding:var(--space-5) var(--space-4)}
+.radial-wires{position:absolute;inset:var(--space-5) var(--space-4);width:calc(100% - var(--space-4) * 2);height:calc(100% - var(--space-5) * 2);pointer-events:none}
+.wire{fill:none;stroke:var(--c-ink-400);stroke-width:1;vector-effect:non-scaling-stroke}
+.wire.is-live{stroke:var(--c-teal-400);stroke-width:1.4;filter:drop-shadow(0 0 3px rgb(47 156 140 / .6))}
+
+.radial-col{display:flex;flex-direction:column;gap:var(--space-3);position:relative;z-index:1}
+.radial-empty{margin:0;padding:var(--space-4);border:1px dashed var(--border-subtle);border-radius:var(--card-radius);
+  font-size:var(--fs-sm);color:var(--text-faint);text-align:center;line-height:var(--leading-body)}
+
+.dept-card{border:1px solid var(--border-subtle);border-radius:var(--card-radius);background:var(--bg-raised);padding:var(--space-3)}
+.dept-card[data-side=right]{border-color:#245f58;background:linear-gradient(160deg,rgb(47 130 120 / .1),var(--bg-raised))}
+.dept-card header{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3)}
+.dept-card header b{font-size:var(--fs-md);font-weight:var(--weight-medium)}
+.dept-card header em{display:flex;align-items:center;gap:3px;font-style:normal;font-size:var(--fs-xs);color:var(--text-faint);margin-left:auto}
+.dept-chain{list-style:none;margin:0;padding:0;display:flex;gap:var(--space-2);justify-content:space-between}
+.dept-chain li{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);text-align:center;flex:1;min-width:0;position:relative}
+.dept-chain li:not(:last-child):after{content:"";position:absolute;top:15px;right:calc(-1 * var(--space-2) / 2 - 3px);width:6px;height:1px;background:var(--c-ink-400)}
+.dept-chain small{font-size:var(--fs-xs);color:var(--text-faint);line-height:1.25;overflow-wrap:anywhere}
+
+.radial-core{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);position:relative;z-index:1}
+.core-orb{width:118px;height:118px;border-radius:50%;display:grid;place-items:center;color:#d6fbf4;
+  background:radial-gradient(circle at 50% 45%,#123330 0,#0b1c1a 62%,#081211 100%);
+  border:1px solid var(--c-teal-400);box-shadow:0 0 40px rgb(47 156 140 / .35),inset 0 0 26px rgb(85 203 187 / .18)}
+.radial-core b{font-size:var(--fs-sm);letter-spacing:.16em;text-transform:uppercase;color:var(--text-secondary)}
+.radial-migration{margin:var(--space-3) 0 0;font-size:var(--fs-xs);color:var(--text-faint);text-align:center}
+
+.radial-example{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:var(--space-3);margin-top:var(--space-3);
+  border:1px solid var(--panel-border);border-radius:var(--panel-radius);background:var(--panel-bg);padding:var(--space-4)}
+.radial-example-flow .worked-chain li{position:relative;padding-top:var(--space-5)}
+.gate-chip{position:absolute;top:0;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:4px;white-space:nowrap;
+  font-size:var(--fs-xs);border:1px solid #8a6a2a;border-radius:var(--pill-radius);padding:2px var(--space-2);background:#251c0d;color:#e6c37e}
+.radial-log{border:1px solid var(--border-subtle);border-radius:var(--card-radius);background:var(--c-ink-900);padding:var(--space-3)}
+.radial-log ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.radial-log li{display:grid;grid-template-columns:42px 1fr auto;gap:var(--space-2);align-items:baseline;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:var(--fs-xs);color:var(--text-secondary)}
+.radial-log time{color:var(--text-faint)}
+.radial-log em{font-style:normal;color:var(--text-faint)}
+.radial-log li[data-gate] span{color:var(--state-attention-label)}
+.radial-log li[data-gate] em{color:var(--state-attention-label)}
+.radial-caveat{border-top:0;padding-top:0;margin-top:var(--space-3)}
+
+@media(max-width:1180px){
+  .radial-stage{grid-template-columns:1fr;gap:var(--space-3)}
+  .radial-wires{display:none}
+  .radial-core{order:-1}
+  .core-orb{width:88px;height:88px}
+  .radial-example{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .radial{margin:0 10px var(--space-5)}
+  .mirror-switch{margin:0 10px var(--space-3)}
+  .radial-heads{flex-direction:column;gap:var(--space-2)}
+  .radial-heads .is-reflected{text-align:left}
+  .dept-chain{flex-wrap:wrap;gap:var(--space-2)}
+  .dept-chain li{flex:0 0 calc(33.333% - var(--space-2))}
+  .dept-chain li:not(:last-child):after{display:none}
+  .radial-log li{grid-template-columns:38px 1fr;row-gap:1px}
+  .radial-log em{grid-column:2}
+}
+
+/* The example chain scrolls itself; without min-width:0 the grid cell grows to
+   fit it instead and takes the page sideways. */
+.radial-example>*,.radial-example-flow,.radial-log{min-width:0}
+.radial-example-flow .worked-chain{overflow-x:auto;scrollbar-width:none}
+.radial-example-flow .worked-chain::-webkit-scrollbar{display:none}

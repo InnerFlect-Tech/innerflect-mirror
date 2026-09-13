@@ -79,6 +79,11 @@ Its own surface, not a view inside Company. Company answers *is my company okay*
 
 Both columns carry the same rows and the same number of steps, on purpose: the work does not shrink, only the share of it a person has to carry. The only thing that changes between the two sides is who performs each step, and that difference is the whole argument.
 
+Mirror has two layouts over the same comparison, because they answer different questions:
+
+- **Split** — the two states lined up so they can be counted against each other. Answers *how much of each department is still carried by a person*.
+- **Radial** — the company at the centre, departments around it. **Position carries meaning**: a department sits on the left while a person still carries the work and moves across once it runs itself, so the layout is a progress bar read at a glance. Answers *where is the company in the migration*. Carries the workflow example with its human-approval gate and the timestamped audit log beside it.
+
 Steps are rendered as icon tiles rather than words, so the read is a count of grey against teal rather than two paragraphs; shape carries meaning before colour does — a circle is a person, a square is work. Labels remain available as tooltips and to assistive technology, and one workflow is spelled out in full beneath the rows.
 
 The right-hand column is a **projection, not a measurement**, and must always be labelled as such on the surface itself. A projection presented as fact is the most dangerous number in the product, because it is the one a person would act on — quote to a board, or plan headcount against.
