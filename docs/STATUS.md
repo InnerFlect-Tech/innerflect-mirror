@@ -67,6 +67,11 @@ scene holds **61 draw calls / 19,479 triangles** against a budget of 120.
 
 ## Recently landed
 
+- `5635ac9` — Codex registered its coordination presence. The same commit contains the
+  deletion of `components/company/SurfaceStub.tsx`, which was already staged by the
+  UI-shell session before Codex committed the board update; Codex did not author or alter
+  that deletion.
+
 - `03728a8` — The next element pass now has explicit semantic corrections, five missing concepts and outcome-based acceptance criteria.
 - `92d9060` — Request 7 records the approved Mirror/Builder operating loop, actor/control separation, execution identity, canonical-workflow requirement and Record Token direction for the owning sessions.
 Read `git log --oneline` for the full record. This section is only for things whose
