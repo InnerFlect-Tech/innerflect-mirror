@@ -13,6 +13,18 @@ const PRIORITY_LABEL: Record<Priority, string> = {
   low: 'Low',
 };
 
+/**
+ * The recommendation is coloured by what it recommends, not by the domain's
+ * state. Colouring "Approve" amber because Delivery happens to need attention
+ * reads as a warning about the recommendation itself, which is the opposite of
+ * what it says. State still owns the card's stripe and the domain chips.
+ */
+const RECOMMENDATION_TONE = {
+  Approve: 'var(--state-active-label)',
+  Review: 'var(--state-attention-label)',
+  Decline: 'var(--state-critical-label)',
+} as const;
+
 const REVERSIBILITY_LABEL = {
   reversible: 'Reversible',
   'partially-reversible': 'Partially reversible',
@@ -114,7 +126,7 @@ export function ApprovalsSurface({ decisions }: { decisions: Decision[] }) {
                   <div className="approval-reco">
                     <span className="eyebrow">Recommendation</span>
                     <span className="reco-line">
-                      <b style={{ color: accent }}>{d.recommended}</b>
+                      <b style={{ color: RECOMMENDATION_TONE[d.recommended] }}>{d.recommended}</b>
                       <em>{d.confidence}%</em>
                     </span>
                     <small><span className="eyebrow">Reason</span> {d.reason}</small>

@@ -1,4 +1,4 @@
-.three-floor{height:500px;background:radial-gradient(circle at 50% 52%,rgba(50,145,133,.13),transparent 38%),linear-gradient(#0a1010,#080d0d)}
+.three-floor{height:500px;background:radial-gradient(circle at 50% 52%,rgba(50,145,133,.13),transparent 38%),linear-gradient(var(--bg-surface),var(--c-ink-850))}
 .three-floor:after{background:linear-gradient(90deg,rgba(6,10,10,.62),transparent 11%,transparent 89%,rgba(6,10,10,.62));z-index:1}
 .world-3d{position:absolute;inset:0;z-index:1}
 .world-3d canvas{display:block;width:100%!important;height:100%!important;touch-action:none;cursor:crosshair}
@@ -15,7 +15,7 @@
 .domain-controls b{font-size:var(--fs-xs)}
 .domain-controls small{font-size:var(--fs-xs);color:#5e6d69;margin-top:2px}
 @media(max-width:1120px){.three-floor{height:520px}}
-@media(max-width:760px){.three-floor{height:320px}.world-3d{display:none}.three-floor:before{content:'Company pulse';position:absolute;inset:38px 14px 62px;border:1px solid #20322f;border-radius:8px;background:radial-gradient(circle at 50% 36%,rgba(85,203,187,.16),transparent 38%),linear-gradient(145deg,#0b1413,#080d0d);display:grid;place-items:center;color:#b9c7c3;font-size:var(--fs-md);letter-spacing:.12em;text-transform:uppercase}.world-hud{top:8px}.world-hud span:last-child{display:none}.domain-controls{width:calc(100% - 16px);bottom:8px}.domain-controls button{width:25%;padding:0 5px;grid-template-columns:4px 1fr}.domain-controls small{display:none}}
+@media(max-width:760px){.three-floor{height:320px}.world-3d{display:none}.three-floor:before{content:'Company pulse';position:absolute;inset:38px 14px 62px;border:1px solid #20322f;border-radius:8px;background:radial-gradient(circle at 50% 36%,rgba(85,203,187,.16),transparent 38%),linear-gradient(145deg,#0b1413,var(--c-ink-850));display:grid;place-items:center;color:#b9c7c3;font-size:var(--fs-md);letter-spacing:.12em;text-transform:uppercase}.world-hud{top:8px}.world-hud span:last-child{display:none}.domain-controls{width:calc(100% - 16px);bottom:8px}.domain-controls button{width:25%;padding:0 5px;grid-template-columns:4px 1fr}.domain-controls small{display:none}}
 
 
 /* World labels are real HTML pinned to scene objects — sharper than

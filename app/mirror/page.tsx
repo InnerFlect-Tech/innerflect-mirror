@@ -14,7 +14,17 @@ import { worstState } from '@/lib/model/state';
  * if the work it already does ran itself" — a different question, and the one
  * the product is named after.
  */
-export default function MirrorPage() {
+/**
+ * The layout is readable from the URL so a particular reading of the comparison
+ * can be linked to — `?layout=radial` is what you send someone when the point
+ * you are making is about migration rather than about count.
+ */
+export default async function MirrorPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ layout?: string }>;
+}) {
+  const { layout } = await searchParams;
   const state = worstState(domains.map((d) => d.state));
   const hoursNow = mirrorRows.reduce((s, r) => s + r.hoursNow, 0);
   const hoursProjected = mirrorRows.reduce((s, r) => s + r.hoursProjected, 0);
@@ -44,6 +54,7 @@ export default function MirrorPage() {
         example={workedExample}
         events={activity}
         caveat={mirrorCaveat}
+        initialLayout={layout === 'radial' ? 'radial' : 'split'}
       />
     </AppShell>
   );

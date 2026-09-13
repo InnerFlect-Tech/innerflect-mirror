@@ -14,20 +14,24 @@ import { RadialMirror } from './RadialMirror';
  * answers "where is the company in the migration" — position is the progress.
  * Neither is a decoration of the other; they answer different questions.
  */
+type Layout = 'split' | 'radial';
+
 export function MirrorSurface({
   rows,
   deltas,
   example,
   events,
   caveat,
+  initialLayout = 'split',
 }: {
   rows: MirrorRow[];
   deltas: DeltaMetric[];
   example: WorkedExample;
   events: ActivityEvent[];
   caveat: string;
+  initialLayout?: Layout;
 }) {
-  const [layout, setLayout] = useState<'split' | 'radial'>('split');
+  const [layout, setLayout] = useState<Layout>(initialLayout);
 
   return (
     <>
