@@ -41,32 +41,32 @@ export const ELEMENTS: readonly ElementDef[] = [
   // separate fields and must not collapse into one.
   { id: 'agent-glyph', name: 'Agent Glyph', takesState: true, modelled: true,
     drivenBy: 'Agent record (pose from Agent.activity)' },
-  { id: 'tool-glyph', name: 'Tool Glyph', takesState: true, modelled: false,
+  { id: 'tool-glyph', name: 'Tool Glyph', takesState: true, modelled: true,
     drivenBy: 'Tool record' },
   // The knowledge object itself, not the file. A document is evidence FOR it.
-  { id: 'knowledge-object', name: 'Knowledge Object', takesState: true, modelled: false,
+  { id: 'knowledge-object', name: 'Knowledge Object', takesState: true, modelled: true,
     drivenBy: 'Knowledge object in use at a step' },
   { id: 'workflow-line', name: 'Workflow Line', takesState: true, modelled: true,
     drivenBy: 'Workflow record' },
   // Must be justified by an actual decision, not inferred from a colour. No
   // Decision record reaches the world yet, so this is currently unmodelled.
-  { id: 'decision-gate', name: 'Decision Gate', takesState: true, modelled: false,
+  { id: 'decision-gate', name: 'Decision Gate', takesState: true, modelled: true,
     drivenBy: 'Decision / Authority record' },
-  { id: 'action-pulse', name: 'Action Pulse', takesState: true, modelled: false,
-    drivenBy: 'Action / event record' },
+  { id: 'action-pulse', name: 'Action Pulse', takesState: true, modelled: true,
+    drivenBy: 'ExecutionStep / ActivityEvent record' },
   // An aggregate count is not a record you can open. Needs an Exception record.
-  { id: 'risk-hotspot', name: 'Risk Hotspot', takesState: true, modelled: false,
-    drivenBy: 'Risk / Exception / Policy conflict record' },
-  { id: 'step-node', name: 'Step Node', takesState: true, modelled: false,
-    drivenBy: 'Workflow step record' },
-  { id: 'record-token', name: 'Record Token', takesState: true, modelled: false,
-    drivenBy: 'Business record in a workflow execution' },
-  { id: 'verification-marker', name: 'Verification Marker', takesState: true, modelled: false,
+  { id: 'risk-hotspot', name: 'Risk Hotspot', takesState: true, modelled: true,
+    drivenBy: 'Exception record (open)' },
+  { id: 'step-node', name: 'Step Node', takesState: true, modelled: true,
+    drivenBy: 'ProcessStep record (id + stage)' },
+  { id: 'record-token', name: 'Record Token', takesState: true, modelled: true,
+    drivenBy: 'Execution.token (RecordToken)' },
+  { id: 'verification-marker', name: 'Verification Marker', takesState: true, modelled: true,
     drivenBy: 'Verification record' },
-  { id: 'outcome-marker', name: 'Outcome Marker', takesState: true, modelled: false,
+  { id: 'outcome-marker', name: 'Outcome Marker', takesState: true, modelled: true,
     drivenBy: 'Outcome record' },
-  { id: 'permission-boundary', name: 'Permission Boundary', takesState: true, modelled: false,
-    drivenBy: 'Authority / permission record' },
+  { id: 'permission-boundary', name: 'Permission Boundary', takesState: true, modelled: true,
+    drivenBy: 'AuthorityLimit / RoleGrant record' },
 ];
 
 export const ELEMENTS_BY_ID = Object.fromEntries(

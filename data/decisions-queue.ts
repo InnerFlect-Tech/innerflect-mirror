@@ -7,6 +7,7 @@ import type { Decision } from '@/lib/model/decision';
 export const decisionQueue: Decision[] = [
   {
     id: 'gate-1-essencia',
+    workflowId: 'dl-gate1',
     amount: '€1,334',
     breachedRule: 'Outside autonomous authority (irreversible billing)',
     priority: 'high',
@@ -55,6 +56,7 @@ export const decisionQueue: Decision[] = [
   },
   {
     id: 'invoice-ownership',
+    workflowId: 'fn-owner',
     amount: '€6,910',
     breachedRule: 'No accountable owner for 56 days',
     priority: 'high',
@@ -96,6 +98,7 @@ export const decisionQueue: Decision[] = [
   },
   {
     id: 'signal-threshold',
+    workflowId: 'mk-signal',
     amount: '8 signals / wk',
     breachedRule: 'Policy change requires approval',
     priority: 'medium',

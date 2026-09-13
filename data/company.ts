@@ -1,5 +1,6 @@
 import { defineDomain, type Domain } from '@/lib/model/domain';
 import { WORKFLOW_DETAIL } from './workflow-detail';
+import { exceptions } from './exceptions';
 
 /**
  * Representative mock data. Per the contract, nothing here may be presented as
@@ -40,7 +41,7 @@ export const domains: Domain[] = [
       { id: 'SW', name: 'Signal Watcher', job: 'Reading demand signals', initials: 'SW', activity: 'acting' },
       { id: 'PC', name: 'Positioning Curator', job: 'Updating message tests', initials: 'PC', activity: 'acting' },
     ],
-  }, WORKFLOW_DETAIL),
+  }, { detail: WORKFLOW_DETAIL, exceptions }),
   defineDomain({
     id: 'sales',
     icon: 'sales',
@@ -66,7 +67,7 @@ export const domains: Domain[] = [
       { id: 'RS', name: 'Revenue Scout', job: 'Qualifying signals', initials: 'RS', activity: 'acting' },
       { id: 'CC', name: 'Commercial Copilot', job: 'Preparing follow-ups', initials: 'CC', activity: 'acting' },
     ],
-  }, WORKFLOW_DETAIL),
+  }, { detail: WORKFLOW_DETAIL, exceptions }),
   defineDomain({
     id: 'delivery',
     icon: 'delivery',
@@ -95,7 +96,7 @@ export const domains: Domain[] = [
       { id: 'DS', name: 'Delivery Steward', job: 'Waiting on Gate 1', initials: 'DS', activity: 'waiting' },
       { id: 'QA', name: 'Quality Auditor', job: 'Verifying artefact', initials: 'QA', activity: 'verifying' },
     ],
-  }, WORKFLOW_DETAIL),
+  }, { detail: WORKFLOW_DETAIL, exceptions }),
   defineDomain({
     id: 'finance',
     icon: 'finance',
@@ -122,7 +123,7 @@ export const domains: Domain[] = [
       { id: 'RX', name: 'Cash Sentinel', job: 'Needs accountable owner', initials: 'RX', activity: 'escalating' },
       { id: 'IL', name: 'Invoice Ledger', job: 'Reconciling payments', initials: 'IL', activity: 'acting' },
     ],
-  }, WORKFLOW_DETAIL),
+  }, { detail: WORKFLOW_DETAIL, exceptions }),
 ];
 
 export type FeedEvent = {

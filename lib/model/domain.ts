@@ -1,6 +1,7 @@
 import type { AgentActivity, SceneState } from './state';
 import { ref, type RecordRef } from './record';
 import type { Workflow as WorkflowType } from './work';
+import { isOpen, type Exception } from './exception';
 
 /**
  * A Domain record, as the contract's shared domain model describes it. The 3D
@@ -107,11 +108,24 @@ export function needsHuman(w: WorkflowType): boolean {
 /** Documented detail, keyed by workflow id. Supplied by the data layer. */
 export type WorkflowDetailMap = Record<string, Partial<WorkflowType> | undefined>;
 
+/**
+ * What the data layer hands in so a domain can be derived rather than asserted.
+ *
+ * Parameters, not imports: `lib/model` describes shapes and must not depend on
+ * `data`, or the dependency runs backwards and the model cannot be pointed at a
+ * real integration later.
+ */
+export type DomainContext = {
+  detail?: WorkflowDetailMap;
+  /** Every exception in the company. `openItems` counts the open ones here. */
+  exceptions?: Exception[];
+};
+
 export function defineDomain(
   d: Omit<Domain, 'processes' | 'people' | 'openItems' | 'workflows'> & {
     workflows: Omit<WorkflowType, 'domainId' | 'domainLabel'>[];
   },
-  detail: WorkflowDetailMap = {},
+  { detail = {}, exceptions = [] }: DomainContext = {},
 ): Domain {
   // A workflow's domain is wherever it is declared, and its documented detail is
   // joined here rather than repeated across 38 literals, so neither can be typed
@@ -132,7 +146,10 @@ export function defineDomain(
     workflows,
     processes: workflows.length,
     people: workflows.reduce((n, w) => n + w.humans, 0),
-    openItems: workflows.filter(needsHuman).length,
+    // Counted from Exception RECORDS, not from which workflows happen to be
+    // coloured attention or critical. An aggregate may summarise records; it may
+    // never fabricate them, and this number is what the world draws hotspots for.
+    openItems: exceptions.filter((e) => e.domainId === d.id && isOpen(e)).length,
   };
 }
 

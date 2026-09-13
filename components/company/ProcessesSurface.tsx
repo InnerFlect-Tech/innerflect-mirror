@@ -14,7 +14,8 @@ import { stateColors } from '@/lib/tokens/state';
 const STAGE_LABEL: Record<StageMode, string> = {
   autonomous: 'Autonomous',
   supervised: 'Supervised',
-  human: 'Human-led',
+  assisted: 'Assisted',
+  'human-led': 'Human-led',
   blocked: 'Blocked',
 };
 

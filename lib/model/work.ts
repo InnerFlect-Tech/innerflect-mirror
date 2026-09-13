@@ -1,4 +1,5 @@
 import type { SceneState } from './state';
+import type { ControlMode } from './actor';
 
 /**
  * Use **Work**, not Processes. Every workflow follows the same seven stages,
@@ -17,7 +18,12 @@ export const WORK_STAGES = [
 export type WorkStage = (typeof WORK_STAGES)[number];
 
 /** Where a stage currently sits. `human` means a person is still required here. */
-export type StageMode = 'autonomous' | 'supervised' | 'human' | 'blocked';
+/**
+ * How a step runs. Re-exported from `actor.ts`, which is the single definition of
+ * the control axis — this used to be a fourth, slightly different vocabulary
+ * ('human' where the others said 'human-led', and missing 'assisted' entirely).
+ */
+export type StageMode = ControlMode;
 
 /**
  * Autonomy is earned, not toggled. A workflow only moves up the ladder when
@@ -58,6 +64,10 @@ export type Evidence = {
  * are what actually happens in this one.
  */
 export type ProcessStep = {
+  /** Stable identity. A step you cannot point at cannot be selected or verified. */
+  id: string;
+  /** Which of the seven canonical stages this step belongs to. */
+  stage: WorkStage;
   label: string;
   /** The system or note under the step — "ERP", "Automated", "If required". */
   note: string;

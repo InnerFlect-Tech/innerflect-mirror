@@ -38,6 +38,11 @@ export type Decision = {
   /** What happened, in plain language. */
   situation: string;
   domainId: string;
+  /**
+   * The workflow this decision gates. Without it a gate pylon can only be
+   * inferred from a colour, which is exactly the fabrication the contract bans.
+   */
+  workflowId?: string;
   domainLabel: string;
   state: SceneState;
   urgency: 'high' | 'medium' | 'low';
