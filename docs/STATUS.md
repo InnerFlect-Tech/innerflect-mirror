@@ -17,7 +17,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
-| Claude · 3D/design | — idle — | — | 2026-09-13 |
+| Claude · 3D/design | Phase 7/8 — record-driven objects + picking | `components/company-world/**`, `WORLD_ELEMENTS.md` | 2026-09-13 |
 | Claude · UI shell | unknown (has not adopted this board yet) | `app/**`, `components/company/**` | — |
 | ChatGPT | landed the V2 fifteen-element kit (`8acb18d`) | `tools/glyph-kit/**`, `public/models/**`, `lib/design/**` | 2026-09-13 |
 
