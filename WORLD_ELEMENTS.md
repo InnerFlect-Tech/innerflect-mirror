@@ -268,6 +268,19 @@ These sit in files this layer does not own.
    procedural. The most important missing world concept is a **Record Token**: the uniquely
    identifiable lead, order, project, invoice or ticket moving through an execution.
 
+8. **`ProcessesSurface` now takes `DocumentedWorkflow[]`.** Applied as a two-line change
+   (the type import and the prop type); no other line in that file was touched. The workflow
+   catalogue is now one array, with the deeply-mapped subset narrowed by `isDocumented()`.
+   The surface renders exactly as before — same four workflows, same fields — but they are now
+   the same objects the islands draw, with the same ids.
+
+9. **Permission Boundary ships as a GLB, which contradicts the semantic review.** The review
+   says: "Stable nouns may be GLBs; state, motion, history, selection and **boundaries are
+   procedural**." `public/models/innerflect-v2/permission-boundary.glb` exists anyway. Either
+   the rule should be amended (a boundary has a stable form even if its extent is procedural),
+   or the asset should go and the boundary be drawn from the authority record's scope. Raised
+   rather than silently resolved, because it is the review's own rule.
+
 ## Semantic review for the next element pass
 
 The ten V1 GLBs are present and their geometry is unchanged from the imported kit. The

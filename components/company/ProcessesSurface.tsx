@@ -7,7 +7,7 @@ import {
   WORK_STAGES,
   type AutonomyLevel,
   type StageMode,
-  type Workflow,
+  type DocumentedWorkflow,
 } from '@/lib/model/work';
 import { stateColors } from '@/lib/tokens/state';
 
@@ -20,7 +20,7 @@ const STAGE_LABEL: Record<StageMode, string> = {
 
 type Tab = 'flow' | 'details' | 'performance' | 'opportunities';
 
-export function ProcessesSurface({ workflows }: { workflows: Workflow[] }) {
+export function ProcessesSurface({ workflows }: { workflows: DocumentedWorkflow[] }) {
   const [selectedId, setSelectedId] = useState(workflows[0].id);
   const [tab, setTab] = useState<Tab>('flow');
   const [query, setQuery] = useState('');

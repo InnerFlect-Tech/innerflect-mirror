@@ -1,5 +1,6 @@
 import type { AgentActivity, SceneState } from './state';
 import { ref, type RecordRef } from './record';
+import type { Workflow as WorkflowType } from './work';
 
 /**
  * A Domain record, as the contract's shared domain model describes it. The 3D
@@ -15,27 +16,25 @@ export type Agent = {
 };
 
 /**
- * One workflow inside a domain — the contract's Work object, reduced to the
- * fields the world needs to draw it.
+ * The workflow type is canonical in `work.ts`. This module re-exports it so the
+ * world layer keeps a short import, and adds the projection the renderer reads.
  *
- * This type exists because the islands used to hold abstract towers keyed on
- * array position, which meant a viewer could not ask what any object
- * represented. Every repeated object on an island is now one entry in this
- * array: a bay per workflow, a desk per human, a column scaled by throughput.
- * See `WORLD_ELEMENTS.md` for the full mapping.
+ * There is deliberately no second `Workflow` shape here any more. There used to
+ * be, and it carried 38 records with ids disjoint from the 4 in `data/work.ts` —
+ * two independently authored truths about one company.
  */
-export type Workflow = {
-  id: string;
-  name: string;
-  /** Actions per day moving through this workflow. Drives column height. */
-  throughput: number;
-  /** Earned autonomy for this workflow, 0–100. Drives the lit share. */
-  autonomy: number;
-  /** Human seats working it. Drives desks and seated figures. */
-  humans: number;
-  /** Workflow-level state. `attention`/`critical` raise a gate pylon. */
-  state: SceneState;
-};
+export type { Workflow } from './work';
+
+/**
+ * What the renderer needs from a workflow: a bay per entry, a desk per human, a
+ * column scaled by throughput and lit by autonomy. Derived by `Pick<>`, so the
+ * world cannot drift from the model — the same relationship `WorldDomain` has
+ * to `Domain`.
+ */
+export type WorldWorkflow = Pick<
+  WorkflowType,
+  'id' | 'name' | 'throughput' | 'autonomy' | 'humans' | 'state'
+>;
 
 export type Domain = {
   id: string;
@@ -52,7 +51,7 @@ export type Domain = {
   /** Work items currently in flight. */
   activeWork: number;
   /** The workflows this domain owns. The island is drawn from this array. */
-  workflows: Workflow[];
+  workflows: WorkflowType[];
   agents: Agent[];
   /** Other domain ids this one exchanges work with. */
   relationships?: string[];
@@ -92,7 +91,7 @@ export function toWorldDomain(d: Domain): WorldDomain {
 }
 
 /** A workflow is stopped and waiting on a person. */
-export function needsHuman(w: Workflow): boolean {
+export function needsHuman(w: WorkflowType): boolean {
   return w.state === 'attention' || w.state === 'critical';
 }
 
@@ -105,14 +104,35 @@ export function needsHuman(w: Workflow): boolean {
  * array — adding a workflow with a human updates the world and the HTML in one
  * commit, or neither.
  */
+/** Documented detail, keyed by workflow id. Supplied by the data layer. */
+export type WorkflowDetailMap = Record<string, Partial<WorkflowType> | undefined>;
+
 export function defineDomain(
-  d: Omit<Domain, 'processes' | 'people' | 'openItems'>,
+  d: Omit<Domain, 'processes' | 'people' | 'openItems' | 'workflows'> & {
+    workflows: Omit<WorkflowType, 'domainId' | 'domainLabel'>[];
+  },
+  detail: WorkflowDetailMap = {},
 ): Domain {
+  // A workflow's domain is wherever it is declared, and its documented detail is
+  // joined here rather than repeated across 38 literals, so neither can be typed
+  // wrong or fall out of step.
+  //
+  // The detail map is a PARAMETER, not an import: `lib/model` describes shapes
+  // and must not depend on `data`, or the dependency runs backwards and the
+  // model cannot be reused against real integrations later.
+  const workflows: WorkflowType[] = d.workflows.map((w) => ({
+    ...w,
+    ...detail[w.id],
+    domainId: d.id,
+    domainLabel: d.label,
+  }));
+
   return {
     ...d,
-    processes: d.workflows.length,
-    people: d.workflows.reduce((n, w) => n + w.humans, 0),
-    openItems: d.workflows.filter(needsHuman).length,
+    workflows,
+    processes: workflows.length,
+    people: workflows.reduce((n, w) => n + w.humans, 0),
+    openItems: workflows.filter(needsHuman).length,
   };
 }
 
@@ -125,5 +145,5 @@ export function defineDomain(
  * cannot get a `domain` ref out of a `Workflow` — with no data churn.
  */
 export const domainRef = (d: Pick<Domain, 'id'>): RecordRef => ref('domain', d.id);
-export const workflowRef = (w: Pick<Workflow, 'id'>): RecordRef => ref('workflow', w.id);
+export const workflowRef = (w: Pick<WorkflowType, 'id'>): RecordRef => ref('workflow', w.id);
 export const agentRef = (a: Pick<Agent, 'id'>): RecordRef => ref('agent', a.id);
