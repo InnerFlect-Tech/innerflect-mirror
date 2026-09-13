@@ -16,6 +16,7 @@ import { companyLayout } from './layouts/companyLayout';
 import { worldRecords } from '@/data/world-records';
 import type { RecordRef } from '@/lib/model/record';
 import { stateTokens } from './tokens/sceneStates';
+import { stateLabel } from '@/lib/model/state';
 
 export function Scene({
   domains,
@@ -93,7 +94,7 @@ export function Scene({
       <CompanyLabel
         position={[0, 1.05, 0]}
         title="Your Company"
-        state={companyState === 'active' ? 'Healthy' : companyState === 'attention' ? 'Attention' : 'At risk'}
+        state={stateLabel[companyState]}
         accent={stateTokens[companyState].label}
         subdued={hasSelection}
       />

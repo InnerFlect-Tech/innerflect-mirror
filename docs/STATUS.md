@@ -19,7 +19,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 |---|---|---|---|
 | Claude · 3D/design | — idle — | — | 2026-09-13 |
 | Claude · UI shell | unknown (has not adopted this board yet) | `app/**`, `components/company/**` | — |
-| ChatGPT | landed the V2 fifteen-element kit (`8acb18d`) | `tools/glyph-kit/**`, `public/models/**`, `lib/design/**` | 2026-09-13 |
+| ChatGPT | — idle — (V2 kit landed in `8acb18d`) | — | 2026-09-13 |
 
 ## In flight / blocked
 
@@ -33,7 +33,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 ## Hand-off — read this first if you are picking the work up
 
-Everything decided is in `docs/DECISIONS.md`, newest first — 14 entries. Read it before
+Everything decided is in `docs/DECISIONS.md`, newest first. Read it before
 proposing anything structural; it records what was decided, why, and what each ruling rules
 out, so settled questions are not reopened and measurements are not re-derived.
 
@@ -50,7 +50,6 @@ scene holds **61 draw calls / 19,479 triangles** against a budget of 120.
 
 ## Next up
 
-- **Semantic gate before new geometry.** Review the corrections, five missing concepts and eight acceptance criteria in `WORLD_ELEMENTS.md` with the user. Do not change or add GLBs until that vocabulary is accepted.
 - **Phase 1 is done** (see Recently landed). Remaining follow-up, needs `app/**` and so
   belongs to the UI-shell session — raised as a numbered request in `WORLD_ELEMENTS.md`:
   delete tiers 1 and 2 from `app/tokens.css` now that `lib/tokens` emits every one of

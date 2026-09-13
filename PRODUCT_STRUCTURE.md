@@ -153,7 +153,7 @@ Objects retain identity across surfaces. Information is organised by why it matt
 - Red `#E16D5D` means risk, blocked action, or unsafe state.
 - Inter is the product face; compact uppercase is reserved for system metadata.
 - Type uses a fixed scale in `rem`, exposed as custom properties: `--fs-xs` 12 · `--fs-sm` 13 · `--fs-md` 14 · `--fs-lg` 16 · `--fs-xl` 20 · `--fs-2xl` 24 · `--fs-3xl` 30. **Nothing renders below 12px.** Density comes from spacing, weight and colour — never from shrinking text past the legibility floor. Icon-only glyphs inside a badge are not text and may sit below the floor.
-- The state palette has exactly one definition, `lib/tokens/state.ts`. The stylesheet receives it as generated custom properties (`--state-<state>-label`) and the WebGL scene imports the same object, so "state decides colour" is enforced mechanically rather than by discipline. Emissive values stay beside the renderer, because they mean nothing outside one.
+- The state palette has exactly one definition, `lib/tokens/source/state.ts` (`lib/tokens/state.ts` is a re-export shim). The stylesheet receives it as generated custom properties (`--state-<state>-label`) and the WebGL scene imports the same object, so "state decides colour" is enforced mechanically rather than by discipline. Emissive values stay beside the renderer, because they mean nothing outside one.
 - The company world dominates. Supporting panels remain subordinate.
 - Motion explains live events, execution, handoffs, verification, learning, or escalation. No ambient particles.
 - Gamification represents earned maturity, evidence, and verified outcomes. No arbitrary points.
@@ -176,7 +176,7 @@ The production visual world is a React Three Fiber scene whose objects are proje
 - The Canvas provides a non-WebGL fallback, respects reduced motion, limits device pixel ratio, and uses on-demand complexity rather than unlimited effects.
 - Custom GLB assets will replace procedural prototype geometry without changing the domain contract.
 - Animation states express work: idle, moving, acting, waiting, verifying, escalating, and handing off.
-- The main camera is a locked orthographic architectural view. Normal use has no free orbit; pointer parallax and controlled focus are the camera grammar.
+- The main camera is orthographic and architectural. Orbit is drag-or-arrow-keys with a reset, because rotation is exploration and needs a way back; it is bounded, never free-fly. Pointer parallax and controlled focus complete the grammar.
 - Platforms use a layered construction: soft shadow, dark bevelled shell, illuminated inner surface, restrained edge highlight, low-detail semantic miniature.
 - Connections are designed three-dimensional infrastructure curves. Static low-luminance paths carry short, event-driven pulses; the whole path never flashes.
 - Lighting stays neutral and nearly invisible. Teal appears to originate inside verified machine activity, not from global colored lighting.
@@ -189,7 +189,7 @@ The production visual world is a React Three Fiber scene whose objects are proje
 - The scene environment is built from lightformers rather than a downloaded HDR: no network request, and no foreign colour cast in a scene whose palette is the point.
 - Contact shadows are baked on mount. Left dynamic they re-render the whole scene into a depth target every frame, for a blur that cannot resolve the hover lift.
 - Camera zoom is derived from the viewport against a fixed world frame, never a constant, so the composition neither crops on a narrow pane nor drowns in floor on a wide one.
-- Measured home scene: **100 draw calls, 21k triangles** against a budget of 120 and 200k. `window.__mirrorGL` exposes the renderer in development so the number can be checked rather than assumed.
+- Measured home scene: **61 draw calls, 19,479 triangles** against a budget of 120 and 200k. `window.__mirrorGL` exposes the renderer in development so the number can be checked rather than assumed.
 - Nothing allocates or calls `setState` inside the frame loop. Scratch vectors are hoisted to module scope, and all easing uses delta-corrected `damp`/`damp3`, never a fixed `lerp` factor — a fixed factor eases twice as fast at 120fps as at 60.
 - The scene renders on demand. It is only continuous while work is flowing; paused, or for a viewer who asked for reduced motion, it issues **zero draw calls** and each easing requests frames only until it settles.
 - `PerformanceMonitor` scales DPR between 1 and 2 to the device that actually turned up.
@@ -214,7 +214,7 @@ The shell is a React Server Component tree. Only what needs interactivity crosse
 - The domain model lives in `lib/model/`, the records in `data/company.ts`, the palette in `lib/tokens/state.ts`. `WorldDomain` is a `Pick<>` of `Domain`, so the scene is a projection **by construction** rather than by discipline.
 - Agent activity is the contract's seven-state union, not a free string.
 - The `Impact` panel renders on the server and is passed into the client workspace as a slot, so a static panel is not dragged across the boundary to sit inside an interactive grid.
-- All six surfaces are real routes. Five are honest stubs that name the question that surface exists to answer and say plainly that it is not built. Navigation is links, never buttons.
+- All six surfaces are real routes, and all six are built. They were stubs once; `SurfaceStub` is now an orphan awaiting deletion. Navigation is links, never buttons.
 - No CSS framework and no component library. The design language is hand-written against the token scale; a half-installed library is worse than either choice.
 
 ## Change discipline

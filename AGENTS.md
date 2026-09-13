@@ -45,8 +45,9 @@ record the outcome in `docs/DECISIONS.md`.
 5. **Labels are HTML.** WebGL is the spatial model only.
 6. **Budget: under 120 draw calls and 200k triangles.** Currently 61 / 19.4k at 60fps,
    and zero draw calls when paused. Hold the measured line, not the ceiling.
-7. **The state palette has exactly one definition**, `lib/tokens/state.ts`, which
+7. **The state palette has exactly one definition**, `lib/tokens/source/state.ts`, which
    generates the CSS custom properties and is imported by the scene. Never add a second.
+   ⚠️ `app/globals.css` still declares a third palette by hand — see request 11.
 
 ## How we communicate
 
@@ -120,8 +121,12 @@ assert it matched the product; these break the build if the import does.
 ## Before you finish
 
 ```bash
-npx tsc --noEmit && npx oxlint
+npm run check
 ```
+
+Six gates: `tsc`, `oxlint`, token parity, glyph-manifest drift, no-fabrication and the
+pick contract. Not two — several of them exist because a claim in a document was not
+enough.
 
 For anything touching the 3D scene, also check the budget in the browser console — the
 renderer is exposed in development:

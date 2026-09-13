@@ -41,7 +41,9 @@ Two corollaries the implementation is held to:
 | Partition | boundary between adjacent workflows | derived from the bay grid | `workflow:<id>` |
 | **Gate pylon** | **a decision waiting on a person** | **one per `Decision` record whose `workflowId` matches** | `decision:<id>` |
 | **Hotspot** | **something wrong, uncertain or unsafe** | **one per OPEN `Exception` record for that workflow** | `exception:<id>` |
+| Chair | the seat itself, behind each figure | one per `Workflow.humans` | `workflow:<id>` |
 | Standing figure | an agent | one per `Domain.agents[]`; pose from `Agent.activity` | `agent:<id>` |
+| Agent status mote | how loudly the agent's activity asks for a person | `Agent.activity` | `agent:<id>` |
 | Island signal strip, edges, tints | semantic state | `Domain.state` | `domain:<id>` |
 
 Every row above resolves to a record you can open. That is not decoration: the island
@@ -88,7 +90,7 @@ that the HTML surfaces already publish. They are now **derived** from
 |---|---|
 | `processes` | `workflows.length` |
 | `people` | `sum(workflows[].humans)` |
-| `openItems` | `count(workflows where state is attention or critical)` |
+| `openItems` | `count(OPEN Exception records in this domain)` |
 
 This is the mechanism that makes the rule enforceable rather than aspirational.
 The island cannot show six desks while the label says four people, because both
@@ -324,6 +326,11 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     id and resolve it against the matching collection. Until then the mechanism is proven
     (`npm run check:picks`) but not visible.
 
+11. ✅ **DONE — Collapse the third palette in `app/globals.css`.** Its `:root` hand-declared
+    eleven hexes and the whole `--fs-*` scale while the docs claimed one definition existed.
+    Five of the eleven were never referenced once. The six that were used are now aliases
+    onto `lib/tokens`, verified in-browser as resolving to identical values.
+
 ## Semantic review for the next element pass
 
 The ten V1 GLBs are present and their geometry is unchanged from the imported kit. The
@@ -440,13 +447,13 @@ with the exact change spelled out. Request 1 is the pattern that worked.
 
 ### Asset provenance
 
-`public/models/innerflect-v1/*.glb` are build artifacts of the glyph kit generator
-(`source/generate_innerflect_v1.py`), committed because the geometry source of truth is
+`public/models/innerflect-v2/*.glb` are build artifacts of the glyph kit generator
+(`tools/glyph-kit/generate_innerflect_v2.py`), committed because the geometry source of truth is
 Python → GLB. `CHECKSUMS.sha256` sits beside them: if a GLB stops matching, someone
 hand-edited a binary and the provenance chain is broken. Verify with:
 
 ```
-cd public/models/innerflect-v1 && shasum -a 256 -c CHECKSUMS.sha256
+cd public/models/innerflect-v2 && shasum -a 256 -c CHECKSUMS.sha256
 ```
 
 The kit's own colours never reach the screen — `conformGlyph` replaces every material at
