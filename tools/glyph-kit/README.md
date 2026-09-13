@@ -1,17 +1,21 @@
 # Glyph kit — geometry source of truth
 
-`generate_innerflect_v1.py` builds the ten canonical Mirror elements from primitives
+`generate_innerflect_v2.py` builds the fifteen canonical Mirror elements from primitives
 (chamfered boxes, low-poly spheres, frustums, tori, tubes, an octahedron) and writes them
-as glTF binaries to `public/models/innerflect-v1/`.
+as glTF binaries to `public/models/innerflect-v2/`.
 
 Vendored into this repo deliberately. The geometry source of truth is Python → GLB, and a
 source of truth that lives in one person's `~/Desktop` is one `rm -rf` from gone.
 
+V2 is the approved semantic set: Company Core, Domain Platform, Human Glyph, Agent Glyph,
+Tool Glyph, Knowledge Object, Workflow Line, Decision Gate, Action Pulse, Risk Hotspot,
+Step Node, Record Token, Verification Marker, Outcome Marker and Permission Boundary.
+
 ## Regenerating
 
 ```bash
-python3 tools/glyph-kit/generate_innerflect_v1.py            # geometry only
-python3 tools/glyph-kit/generate_innerflect_v1.py --preview  # also the PNG contact sheet
+python3 tools/glyph-kit/generate_innerflect_v2.py            # geometry only
+python3 tools/glyph-kit/generate_innerflect_v2.py --preview  # also the PNG contact sheet
 ```
 
 Geometry needs **numpy and scipy only**. Previews additionally need matplotlib and Pillow,
@@ -20,6 +24,10 @@ because the live `/design/elements` route is the real contact sheet now — it r
 actual product materials under the actual bloom pass, which a matplotlib raster never could.
 
 ## ⚠️ Regeneration is not byte-reproducible
+
+The committed V2 artifacts and their checksums are the accepted baseline. The warning
+below was measured against V1, but still applies because V2 uses the same
+`scipy.spatial.ConvexHull` chamfer path.
 
 Measured on 2026-09-13, regenerating with scipy 1.13.1 against the committed artifacts:
 
@@ -39,7 +47,7 @@ commit the result. If you change geometry:
 
 1. regenerate,
 2. **look at every model** on `/design/elements`, not just the one you edited,
-3. update `CHECKSUMS.sha256` in `public/models/innerflect-v1/` deliberately,
+3. update `CHECKSUMS.sha256` in `public/models/innerflect-v2/` deliberately,
 4. say in the commit message which models changed and why.
 
 Pinning scipy, or replacing `ConvexHull` with a deterministic chamfer, would make this
@@ -48,7 +56,7 @@ reproducible. Worth doing before geometry changes become routine; not worth bloc
 ## Verifying the artifacts
 
 ```bash
-cd public/models/innerflect-v1 && shasum -a 256 -c CHECKSUMS.sha256
+cd public/models/innerflect-v2 && shasum -a 256 -c CHECKSUMS.sha256
 ```
 
 This checks that nobody hand-edited a binary. It does **not** check that regeneration

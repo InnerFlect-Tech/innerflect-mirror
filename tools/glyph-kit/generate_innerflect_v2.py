@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the InnerFlect Mirror V1 procedural 3D glyph kit.
+"""Generate the InnerFlect Mirror V2 procedural 3D glyph kit.
 
 The script intentionally uses only primitive geometry. It writes glTF 2.0
 binary files directly, renders deterministic preview images, and creates a
@@ -49,7 +49,7 @@ def to_rgb(color: str | tuple[float, float, float]) -> tuple[float, float, float
 # folder (manifest, checksums); the models land in public/.
 ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parents[1]
-MODELS_DIR = REPO / "public" / "models" / "innerflect-v1"
+MODELS_DIR = REPO / "public" / "models" / "innerflect-v2"
 PREVIEWS_DIR = ROOT / "previews"
 REFERENCE_IMAGE = ROOT.parent / "generated_images" / "exec-fd6726b4-4296-422f-9d84-c3cf88467fe8.png"
 
@@ -108,9 +108,9 @@ ASSET_INFO = {
         "COMPANY CORE",
         "The organisation above; its living Mirror integrated below.",
     ),
-    "function-platform": (
-        "FUNCTION PLATFORM",
-        "A coherent operational area such as Sales, Finance, or Support.",
+    "domain-platform": (
+        "DOMAIN PLATFORM",
+        "One portable operating domain in the path value takes through the company.",
     ),
     "human-glyph": (
         "HUMAN GLYPH",
@@ -124,9 +124,9 @@ ASSET_INFO = {
         "TOOL GLYPH",
         "A software system through which work is read or executed.",
     ),
-    "knowledge-slab": (
-        "KNOWLEDGE SLAB",
-        "A document, policy, rule, instruction, or company memory.",
+    "knowledge-object": (
+        "KNOWLEDGE OBJECT",
+        "Trusted structured company knowledge in use; files are evidence for it.",
     ),
     "workflow-line": (
         "WORKFLOW LINE",
@@ -142,7 +142,27 @@ ASSET_INFO = {
     ),
     "risk-hotspot": (
         "RISK HOTSPOT",
-        "Uncertainty, friction, policy conflict, or an unsafe condition.",
+        "An identifiable exception, policy conflict, risk, or unsafe condition.",
+    ),
+    "step-node": (
+        "STEP NODE",
+        "One concrete step in the canonical seven-stage workflow spine.",
+    ),
+    "record-token": (
+        "RECORD TOKEN",
+        "The uniquely identifiable business object moving through an execution.",
+    ),
+    "verification-marker": (
+        "VERIFICATION MARKER",
+        "The recorded check of an action and its pass or fail result.",
+    ),
+    "outcome-marker": (
+        "OUTCOME MARKER",
+        "An observable, traceable business result rather than completed activity.",
+    ),
+    "permission-boundary": (
+        "PERMISSION BOUNDARY",
+        "The authority limit within which an actor may read, decide, or act.",
     ),
 }
 
@@ -420,21 +440,16 @@ def company_core() -> list[Part]:
     return parts
 
 
-def function_platform() -> list[Part]:
+def domain_platform() -> list[Part]:
     parts = [
         make_part("Zone_Base", chamfered_box((3.35, 0.22, 3.0), 0.09), "graphite", (0, 0.11, 0)),
         make_part("Zone_Field", chamfered_box((3.12, 0.18, 2.77), 0.07), "teal_glass", (0, 0.30, 0)),
+        make_part("Zone_Inner", chamfered_box((2.62, 0.08, 2.27), 0.04), "glass", (0, 0.43, 0)),
+        make_part("Zone_Threshold_Left", chamfered_box((0.12, 0.78, 0.12), 0.025), "graphite_light", (-1.05, 0.75, -1.02)),
+        make_part("Zone_Threshold_Right", chamfered_box((0.12, 0.78, 0.12), 0.025), "graphite_light", (-0.35, 0.75, -1.02)),
+        make_part("Zone_Threshold_Top", chamfered_box((0.82, 0.12, 0.12), 0.025), "teal_bright", (-0.70, 1.14, -1.02)),
+        make_part("Zone_State", chamfered_box((1.42, 0.045, 0.045), 0.012), "teal_bright", (0.68, 0.48, 1.12)),
     ]
-    stations = ((-0.90, -0.42, 0.88), (0.0, 0.35, 1.10), (0.90, -0.42, 0.88))
-    for index, (x, z, height) in enumerate(stations):
-        parts.extend([
-            make_part(f"Station_{index+1}_Desk", chamfered_box((0.70, 0.12, 0.52), 0.035), "graphite_light", (x, 0.60, z)),
-            make_part(f"Station_{index+1}_Leg", chamfered_box((0.10, 0.46, 0.10), 0.025), "neutral", (x, 0.39, z)),
-            make_part(f"Station_{index+1}_Screen", chamfered_box((0.42, height * 0.55, 0.07), 0.025), "glass", (x, 0.91, z - 0.19), rotation=(-8, 0, 0)),
-            make_part(f"Station_{index+1}_Signal", chamfered_box((0.25, 0.035, 0.02), 0.008), "teal_bright", (x, 0.91, z - 0.235), rotation=(-8, 0, 0)),
-        ])
-    points = [(-1.05, 0.39, 0.0), (0, 0.43, 0.20), (1.05, 0.39, 0.0)]
-    parts.append(make_part("Zone_Internal_Flow", tube(points, 0.025, 6), "teal"))
     return parts
 
 
@@ -446,7 +461,6 @@ def human_glyph() -> list[Part]:
         make_part("Human_Leg_Right", chamfered_box((0.23, 0.86, 0.25), 0.055), "neutral", (0.19, 0.52, 0)),
         make_part("Human_Arm_Left", chamfered_box((0.19, 0.83, 0.22), 0.045), "neutral", (-0.43, 1.41, 0), rotation=(0, 0, -5)),
         make_part("Human_Arm_Right", chamfered_box((0.19, 0.83, 0.22), 0.045), "neutral", (0.43, 1.41, 0), rotation=(0, 0, 5)),
-        make_part("Human_Authority_Marker", low_sphere(0.075, 4, 8), "teal_bright", (0, 1.45, -0.25)),
     ]
     return parts
 
@@ -477,22 +491,17 @@ def tool_glyph() -> list[Part]:
     return parts
 
 
-def knowledge_slab() -> list[Part]:
-    group = [
-        make_part("Knowledge_Back", chamfered_box((1.58, 2.02, 0.14), 0.09), "teal_glass", (0, 1.10, 0)),
-        make_part("Knowledge_Surface", chamfered_box((1.40, 1.82, 0.09), 0.07), "glass", (0, 1.10, -0.09)),
-        make_part("Knowledge_Mark", chamfered_box((0.28, 0.28, 0.035), 0.035), "teal_bright", (-0.43, 1.57, -0.155)),
+def knowledge_object() -> list[Part]:
+    parts = [
+        make_part("Knowledge_Base", chamfered_box((1.85, 0.20, 1.62), 0.075), "graphite", (0, 0.10, 0)),
+        make_part("Knowledge_Layer_1", chamfered_box((1.62, 0.30, 1.38), 0.075), "teal_glass", (0, 0.38, 0)),
+        make_part("Knowledge_Layer_2", chamfered_box((1.42, 0.30, 1.20), 0.07), "glass", (0, 0.73, 0)),
+        make_part("Knowledge_Layer_3", chamfered_box((1.20, 0.30, 1.02), 0.065), "teal_glass", (0, 1.08, 0)),
+        make_part("Knowledge_Core", octahedron(0.31), "teal_bright", (0, 1.48, 0)),
     ]
-    widths = (0.70, 0.88, 0.72, 0.82)
-    for index, width in enumerate(widths):
-        group.append(make_part(
-            f"Knowledge_Line_{index+1}",
-            chamfered_box((width, 0.035, 0.025), 0.008),
-            "white" if index == 0 else "neutral",
-            (0.18 - (0.88 - width) / 2, 1.38 - index * 0.25, -0.16),
-        ))
-    matrix = rotation_matrix((-8, 0, -10))
-    return [Part(part.name, part.vertices @ matrix.T, part.faces, part.material) for part in group]
+    for index, (x, z) in enumerate(((-0.56, -0.46), (0.56, -0.46), (-0.56, 0.46), (0.56, 0.46))):
+        parts.append(make_part(f"Knowledge_Relation_{index+1}", low_sphere(0.075, 4, 8), "neutral", (x, 0.77, z)))
+    return parts
 
 
 def workflow_line() -> list[Part]:
@@ -554,17 +563,88 @@ def risk_hotspot() -> list[Part]:
     ]
 
 
+def step_node() -> list[Part]:
+    parts = [
+        make_part("Step_Base", chamfered_box((1.62, 0.28, 1.62), 0.11), "graphite", (0, 0.14, 0)),
+        make_part("Step_Body", chamfered_box((1.34, 1.06, 1.34), 0.16), "graphite_light", (0, 0.78, 0)),
+        make_part("Step_State", chamfered_box((1.02, 0.08, 1.02), 0.04), "teal_glass", (0, 1.35, 0)),
+        make_part("Step_Core", octahedron(0.19), "teal_bright", (0, 1.56, 0)),
+    ]
+    sockets = (
+        (0.0, 2.02, 0.0), (1.10, 1.42, 0.0), (0.68, 0.58, 0.98),
+        (-0.68, 0.58, 0.98), (-1.10, 1.42, 0.0), (-0.68, 0.58, -0.98),
+        (0.68, 0.58, -0.98),
+    )
+    for index, position in enumerate(sockets):
+        parts.append(make_part(f"Step_Stage_{index+1}", chamfered_box((0.24, 0.24, 0.24), 0.045), "teal_glass", position))
+    return parts
+
+
+def record_token() -> list[Part]:
+    axis = align_y_to((1, 0, 0))
+    return [
+        make_part("Record_Core", frustum(1.36, 0.34, 0.34, 12), "teal_glass", (0, 0.92, 0), matrix=axis),
+        make_part("Record_Left", torus(0.38, 0.075, 28, 7), "graphite_light", (-0.70, 0.92, 0), rotation=(0, 0, 90)),
+        make_part("Record_Right", torus(0.38, 0.075, 28, 7), "graphite_light", (0.70, 0.92, 0), rotation=(0, 0, 90)),
+        make_part("Record_Identity", chamfered_box((0.40, 0.15, 0.10), 0.025), "teal_bright", (0, 0.92, -0.33)),
+        make_part("Record_Origin", low_sphere(0.10, 5, 10), "neutral", (-1.06, 0.92, 0)),
+        make_part("Record_Target", low_sphere(0.10, 5, 10), "white", (1.06, 0.92, 0)),
+    ]
+
+
+def verification_marker() -> list[Part]:
+    parts = [
+        make_part("Verification_Base", chamfered_box((2.45, 0.20, 1.42), 0.08), "graphite", (0, 0.10, 0)),
+        make_part("Verification_Pivot", chamfered_box((0.16, 1.62, 0.16), 0.035), "graphite_light", (0, 0.96, 0)),
+        make_part("Verification_Pass", chamfered_box((0.88, 1.12, 0.13), 0.09), "teal_glass", (-0.63, 1.02, 0)),
+        make_part("Verification_Fail", chamfered_box((0.88, 1.12, 0.13), 0.09), "glass", (0.63, 1.02, 0)),
+        make_part("Verification_Tick_A", tube([(-0.88, 0.99, -0.10), (-0.70, 0.80, -0.10)], 0.045, 6), "teal_bright"),
+        make_part("Verification_Tick_B", tube([(-0.70, 0.80, -0.10), (-0.39, 1.24, -0.10)], 0.045, 6), "teal_bright"),
+        make_part("Verification_Cross_A", tube([(0.42, 0.78, -0.10), (0.84, 1.22, -0.10)], 0.035, 6), "neutral"),
+        make_part("Verification_Cross_B", tube([(0.84, 0.78, -0.10), (0.42, 1.22, -0.10)], 0.035, 6), "neutral"),
+    ]
+    return parts
+
+
+def outcome_marker() -> list[Part]:
+    return [
+        make_part("Outcome_Base", chamfered_box((1.92, 0.22, 1.92), 0.09), "graphite", (0, 0.11, 0)),
+        make_part("Outcome_Foundation", chamfered_box((1.52, 0.34, 1.52), 0.10), "teal_glass", (0, 0.40, 0)),
+        make_part("Outcome_Frame", chamfered_box((1.26, 1.48, 1.26), 0.10), "glass", (0, 1.18, 0)),
+        make_part("Outcome_Result", octahedron(0.47), "teal_bright", (0, 1.23, 0)),
+        make_part("Outcome_Seal", torus(0.59, 0.035, 32, 6), "teal", (0, 1.23, 0), rotation=(90, 0, 0)),
+    ]
+
+
+def permission_boundary() -> list[Part]:
+    parts = [
+        make_part("Boundary_Base", chamfered_box((2.75, 0.18, 1.65), 0.07), "graphite", (0, 0.09, 0)),
+        make_part("Boundary_Field", chamfered_box((0.10, 1.46, 1.34), 0.04), "teal_glass", (0, 0.88, 0)),
+        make_part("Boundary_Left", chamfered_box((0.16, 1.72, 0.16), 0.04), "graphite_light", (0, 0.91, -0.76)),
+        make_part("Boundary_Right", chamfered_box((0.16, 1.72, 0.16), 0.04), "graphite_light", (0, 0.91, 0.76)),
+        make_part("Boundary_Top", chamfered_box((0.16, 0.16, 1.68), 0.04), "teal_bright", (0, 1.76, 0)),
+        make_part("Boundary_Before", tube([(-1.22, 0.25, 0), (-0.18, 0.25, 0)], 0.028, 6), "neutral"),
+        make_part("Boundary_After", tube([(0.18, 0.25, 0), (1.22, 0.25, 0)], 0.035, 6), "teal_bright"),
+    ]
+    return parts
+
+
 ASSET_BUILDERS: dict[str, Callable[[], list[Part]]] = {
     "company-core": company_core,
-    "function-platform": function_platform,
+    "domain-platform": domain_platform,
     "human-glyph": human_glyph,
     "agent-glyph": agent_glyph,
     "tool-glyph": tool_glyph,
-    "knowledge-slab": knowledge_slab,
+    "knowledge-object": knowledge_object,
     "workflow-line": workflow_line,
     "decision-gate": decision_gate,
     "action-pulse": action_pulse,
     "risk-hotspot": risk_hotspot,
+    "step-node": step_node,
+    "record-token": record_token,
+    "verification-marker": verification_marker,
+    "outcome-marker": outcome_marker,
+    "permission-boundary": permission_boundary,
 }
 
 
@@ -683,7 +763,7 @@ def write_glb(parts: list[Part], output: Path, title: str, semantic: str) -> dic
             "KHR_materials_transmission",
         ],
         "extras": {
-            "system": "InnerFlect Mirror V1",
+            "system": "InnerFlect Mirror V2",
             "semantic": semantic,
             "coordinateSystem": "Y-up",
             "unit": "metre",
@@ -702,7 +782,7 @@ def write_glb(parts: list[Part], output: Path, title: str, semantic: str) -> dic
 
     dimensions = all_vertices.max(axis=0) - all_vertices.min(axis=0)
     return {
-        "file": f"public/models/innerflect-v1/{output.name}",
+        "file": f"public/models/innerflect-v2/{output.name}",
         # The glTF material NAME on each mesh is the contract the runtime role map
         # keys on -- "Active Teal", not the internal key "teal_bright". Emitting it
         # here is what lets an unmapped material become a compile error instead of
@@ -822,7 +902,7 @@ def load_font(size: int, bold: bool = False) -> "ImageFont.FreeTypeFont":
 def make_contact_sheet(render_paths: dict[str, Path], output: Path) -> None:
     from PIL import Image, ImageDraw
 
-    width, height = 3200, 1800
+    width, height = 3200, 2450
     yy, xx = np.mgrid[0:height, 0:width]
     radial = np.sqrt(((xx - width * 0.50) / width) ** 2 + ((yy - height * 0.43) / height) ** 2)
     vignette = np.clip(1.0 - radial * 1.15, 0, 1)
@@ -840,8 +920,8 @@ def make_contact_sheet(render_paths: dict[str, Path], output: Path) -> None:
     body_font = load_font(18)
     number_font = load_font(18, bold=True)
     draw.text((82, 55), "INNERFLECT MIRROR", font=eyebrow_font, fill=(138, 216, 204, 235))
-    draw.text((82, 92), "V1 · OPERATIONAL GLYPH SYSTEM", font=title_font, fill=(245, 245, 243, 255))
-    draw.text((82, 163), "Ten original procedural assets · Human and Agent are intentionally distinct", font=body_font, fill=(138, 138, 133, 240))
+    draw.text((82, 92), "V2 · OPERATIONAL GLYPH SYSTEM", font=title_font, fill=(245, 245, 243, 255))
+    draw.text((82, 163), "Fifteen semantic assets · Shape identifies kind · State decides colour", font=body_font, fill=(138, 138, 133, 240))
     draw.line((82, 216, width - 82, 216), fill=(79, 158, 148, 95), width=2)
 
     margin_x = 66
@@ -849,7 +929,7 @@ def make_contact_sheet(render_paths: dict[str, Path], output: Path) -> None:
     gap_x = 20
     gap_y = 22
     cell_width = (width - 2 * margin_x - 4 * gap_x) // 5
-    cell_height = (height - top - 58 - gap_y) // 2
+    cell_height = (height - top - 58 - 2 * gap_y) // 3
     slugs = list(ASSET_BUILDERS)
     for index, slug in enumerate(slugs):
         row, column = divmod(index, 5)
@@ -878,7 +958,7 @@ def make_contact_sheet(render_paths: dict[str, Path], output: Path) -> None:
 def build_showcase(assets: dict[str, list[Part]]) -> list[Part]:
     showcase: list[Part] = []
     x_positions = (-9.2, -4.6, 0.0, 4.6, 9.2)
-    z_positions = (2.8, -3.0)
+    z_positions = (5.6, 0.0, -5.6)
     for index, (slug, parts) in enumerate(assets.items()):
         row, column = divmod(index, 5)
         offset = (x_positions[column], 0, z_positions[row])
@@ -910,23 +990,23 @@ def main(previews: bool = False) -> None:
     # real bandwidth on every uncached request.
     if previews:
         showcase = build_showcase(assets)
-        showcase_path = PREVIEWS_DIR / "innerflect-v1-showcase.glb"
-        stats["innerflect-v1-showcase"] = write_glb(
+        showcase_path = PREVIEWS_DIR / "innerflect-v2-showcase.glb"
+        stats["innerflect-v2-showcase"] = write_glb(
             showcase,
             showcase_path,
-            "INNERFLECT MIRROR V1 SHOWCASE",
-            "A display scene containing all ten V1 operational glyphs.",
+            "INNERFLECT MIRROR V2 SHOWCASE",
+            "A display scene containing all fifteen V2 operational glyphs.",
         )
         validate_glb(showcase_path)
 
-        make_contact_sheet(renders, PREVIEWS_DIR / "innerflect-v1-contact-sheet.png")
+        make_contact_sheet(renders, PREVIEWS_DIR / "innerflect-v2-contact-sheet.png")
         if REFERENCE_IMAGE.exists():
             shutil.copy2(REFERENCE_IMAGE, PREVIEWS_DIR / "concept-reference.png")
 
     manifest = {
-        "name": "InnerFlect Mirror V1 Operational Glyph System",
-        "version": "1.0.0",
-        "generator": "source/generate_innerflect_v1.py",
+        "name": "InnerFlect Mirror V2 Operational Glyph System",
+        "version": "2.0.0",
+        "generator": "tools/glyph-kit/generate_innerflect_v2.py",
         "originalGeometry": True,
         "thirdPartyModels": False,
         "coordinateSystem": "Y-up",
@@ -946,7 +1026,7 @@ def main(previews: bool = False) -> None:
             "supervised": "grey-to-teal transition with a decision gate",
             "autonomous": "continuous teal flow",
             "attention": "amber hotspot",
-            "unsafe": "red, intentionally absent from normal V1 assets",
+            "unsafe": "red, intentionally absent from normal V2 assets",
         },
         "materialNames": sorted({n for slug in ASSET_BUILDERS for n in stats[slug]["materialNames"]}),
         "assets": [
@@ -958,7 +1038,7 @@ def main(previews: bool = False) -> None:
             }
             for slug in ASSET_BUILDERS
         ],
-        **({"showcase": stats["innerflect-v1-showcase"]} if "innerflect-v1-showcase" in stats else {}),
+        **({"showcase": stats["innerflect-v2-showcase"]} if "innerflect-v2-showcase" in stats else {}),
     }
     (ROOT / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"status": "ok", "assets": len(assets), "models": len(list(MODELS_DIR.glob('*.glb'))), "manifest": str(ROOT / 'manifest.json')}, indent=2))

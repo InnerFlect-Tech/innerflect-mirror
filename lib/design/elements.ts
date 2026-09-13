@@ -33,9 +33,7 @@ export type ElementDef = {
 export const ELEMENTS: readonly ElementDef[] = [
   { id: 'company-core', name: 'Company Core', takesState: true, modelled: true,
     drivenBy: 'Company record' },
-  // Named for the domain it represents, never a department. The glyph id stays
-  // `function-platform` because it is the kit's filename.
-  { id: 'function-platform', name: 'Domain Platform', takesState: true, modelled: true,
+  { id: 'domain-platform', name: 'Domain Platform', takesState: true, modelled: true,
     drivenBy: 'Domain record' },
   { id: 'human-glyph', name: 'Human Glyph', takesState: false, modelled: true,
     drivenBy: 'Workflow.humans / Person record' },
@@ -46,7 +44,7 @@ export const ELEMENTS: readonly ElementDef[] = [
   { id: 'tool-glyph', name: 'Tool Glyph', takesState: true, modelled: false,
     drivenBy: 'Tool record' },
   // The knowledge object itself, not the file. A document is evidence FOR it.
-  { id: 'knowledge-slab', name: 'Knowledge Object', takesState: true, modelled: false,
+  { id: 'knowledge-object', name: 'Knowledge Object', takesState: true, modelled: false,
     drivenBy: 'Knowledge object in use at a step' },
   { id: 'workflow-line', name: 'Workflow Line', takesState: true, modelled: true,
     drivenBy: 'Workflow record' },
@@ -59,6 +57,16 @@ export const ELEMENTS: readonly ElementDef[] = [
   // An aggregate count is not a record you can open. Needs an Exception record.
   { id: 'risk-hotspot', name: 'Risk Hotspot', takesState: true, modelled: false,
     drivenBy: 'Risk / Exception / Policy conflict record' },
+  { id: 'step-node', name: 'Step Node', takesState: true, modelled: false,
+    drivenBy: 'Workflow step record' },
+  { id: 'record-token', name: 'Record Token', takesState: true, modelled: false,
+    drivenBy: 'Business record in a workflow execution' },
+  { id: 'verification-marker', name: 'Verification Marker', takesState: true, modelled: false,
+    drivenBy: 'Verification record' },
+  { id: 'outcome-marker', name: 'Outcome Marker', takesState: true, modelled: false,
+    drivenBy: 'Outcome record' },
+  { id: 'permission-boundary', name: 'Permission Boundary', takesState: true, modelled: false,
+    drivenBy: 'Authority / permission record' },
 ];
 
 export const ELEMENTS_BY_ID = Object.fromEntries(
