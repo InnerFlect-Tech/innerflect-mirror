@@ -36,3 +36,7 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+
+# TypeScript incremental build cache — machine-local, conflicts on every
+# interleaved commit, and carries no value in version control.
+tsconfig.tsbuildinfo

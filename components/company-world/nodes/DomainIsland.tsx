@@ -24,7 +24,7 @@ import { DomainContent } from './DomainContent';
  */
 export function DomainIsland({
   visual,
-  index,
+  index: _index,
   selected,
   subdued,
   onSelect,
@@ -127,7 +127,7 @@ export function DomainIsland({
           />
         </mesh>
 
-        <DomainContent shape={index} accent={token.edge} />
+        <DomainContent domain={domain} accent={token.edge} />
       </group>
     </group>
   );
