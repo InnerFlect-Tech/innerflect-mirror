@@ -9,11 +9,30 @@ import type { SceneState } from './state';
  * shown without that label is the most dangerous number in the product: it is
  * the one a person would act on.
  */
-export type StepActor = 'human' | 'system' | 'gate';
+/**
+ * `person` is drawn as a circular avatar, the way a human reads as a human.
+ * Everything else is a square tile — the shape itself says whether a person or
+ * a system is doing the work, before any colour is involved.
+ */
+export type StepActor = 'person' | 'human' | 'system' | 'gate';
+
+export type StepIcon =
+  | 'person' | 'mail' | 'doc' | 'crm' | 'search' | 'reply' | 'chart'
+  | 'calendar' | 'image' | 'users' | 'chat' | 'sheet' | 'system'
+  | 'send' | 'check' | 'database';
 
 export type MirrorStep = {
   label: string;
   actor: StepActor;
+  icon: StepIcon;
+};
+
+/** One workflow shown in full, labelled, beneath the department rows. */
+export type WorkedExample = {
+  title: string;
+  note: string;
+  today: MirrorStep[];
+  reflected: MirrorStep[];
 };
 
 export type MirrorRow = {

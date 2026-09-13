@@ -24,6 +24,7 @@ Governing rule: **Every autonomous action must have authority, evidence, an obse
 | Surface | Question | Primary object |
 |---|---|---|
 | Company | Is my company okay, and where should I look? | Operational digital twin |
+| Mirror | What would this company be if the work it already does ran itself? | The company reflected as a system |
 | Processes | How does work flow through the company, and what should change? | Workflows and capabilities |
 | Approvals | Where does the company need human judgement? | Human authority layer |
 | Knowledge | What does the company know, why, and where is it used? | Trusted knowledge objects |
@@ -44,8 +45,6 @@ The dominant object is a living operational world, not a widget dashboard. It ha
 
 - **Visual:** spatial company world. Selecting an area brings its work, people, agents, policies, and decisions into context.
 - **Practical:** table of area, state, active work, autonomy, and attention.
-- **Mirror:** how the company operates now, beside the same company operating itself. Same rows, same step count — the only thing that differs between the two columns is who performs each step, which is the whole argument the product makes. The right-hand column is a **projection, not a measurement**, and must always be labelled as such: a projection presented as fact is the most dangerous number in the product, because it is the one a person would act on.
-
 The Company surface also carries the audit trail as a readable sequence rather than a ticker. Every entry names who acted — the system, or the person — and carries the record reference, and the step where a human was required is marked. A feed that only says "something happened" satisfies none of authority, evidence, outcome or audit.
 
 ### Operational domains
@@ -73,6 +72,16 @@ Two things that look like domains are deliberately not domains:
 Mirror is the Strategic Assessment made continuous: the assessment maps how work, decisions, and data move through the organisation, and the world is that map kept live. Each remaining entry point lights up one region of an existing world rather than adding a new one.
 
 Desktop is exploratory. Mobile is a compact Company Pulse focused on health, activity, and exceptions. Healthy systems become quiet; information moves from the periphery to the centre only when necessary.
+
+## Mirror
+
+Its own surface, not a view inside Company. Company answers *is my company okay*; Mirror answers *what would this company be if the work it already does ran itself*.
+
+Both columns carry the same rows and the same number of steps, on purpose: the work does not shrink, only the share of it a person has to carry. The only thing that changes between the two sides is who performs each step, and that difference is the whole argument.
+
+Steps are rendered as icon tiles rather than words, so the read is a count of grey against teal rather than two paragraphs; shape carries meaning before colour does — a circle is a person, a square is work. Labels remain available as tooltips and to assistive technology, and one workflow is spelled out in full beneath the rows.
+
+The right-hand column is a **projection, not a measurement**, and must always be labelled as such on the surface itself. A projection presented as fact is the most dangerous number in the product, because it is the one a person would act on — quote to a board, or plan headcount against.
 
 ## Processes
 

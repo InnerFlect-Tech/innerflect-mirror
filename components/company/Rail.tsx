@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BookOpen, Eye, FileCheck2, Settings2, Target, Workflow } from 'lucide-react';
+import { BookOpen, Columns2, Eye, FileCheck2, Settings2, Target, Workflow } from 'lucide-react';
 
 /**
  * Navigation, so it is built from links. These were six <button>s with no
@@ -8,10 +8,11 @@ import { BookOpen, Eye, FileCheck2, Settings2, Target, Workflow } from 'lucide-r
  *
  * Server component: it renders once and ships no JavaScript.
  */
-export type Surface = 'company' | 'processes' | 'approvals' | 'knowledge' | 'outcomes' | 'settings';
+export type Surface = 'company' | 'mirror' | 'processes' | 'approvals' | 'knowledge' | 'outcomes' | 'settings';
 
 const SURFACES: { id: Surface; href: string; label: string; icon: React.ReactNode }[] = [
   { id: 'company', href: '/', label: 'Company', icon: <Eye /> },
+  { id: 'mirror', href: '/mirror', label: 'Mirror', icon: <Columns2 /> },
   { id: 'processes', href: '/processes', label: 'Processes', icon: <Workflow /> },
   { id: 'approvals', href: '/approvals', label: 'Approvals', icon: <FileCheck2 /> },
   { id: 'knowledge', href: '/knowledge', label: 'Knowledge', icon: <BookOpen /> },

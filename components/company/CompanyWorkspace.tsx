@@ -11,9 +11,7 @@ import type { decisions as Decisions } from '@/data/company';
 import { PracticalTable } from './PracticalTable';
 import { DomainInspector } from './DomainInspector';
 import { NeedsYou } from './NeedsYou';
-import { MirrorView } from './MirrorView';
 import { ActivityLog } from './ActivityLog';
-import { mirrorCaveat, mirrorDeltas, mirrorRows } from '@/data/mirror';
 import { activity } from '@/data/activity';
 
 const CompanyWorld = dynamic(
@@ -45,7 +43,7 @@ export function CompanyWorkspace({
   const isMobile = useIsMobile();
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [running, setRunning] = useState(true);
-  const [view, setView] = useState<'visual' | 'mirror' | 'practical'>('visual');
+  const [view, setView] = useState<'visual' | 'practical'>('visual');
   const [toast, setToast] = useState('');
 
   // Nothing is focused on arrival: a healthy company shows the whole world.
@@ -74,13 +72,7 @@ export function CompanyWorkspace({
         <div className="deck-head">
           <div>
             <span className="eyebrow">Live company floor</span>
-            <h2>
-              {view === 'visual'
-                ? 'See who is working on what'
-                : view === 'mirror'
-                  ? 'How it operates now, and how it could'
-                  : 'Current operating state'}
-            </h2>
+            <h2>{view === 'visual' ? 'See who is working on what' : 'Current operating state'}</h2>
           </div>
           <div className="deck-controls">
             <fieldset className="segmented">
@@ -92,14 +84,6 @@ export function CompanyWorkspace({
                 onClick={() => setView('visual')}
               >
                 Visual
-              </button>
-              <button
-                type="button"
-                aria-pressed={view === 'mirror'}
-                className={view === 'mirror' ? 'active' : ''}
-                onClick={() => setView('mirror')}
-              >
-                Mirror
               </button>
               <button
                 type="button"
@@ -160,16 +144,6 @@ export function CompanyWorkspace({
               ))}
             </fieldset>
           </div>
-        ) : view === 'mirror' ? (
-          <MirrorView
-            rows={mirrorRows}
-            deltas={mirrorDeltas}
-            caveat={mirrorCaveat}
-            onSelect={(id) => {
-              setFocusedId(id);
-              setView('visual');
-            }}
-          />
         ) : (
           <PracticalTable
             domains={domains}

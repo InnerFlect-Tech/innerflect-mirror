@@ -580,58 +580,6 @@ a.panel-cta{text-decoration:none}
   .summary-strip b{font-size:var(--fs-lg)}
 }
 
-/* ── The Mirror ──────────────────────────────────────────────────────────────
-   Two columns of deliberately identical shape: same rows, same step count. The
-   only thing that changes between them is who does each step, which is the
-   entire argument the product makes. */
-.mirror-view{padding:var(--space-4) var(--space-5) var(--space-5)}
-.mirror-columns{display:grid;grid-template-columns:1fr 150px 1fr;gap:var(--space-4);align-items:center;margin-bottom:var(--space-4)}
-.mirror-col-head b{display:block;font-size:var(--fs-md);font-weight:var(--weight-strong);margin:var(--space-2) 0 var(--space-1);color:var(--text-secondary)}
-.mirror-col-head small{font-size:var(--fs-xs);color:var(--text-faint)}
-.mirror-col-head.is-reflected{text-align:right}
-.mirror-col-head.is-reflected b{color:var(--text-accent)}
-.mirror-axis{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);font-size:var(--fs-xs);color:var(--text-faint)}
-.mirror-axis i{width:1px;height:var(--space-3);background:linear-gradient(var(--c-ink-400),transparent)}
-.mirror-axis i:last-child{background:linear-gradient(transparent,var(--c-teal-500))}
-
-.mirror-rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
-.mirror-row{width:100%;display:grid;grid-template-columns:1fr 150px 1fr;gap:var(--space-4);align-items:center;padding:var(--space-3);border:1px solid var(--border-subtle);border-radius:var(--card-radius);background:var(--bg-raised);cursor:pointer;text-align:left;color:var(--text-primary);transition:border-color var(--dur-base) var(--ease-out),background var(--dur-base) var(--ease-out)}
-.mirror-row:hover{border-color:var(--border-strong);background:var(--bg-hover)}
-.mirror-side{min-width:0}
-.mirror-row-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-2)}
-.mirror-row-head i{width:6px;height:6px;border-radius:50%;flex:none}
-.mirror-row-head b{font-size:var(--fs-sm);font-weight:var(--weight-medium)}
-.mirror-row-head em{display:flex;align-items:center;gap:3px;font-style:normal;font-size:var(--fs-xs);color:var(--text-faint);margin-left:auto}
-.mirror-side.is-reflected .mirror-row-head{justify-content:flex-end}
-.mode-chip{font-size:var(--fs-xs);border:1px solid;border-radius:var(--pill-radius);padding:2px var(--space-2)}
-
-.chain{display:flex;flex-wrap:wrap;gap:4px}
-.chain-step{font-size:var(--fs-xs);padding:5px var(--space-2);border:1px solid var(--border-subtle);border-radius:var(--radius-xs);background:var(--bg-surface);color:var(--text-muted);white-space:nowrap}
-.chain-step[data-actor=system]{border-color:#245f58;background:#0b1a19;color:#9ad6cc}
-.chain-step[data-actor=gate]{border-color:#5c4826;background:#14110a;color:#e0be7c}
-.mirror-side.is-reflected .chain{justify-content:flex-end}
-
-.mirror-gap{display:flex;flex-direction:column;align-items:center;gap:2px}
-.mirror-hours{font-size:var(--fs-sm);color:var(--text-faint)}
-.mirror-hours.is-to{font-weight:var(--weight-bold)}
-.mirror-arrow{font-size:var(--fs-xs);color:var(--c-ink-300)}
-
-.mirror-foot{display:grid;grid-template-columns:1fr;gap:var(--space-3);margin-top:var(--space-4);padding-top:var(--space-4);border-top:1px solid var(--border-subtle)}
-.delta-list{list-style:none;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:var(--space-3);margin:0;padding:0}
-.delta-values{display:flex;align-items:baseline;gap:var(--space-2)}
-.delta-values em{font-style:normal;font-size:var(--fs-md);color:var(--text-faint);text-decoration:line-through;text-decoration-color:var(--c-ink-300)}
-.delta-values i{font-style:normal;color:var(--c-ink-300);font-size:var(--fs-xs)}
-.delta-values b{font-size:var(--fs-xl);font-weight:var(--weight-strong);color:var(--text-accent);letter-spacing:var(--tracking-tight)}
-.delta-list small{display:block;font-size:var(--fs-xs);color:var(--text-faint);margin-top:var(--space-1)}
-.mirror-caveat{display:flex;gap:var(--space-2);align-items:flex-start;margin:0;font-size:var(--fs-xs);color:var(--state-attention-label);line-height:var(--leading-body)}
-.mirror-caveat svg{flex:none;margin-top:2px}
-
-.chain-legend{list-style:none;display:flex;gap:var(--space-4);margin:var(--space-3) 0 0;padding:0;font-size:var(--fs-xs);color:var(--text-faint)}
-.chain-legend li{display:flex;align-items:center;gap:6px}
-.chain-legend i{width:9px;height:9px;border-radius:3px;border:1px solid var(--border-subtle);background:var(--bg-surface)}
-.chain-legend i[data-actor=system]{border-color:#245f58;background:#0b1a19}
-.chain-legend i[data-actor=gate]{border-color:#5c4826;background:#14110a}
-
 /* ── Activity log ────────────────────────────────────────────────────────── */
 .activity{border-top:1px solid var(--border-subtle)}
 .activity-head{display:flex;justify-content:space-between;align-items:baseline;padding:var(--space-3) var(--space-4) var(--space-2)}
@@ -659,4 +607,116 @@ a.panel-cta{text-decoration:none}
   .mirror-view{padding:var(--space-3)}
   .activity-log button{grid-template-columns:42px 20px 1fr;row-gap:2px}
   .activity-by{grid-column:3}
+}
+
+/* ── The Mirror ──────────────────────────────────────────────────────────────
+   Two columns of deliberately identical shape: same rows, same step count. The
+   only thing that changes is who performs each step. Steps are icon tiles, not
+   words — at a glance you are counting grey against teal, not reading two
+   paragraphs. Labels stay available as tooltips and to screen readers. */
+.mirror-view{margin:0 var(--space-6) var(--space-6)}
+.mirror-stage{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:var(--space-3);align-items:start}
+.mirror-board{border:1px solid var(--panel-border);border-radius:var(--panel-radius);background:var(--panel-bg);padding:var(--space-4);position:relative;overflow:hidden}
+
+/* The seam: a light gradient down the centre, the join in the mirror. */
+.mirror-board:before{content:"";position:absolute;top:0;bottom:0;left:calc(50% - 1px);width:2px;
+  background:linear-gradient(180deg,transparent,rgb(85 203 187 / .55) 14%,rgb(85 203 187 / .55) 86%,transparent);box-shadow:0 0 16px rgb(85 203 187 / .25);
+  pointer-events:none}
+
+.mirror-heads{display:grid;grid-template-columns:1fr 132px 1fr;gap:var(--space-3);align-items:center;margin-bottom:var(--space-4)}
+.mirror-heads header{text-align:center}
+.mirror-heads h3{margin:0;font-size:var(--fs-lg);font-weight:var(--weight-medium);letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)}
+.mirror-heads header.is-reflected h3{color:var(--text-accent)}
+.mirror-heads small{display:block;font-size:var(--fs-xs);color:var(--text-faint);margin-top:var(--space-1)}
+.mirror-axis{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:var(--fs-xs);color:var(--text-faint)}
+.mirror-axis i{width:1px;height:var(--space-3);background:var(--c-ink-400)}
+
+.mirror-rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.mirror-row{display:grid;grid-template-columns:1fr 132px 1fr;gap:var(--space-3);align-items:center;
+  padding:var(--space-2) var(--space-2);border-radius:var(--card-radius);text-decoration:none;color:var(--text-primary);
+  transition:background var(--dur-base) var(--ease-out)}
+.mirror-row:hover{background:var(--bg-hover)}
+.mirror-side{display:flex;align-items:center;gap:var(--space-3);min-width:0}
+.mirror-side.is-reflected{flex-direction:row-reverse}
+.mirror-name{display:flex;align-items:center;gap:var(--space-2);font-size:var(--fs-sm);font-weight:var(--weight-medium);width:118px;flex:none}
+.mirror-side.is-reflected .mirror-name{flex-direction:row-reverse;text-align:right}
+.mirror-name i{width:6px;height:6px;border-radius:50%;flex:none}
+.mode-chip{font-size:var(--fs-xs);border:1px solid;border-radius:var(--pill-radius);padding:2px var(--space-2);font-weight:var(--weight-regular)}
+
+.chain{display:flex;align-items:center;min-width:0;flex:1}
+.mirror-side.is-reflected .chain{flex-direction:row-reverse}
+.chain-cell{display:flex;align-items:center}
+.mirror-side.is-reflected .chain-cell{flex-direction:row-reverse}
+.chain-arrow{width:var(--space-3);height:1px;background:var(--c-ink-400);flex:none;position:relative}
+.chain-arrow:after{content:"";position:absolute;right:0;top:-2px;width:4px;height:4px;border-top:1px solid var(--c-ink-400);border-right:1px solid var(--c-ink-400);transform:rotate(45deg)}
+.mirror-side.is-reflected .chain-arrow:after{right:auto;left:0;transform:rotate(-135deg)}
+
+/* Shape says who: a circle is a person, a square is work. */
+.chain-tile{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:var(--radius-sm);
+  border:1px solid var(--border-subtle);background:var(--bg-raised);color:var(--text-muted)}
+.chain-tile[data-actor=person]{border-radius:50%;background:var(--c-ink-500);color:var(--c-ink-50)}
+.chain-tile[data-actor=system]{border-color:#2f9c8c;background:#10302c;color:#7fe4d4;box-shadow:0 0 12px rgb(47 156 140 / .28)}
+.chain-tile[data-actor=gate]{border-radius:50%;border-color:#8a6a2a;background:#251c0d;color:#e6c37e}
+
+.mirror-seam{display:flex;flex-direction:column;align-items:center;gap:1px}
+.mirror-seam em{font-style:normal;font-size:var(--fs-xs);color:var(--text-faint)}
+.mirror-seam em.is-to{font-weight:var(--weight-bold)}
+
+/* Worked example — one workflow spelled out, since the rows are icons only. */
+.worked-example{margin-top:var(--space-4);padding-top:var(--space-4);border-top:1px solid var(--border-subtle)}
+.worked-head{display:flex;align-items:baseline;gap:var(--space-2);margin-bottom:var(--space-3)}
+.worked-head small{font-size:var(--fs-xs);color:var(--text-faint)}
+.worked-body{display:grid;grid-template-columns:1fr 1px 1fr;gap:var(--space-3);align-items:start}
+.worked-divider{background:linear-gradient(180deg,transparent,var(--c-ink-400),transparent)}
+.worked-chain{list-style:none;margin:0;padding:0 0 var(--space-1);display:flex;gap:var(--space-1);justify-content:center;overflow-x:auto;scrollbar-width:none}
+.worked-chain::-webkit-scrollbar{display:none}
+.worked-chain li{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);width:60px;flex:none;text-align:center}
+.worked-chain small{font-size:var(--fs-xs);color:var(--text-faint);line-height:1.25;hyphens:auto}
+.worked-chain.is-reflected small{color:var(--text-muted)}
+.worked-note{margin:var(--space-3) 0 0;text-align:center;font-size:var(--fs-xs);color:var(--text-faint)}
+
+/* Metrics panel */
+.mirror-metrics{border:1px solid var(--panel-border);border-radius:var(--panel-radius);background:var(--panel-bg);padding:var(--space-4)}
+.mirror-metrics dl{margin:var(--space-3) 0 0;display:flex;flex-direction:column;gap:var(--space-4)}
+.mirror-metrics dt{font-size:var(--fs-xs);color:var(--text-faint);margin-bottom:var(--space-1)}
+.mirror-metrics dd{margin:0;display:flex;align-items:baseline;gap:var(--space-2)}
+.mirror-metrics dd em{font-style:normal;font-size:var(--fs-lg);color:var(--text-faint)}
+.mirror-metrics dd i{font-style:normal;color:var(--c-ink-300);font-size:var(--fs-xs)}
+.mirror-metrics dd b{font-size:var(--fs-xl);font-weight:var(--weight-strong);color:var(--text-accent);letter-spacing:var(--tracking-tight)}
+.mirror-metrics dd b.solo{color:var(--text-primary)}
+.mirror-caveat{display:flex;gap:var(--space-2);align-items:flex-start;margin:var(--space-4) 0 0;padding-top:var(--space-3);
+  border-top:1px solid var(--border-subtle);font-size:var(--fs-xs);color:var(--state-attention-label);line-height:var(--leading-body)}
+.mirror-caveat svg{flex:none;margin-top:2px}
+.mirror-motto{margin:var(--space-4) 0 0;font-size:var(--fs-sm);color:var(--text-faint);line-height:1.5}
+
+.chain-legend{list-style:none;display:flex;flex-wrap:wrap;gap:var(--space-4);margin:var(--space-3) 0 0;padding:0;font-size:var(--fs-xs);color:var(--text-faint)}
+.chain-legend li{display:flex;align-items:center;gap:6px}
+.chain-legend i{width:12px;height:12px;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);background:var(--bg-raised)}
+.chain-legend i[data-actor=person]{border-radius:50%;background:var(--c-ink-500)}
+.chain-legend i[data-actor=system]{border-color:#2f9c8c;background:#10302c}
+.chain-legend i[data-actor=gate]{border-radius:50%;border-color:#8a6a2a;background:#251c0d}
+
+@media(max-width:1280px){
+  .mirror-stage{grid-template-columns:1fr}
+  .mirror-metrics dl{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)}
+}
+@media(max-width:900px){
+  .mirror-board:before,.worked-divider{display:none}
+  .mirror-heads,.mirror-row{grid-template-columns:1fr}
+  .mirror-heads header,.mirror-heads header.is-reflected{text-align:left}
+  .mirror-axis{flex-direction:row;gap:var(--space-2);margin:var(--space-2) 0}
+  .mirror-axis i{width:var(--space-4);height:1px}
+  .mirror-side,.mirror-side.is-reflected{flex-direction:column;align-items:flex-start;gap:var(--space-2)}
+  .mirror-side.is-reflected .mirror-name,.mirror-side.is-reflected .chain,.mirror-side.is-reflected .chain-cell{flex-direction:row;text-align:left}
+  .mirror-side.is-reflected .chain-arrow:after{right:0;left:auto;transform:rotate(45deg)}
+  .mirror-name{width:auto}
+  .mirror-row{border:1px solid var(--border-subtle);padding:var(--space-3);gap:var(--space-2)}
+  .mirror-seam{flex-direction:row;gap:var(--space-2)}
+  .worked-body{grid-template-columns:1fr}
+  .mirror-metrics dl{grid-template-columns:1fr 1fr}
+}
+@media(max-width:760px){
+  .mirror-view{margin:0 10px var(--space-5)}
+  .chain{flex-wrap:wrap;gap:2px}
+  .worked-chain{justify-content:flex-start}
 }
