@@ -44,6 +44,9 @@ The dominant object is a living operational world, not a widget dashboard. It ha
 
 - **Visual:** spatial company world. Selecting an area brings its work, people, agents, policies, and decisions into context.
 - **Practical:** table of area, state, active work, autonomy, and attention.
+- **Mirror:** how the company operates now, beside the same company operating itself. Same rows, same step count — the only thing that differs between the two columns is who performs each step, which is the whole argument the product makes. The right-hand column is a **projection, not a measurement**, and must always be labelled as such: a projection presented as fact is the most dangerous number in the product, because it is the one a person would act on.
+
+The Company surface also carries the audit trail as a readable sequence rather than a ticker. Every entry names who acted — the system, or the person — and carries the record reference, and the step where a human was required is marked. A feed that only says "something happened" satisfies none of authority, evidence, outcome or audit.
 
 ### Operational domains
 

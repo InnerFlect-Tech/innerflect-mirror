@@ -2,7 +2,7 @@ import { AppShell } from '@/components/company/AppShell';
 import { CompanyWorkspace } from '@/components/company/CompanyWorkspace';
 import { Hero, companyHeadline } from '@/components/company/Hero';
 import { Impact } from '@/components/company/Impact';
-import { company, decisions, domains, feed } from '@/data/company';
+import { company, decisions, domains } from '@/data/company';
 import { worstState } from '@/lib/model/state';
 
 /**
@@ -35,7 +35,6 @@ export default function CompanyPage() {
 
       <CompanyWorkspace
         domains={domains}
-        feed={feed}
         decisions={decisions}
         decisionsWaiting={company.decisionsWaiting}
         eventsObserved={company.eventsObserved}
