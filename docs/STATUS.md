@@ -51,6 +51,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 ## Recently landed
 
+- `92d9060` — Request 7 records the approved Mirror/Builder operating loop, actor/control separation, execution identity, canonical-workflow requirement and Record Token direction for the owning sessions.
 Read `git log --oneline` for the full record. This section is only for things whose
 consequences another agent needs to know about:
 
