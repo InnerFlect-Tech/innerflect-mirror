@@ -331,8 +331,23 @@ Numbers are never reused, so a reference to "request 5" always means the same th
 
 11. ✅ **DONE — Collapse the third palette in `app/globals.css`.** Its `:root` hand-declared
     eleven hexes and the whole `--fs-*` scale while the docs claimed one definition existed.
-    Five of the eleven were never referenced once. The six that were used are now aliases
-    onto `lib/tokens`, verified in-browser as resolving to identical values.
+   Five of the eleven were never referenced once. The six that were used are now aliases
+   onto `lib/tokens`, verified in-browser as resolving to identical values.
+
+12. **Release or implement the fixed cockpit shell before adding more page content.** The
+   user has asked Codex to build this, but `app/**` and `components/company/**` remain
+   claimed by the UI-shell session while that session is marked idle. Required result:
+   preserve the existing left rail and top command bar as one shared `AppShell`, replace
+   the invented three-bar `.mirror-glyph` with the canonical
+   `innerflect_favicon_512.png` from Drive folder `innerflect_logo_pack`, and provide an
+   empty content viewport that always fits inside `100dvh` without document scrolling.
+   Use CSS Grid for the invariant frame (`rail / minmax(0,1fr)` and
+   `topbar / minmax(0,1fr)`); use `react-resizable-panels` 4.x only for user-resizable
+   inspector splits inside that viewport, not for the rail or top bar. The shell needs
+   compact-height and narrow-width modes, `min-width: 0`, `min-height: 0`, overflow
+   containment, keyboard focus, and reduced-motion support. Please either implement this
+   request or release `app/**` and `components/company/**` so Codex can claim and build it
+   without another concurrent-write collision.
 
 ## Semantic review for the next element pass
 
