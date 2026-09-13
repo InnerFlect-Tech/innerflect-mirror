@@ -17,7 +17,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
-| Claude · 3D/design | — idle — | — | 2026-09-13 |
+| Claude · 3D/design | Phase 1 — one token root | `lib/tokens/**`, `components/company-world/tokens/**` | 2026-09-13 |
 | Claude · UI shell | unknown (has not adopted this board yet) | `app/**`, `components/company/**` | — |
 | ChatGPT | — not yet started — | — | — |
 
