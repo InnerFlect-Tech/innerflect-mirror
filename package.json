@@ -17,6 +17,7 @@
     "emit:glyphs": "esbuild scripts/emit-glyph-manifest.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/emit-glyphs.mjs --log-level=error && node node_modules/.cache/emit-glyphs.mjs",
     "check:glyphs": "npm run emit:glyphs && git diff --exit-code components/company-world/generated/",
     "check:records": "esbuild scripts/check-no-fabrication.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/check-records.mjs --log-level=error --alias:@=. && node node_modules/.cache/check-records.mjs",
+    "export:world": "esbuild scripts/export-world.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/export-world.mjs --log-level=error --alias:@=. --external:three && node node_modules/.cache/export-world.mjs",
     "check:picks": "esbuild scripts/check-picks.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/check-picks.mjs --log-level=error --alias:@=. && node node_modules/.cache/check-picks.mjs"
   },
   "dependencies": {
