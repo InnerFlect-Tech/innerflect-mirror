@@ -1,20 +1,22 @@
 import { AppShell } from '@/components/company/AppShell';
-import { SurfaceStub } from '@/components/company/SurfaceStub';
-import { company, domains } from '@/data/company';
+import { SurfaceHead } from '@/components/company/SurfaceHead';
+import { DecisionsSurface } from '@/components/company/DecisionsSurface';
 import { companyHeadline } from '@/components/company/Hero';
+import { company, domains } from '@/data/company';
+import { decisionQueue } from '@/data/decisions-queue';
 import { worstState } from '@/lib/model/state';
 
-export default function Page() {
+export default function DecisionsPage() {
   const state = worstState(domains.map((d) => d.state));
+
   return (
     <AppShell active="decisions" status={companyHeadline[state].top} state={state} decisionsWaiting={company.decisionsWaiting}>
-      <SurfaceStub
-        eyebrow="Stable surface"
-        title="Decisions"
-        question="Where does the company need human judgement?"
-        object="Human authority layer"
-        detail="A large queue is a system failure. Actions are Approve · Modify · Decline · Simulate, and repeated judgement should produce a policy suggestion — turning tacit knowledge into institutional memory."
+      <SurfaceHead
+        eyebrow="Human authority layer"
+        title={`${decisionQueue.length} decisions need you.`}
+        pulse="Everything else is running. A large queue would be a system failure, not a busy day."
       />
+      <DecisionsSurface decisions={decisionQueue} />
     </AppShell>
   );
 }

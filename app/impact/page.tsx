@@ -1,20 +1,23 @@
 import { AppShell } from '@/components/company/AppShell';
-import { SurfaceStub } from '@/components/company/SurfaceStub';
-import { company, domains } from '@/data/company';
+import { SurfaceHead } from '@/components/company/SurfaceHead';
+import { ImpactSurface } from '@/components/company/ImpactSurface';
 import { companyHeadline } from '@/components/company/Hero';
+import { company, domains } from '@/data/company';
+import { impactClaims, safety } from '@/data/impact';
 import { worstState } from '@/lib/model/state';
 
-export default function Page() {
+export default function ImpactPage() {
   const state = worstState(domains.map((d) => d.state));
+  const verified = impactClaims.filter((c) => c.verified).length;
+
   return (
     <AppShell active="impact" status={companyHeadline[state].top} state={state} decisionsWaiting={company.decisionsWaiting}>
-      <SurfaceStub
-        eyebrow="Stable surface"
+      <SurfaceHead
+        eyebrow="Verified business value"
         title="Impact"
-        question="Is autonomy making the company better?"
-        object="Verified business value"
-        detail="The proof layer. Every claim traces back: Impact → Work → Execution → Action → Decision → Policy → Evidence → Source event."
+        pulse={`${verified} of ${impactClaims.length} claims traceable to a source event · ${safety.unsafeActions} unsafe actions`}
       />
+      <ImpactSurface claims={impactClaims} safety={safety} />
     </AppShell>
   );
 }

@@ -1,20 +1,24 @@
 import { AppShell } from '@/components/company/AppShell';
-import { SurfaceStub } from '@/components/company/SurfaceStub';
-import { company, domains } from '@/data/company';
+import { SurfaceHead } from '@/components/company/SurfaceHead';
+import { WorkSurface } from '@/components/company/WorkSurface';
 import { companyHeadline } from '@/components/company/Hero';
+import { company, domains } from '@/data/company';
+import { workflows } from '@/data/work';
 import { worstState } from '@/lib/model/state';
 
-export default function Page() {
+export default function WorkPage() {
   const state = worstState(domains.map((d) => d.state));
+  const autonomous = workflows.filter((w) => w.level === 'Autonomous').length;
+  const blocked = workflows.filter((w) => w.evidence.some((e) => !e.met)).length;
+
   return (
     <AppShell active="work" status={companyHeadline[state].top} state={state} decisionsWaiting={company.decisionsWaiting}>
-      <SurfaceStub
-        eyebrow="Stable surface"
+      <SurfaceHead
+        eyebrow="Workflows and capabilities"
         title="Work"
-        question="What work exists, how does it happen, and what should change?"
-        object="Workflows and capabilities"
-        detail="Every workflow follows Trigger → Context → Work → Decision → Action → Verification → Outcome. Autonomy is earned here, not toggled: progress requires observations, decision agreement, policy coverage, reversibility and passed evaluations."
+        pulse={`${workflows.length} workflows · ${autonomous} autonomous · ${blocked} awaiting evidence`}
       />
+      <WorkSurface workflows={workflows} />
     </AppShell>
   );
 }

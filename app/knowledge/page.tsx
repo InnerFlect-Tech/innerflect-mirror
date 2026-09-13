@@ -1,20 +1,24 @@
 import { AppShell } from '@/components/company/AppShell';
-import { SurfaceStub } from '@/components/company/SurfaceStub';
-import { company, domains } from '@/data/company';
+import { SurfaceHead } from '@/components/company/SurfaceHead';
+import { KnowledgeSurface } from '@/components/company/KnowledgeSurface';
 import { companyHeadline } from '@/components/company/Hero';
+import { company, domains } from '@/data/company';
+import { knowledgeObjects } from '@/data/knowledge';
 import { worstState } from '@/lib/model/state';
 
-export default function Page() {
+export default function KnowledgePage() {
   const state = worstState(domains.map((d) => d.state));
+  const drifting = knowledgeObjects.filter((o) => o.drift).length;
+  const stale = knowledgeObjects.filter((o) => o.freshness === 'stale').length;
+
   return (
     <AppShell active="knowledge" status={companyHeadline[state].top} state={state} decisionsWaiting={company.decisionsWaiting}>
-      <SurfaceStub
-        eyebrow="Stable surface"
+      <SurfaceHead
+        eyebrow="Trusted knowledge objects"
         title="Knowledge"
-        question="What does the company know, why, and where is it used?"
-        object="Trusted knowledge objects"
-        detail="Not a document repository — files are evidence for knowledge. Each object exposes trust, owner, freshness, conflicts and last verification against reality, so Mirror can show where documented procedure and observed behaviour disagree."
+        pulse={`${knowledgeObjects.length} objects · ${drifting} diverging from observed behaviour · ${stale} unverified for months`}
       />
+      <KnowledgeSurface objects={knowledgeObjects} />
     </AppShell>
   );
 }
