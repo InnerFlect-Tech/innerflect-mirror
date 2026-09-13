@@ -12,7 +12,7 @@ import { CompanyCore } from './nodes/CompanyCore';
 import { DomainIsland } from './nodes/DomainIsland';
 import type { WorldDomain } from './nodes/NodeState';
 import { CompanyLabel, WorldLabel } from './labels/WorldLabel';
-import { companyLayout } from './layouts/companyLayout';
+import { companyLayout, scaleForActivity } from './layouts/companyLayout';
 import { worldRecords } from '@/data/world-records';
 import type { RecordRef } from '@/lib/model/record';
 import { stateTokens } from './tokens/sceneStates';
@@ -37,6 +37,13 @@ export function Scene({
 }) {
   const slots = useMemo(() => companyLayout(domains.length), [domains.length]);
   const selectedIndex = domains.findIndex((d) => d.id === selectedId);
+  // Footprint comes from the record, not the composition: a domain carrying
+  // 146 items in flight should look like a bigger place than one carrying 19.
+  // Request 2 from the 3D session.
+  const maxActiveWork = useMemo(
+    () => Math.max(...domains.map((d) => d.activeWork), 0),
+    [domains],
+  );
   const hasSelection = selectedIndex >= 0;
 
   // Governance as a layer: the company's own state is the worst state present
@@ -80,7 +87,11 @@ export function Scene({
       {domains.map((domain, i) => (
         <DomainIsland
           key={domain.id}
-          visual={{ domain, position: slots[i].position, scale: slots[i].scale }}
+          visual={{
+            domain,
+            position: slots[i].position,
+            scale: slots[i].scale * scaleForActivity(domain.activeWork, maxActiveWork),
+          }}
           records={worldRecords}
           index={i}
           selected={i === selectedIndex}

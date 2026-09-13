@@ -1,5 +1,6 @@
 import type { SceneState } from './state';
 import type { Control } from './actor';
+import type { AutonomyLevel } from './work';
 
 /**
  * The Mirror: the company as it operates now, beside the same company operating
@@ -65,7 +66,12 @@ export type MirrorRow = {
   state: SceneState;
   /** Humans involved in this department's work today. */
   people: number;
-  mode: 'Human-led' | 'Supervised' | 'Autonomous';
+  /**
+   * Where the row sits on the autonomy ladder. Was its own three-value union —
+   * a fifth control vocabulary — but every value was already an `AutonomyLevel`
+   * rung with identical casing, so it is now that type. No data changed.
+   */
+  mode: AutonomyLevel;
   /** How the work runs today. */
   today: MirrorStep[];
   /** How the same work would run once autonomy is earned. */

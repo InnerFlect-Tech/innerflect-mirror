@@ -33,6 +33,7 @@ export function DomainIsland({
   onSelect,
   onSelectRecord,
   records,
+  running = false,
   reducedMotion,
 }: {
   visual: DomainVisual;
@@ -43,6 +44,7 @@ export function DomainIsland({
   /** Fired with the specific record clicked, where the hit resolves to one. */
   onSelectRecord?: (ref: RecordRef) => void;
   records?: IslandRecords;
+  running?: boolean;
   reducedMotion: boolean;
 }) {
   const group = useRef<Group>(null);
@@ -142,7 +144,7 @@ export function DomainIsland({
           />
         </mesh>
 
-        <DomainContent domain={domain} accent={token.edge} records={records} />
+        <DomainContent domain={domain} accent={token.edge} records={records} running={running} reducedMotion={reducedMotion} />
       </group>
     </group>
   );

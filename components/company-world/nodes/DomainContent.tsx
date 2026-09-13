@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import type { Mesh } from 'three';
 import type { WorldDomain } from '@/lib/model/domain';
 import { buildAgentGeometry, buildIslandGeometry, type IslandRecords } from '../assets/primitives';
 
@@ -23,12 +25,32 @@ export function DomainContent({
   domain,
   accent,
   records,
+  running = false,
+  reducedMotion = false,
 }: {
   domain: WorldDomain;
   accent: string;
   /** The records that justify the gate pylons and hotspots on this island. */
   records?: IslandRecords;
+  /** Work is flowing. Without it, agents hold their pose and nothing redraws. */
+  running?: boolean;
+  reducedMotion?: boolean;
 }) {
+  // Request 3: agents move only while work flows. The frame loop is `always`
+  // while running and `demand` when not, so returning early here is what keeps a
+  // paused scene at zero draw calls — this never calls invalidate() itself.
+  const motes = useRef<Mesh>(null);
+  const escalating = domain.agents.some((a) => a.activity === 'escalating');
+  const waiting = domain.agents.some((a) => a.activity === 'waiting');
+  // Pose from activity: escalating is urgent, waiting is a slow held breath,
+  // everything else is quiet. Amplitude and rate are the only knobs.
+  const rate = escalating ? 3.2 : waiting ? 1.1 : 1.8;
+  const amp = escalating ? 0.03 : waiting ? 0.012 : 0.018;
+  useFrame(({ clock }) => {
+    const m = motes.current;
+    if (!m || !running || reducedMotion) return;
+    m.position.y = Math.sin(clock.elapsedTime * rate) * amp;
+  });
   // Rebuilt only when the model or the state colour changes — never per frame,
   // never on hover or selection.
   const island = useMemo(
@@ -82,7 +104,7 @@ export function DomainContent({
       <mesh geometry={agents.body} userData={{ picks: agents.bodyPicks }}>
         <meshStandardMaterial vertexColors roughness={0.6} metalness={0.05} />
       </mesh>
-      <mesh geometry={agents.accent} userData={{ picks: agents.accentPicks }}>
+      <mesh ref={motes} geometry={agents.accent} userData={{ picks: agents.accentPicks }}>
         <meshBasicMaterial vertexColors toneMapped={false} />
       </mesh>
     </group>

@@ -41,6 +41,19 @@ const families: Record<number, Slot[]> = { 4: four, 5: five, 6: six };
  * back to the nearest family, truncated or ringed — a deliberate degradation
  * rather than a procedural surprise.
  */
+/**
+ * Scale by share of company activity, so a busy domain is visibly a bigger
+ * place. Position stays curated — the composition owns where a domain sits,
+ * the model owns how much room it takes.
+ *
+ * The floor of 0.92 matters: a quiet domain must still read as a domain, not
+ * as a mistake. Requested by the 3D session as request 2.
+ */
+export function scaleForActivity(activeWork: number, maxActiveWork: number): number {
+  if (maxActiveWork <= 0) return 1;
+  return 0.92 + 0.22 * (activeWork / maxActiveWork);
+}
+
 export function companyLayout(count: number): Slot[] {
   const exact = families[count];
   if (exact) return exact;
@@ -57,4 +70,21 @@ export function companyLayout(count: number): Slot[] {
     return ring;
   }
   return four;
+}
+
+/**
+ * Island footprint from share of company activity — request 2 in WORLD_ELEMENTS.md.
+ *
+ * The curated slot still owns POSITION; this owns SCALE, so a busy domain reads
+ * as a bigger place without disturbing the composition. Bounded to a narrow band
+ * because the platform also has to stay legible next to its neighbours: 0.92 for
+ * the quietest domain, 1.14 for the busiest, linear between. Sales at 146 items
+ * in flight is visibly larger than Finance at 19, which is the point.
+ */
+export const FOOTPRINT_MIN = 0.92;
+export const FOOTPRINT_RANGE = 0.22;
+
+export function footprintScale(activeWork: number, maxActiveWork: number): number {
+  if (maxActiveWork <= 0) return FOOTPRINT_MIN;
+  return FOOTPRINT_MIN + FOOTPRINT_RANGE * Math.min(1, activeWork / maxActiveWork);
 }

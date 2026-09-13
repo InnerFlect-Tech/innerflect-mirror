@@ -82,13 +82,14 @@ export type WorldDomain = Pick<
   | 'relationships'
   | 'workflows'
   | 'agents'
+  | 'activeWork'
 >;
 
 export function toWorldDomain(d: Domain): WorldDomain {
   const {
-    id, label, mode, state, autonomy, metric, processes, icon, relationships, workflows, agents,
+    id, label, mode, state, autonomy, metric, processes, icon, relationships, workflows, agents, activeWork,
   } = d;
-  return { id, label, mode, state, autonomy, metric, processes, icon, relationships, workflows, agents };
+  return { id, label, mode, state, autonomy, metric, processes, icon, relationships, workflows, agents, activeWork };
 }
 
 /** A workflow is stopped and waiting on a person. */

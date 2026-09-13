@@ -1,10 +1,12 @@
 /**
- * Proves the generated token set matches what the hand-authored stylesheet
- * declares, name for name and value for value.
+ * Guards the one-definition rule for CSS tokens.
  *
- * This exists because the token consolidation is only safe if it is provably a
- * no-op first. Redesigning the ramp and changing the mechanism in one commit is
- * how a "refactor" silently restyles a product.
+ * It began life as a parity check: while tiers 1 and 2 still lived in
+ * app/tokens.css, it proved every declaration matched lib/tokens value for value,
+ * which is what made deleting them safe. Now that they are gone it enforces the
+ * result — nothing the token root emits may be re-declared by hand. A name in
+ * both places is a second copy waiting to drift, which is the thing this whole
+ * effort removed.
  */
 import { readFileSync } from 'node:fs';
 import { tokenVariables } from '../lib/tokens/css';
@@ -17,21 +19,17 @@ for (const m of css.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
   declared.set(m[1], m[2].trim());
 }
 
-const missing: string[] = [];
-const differing: string[] = [];
-for (const [name, value] of declared) {
-  if (!(name in generated)) missing.push(name);
-  else if (generated[name] !== value) differing.push(`${name}\n      css: ${value}\n      ts : ${generated[name]}`);
-}
+const duplicated = [...declared.keys()].filter((name) => name in generated);
+const tier3 = [...declared.keys()].filter((name) => !(name in generated));
 
-console.log(`declared in app/tokens.css : ${declared.size}`);
+console.log(`declared in app/tokens.css : ${declared.size} (tier 3, hand-authored)`);
 console.log(`emitted from lib/tokens    : ${Object.keys(generated).length}`);
-// Tier 3 is component plumbing with no TypeScript consumer and stays hand-authored,
-// so these are expected. Printed as "by design" rather than as a bare list, which
-// read like a warning on a passing run.
-if (missing.length) {
-  console.log(`\nhand-authored, by design (${missing.length}): ${missing.join(', ')}`);
+console.log(`tier 3: ${tier3.join(', ')}`);
+if (duplicated.length) {
+  console.log(
+    `\nDUPLICATED — declared in CSS but already emitted from lib/tokens (${duplicated.length}):\n  ${duplicated.join('\n  ')}`,
+  );
+} else {
+  console.log('\nno token is defined in two places.');
 }
-if (differing.length) console.log(`\nVALUE MISMATCH (${differing.length}):\n  ${differing.join('\n  ')}`);
-if (!missing.length && !differing.length) console.log('\nevery declared token is emitted with an identical value.');
-process.exit(differing.length ? 1 : 0);
+process.exit(duplicated.length ? 1 : 0);

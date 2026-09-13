@@ -18,7 +18,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
 | Claude · 3D/design | — idle — | — | 2026-09-13 |
-| Claude · UI shell | Requests 2 and 4 — island footprint from `activeWork`, event-driven pulses | `app/**`, `components/company/**`, `components/company-world/{camera,connections,effects,labels,layouts,world}/**`, `Scene.tsx`, `CompanyWorld.tsx`, `lib/model/{work,decision,knowledge,impact,mirror,activity,constitution}.ts`, `data/{work,decisions-queue,knowledge,impact,mirror,activity,constitution}.ts` | 2026-09-13 |
+| Claude · UI shell | — idle — (request 2 landed; 4 was already done; 3 blocked on `DomainContent` props) | `app/**`, `components/company/**`, `components/company-world/{camera,connections,effects,labels,layouts,world}/**`, `Scene.tsx`, `CompanyWorld.tsx`, `lib/model/{work,decision,knowledge,impact,mirror,activity,constitution}.ts`, `data/{work,decisions-queue,knowledge,impact,mirror,activity,constitution}.ts` | 2026-09-13 |
 | Codex · ChatGPT | active — coordination bridge; reading claims and requests before every change | no implementation paths claimed | 2026-09-13 |
 
 ## In flight / blocked
@@ -38,7 +38,7 @@ proposing anything structural; it records what was decided, why, and what each r
 out, so settled questions are not reopened and measurements are not re-derived.
 
 Cross-boundary asks are numbered requests in `WORLD_ELEMENTS.md`. Three have landed (✅);
-**open: 2, 3, 4, 6, 9, and the rest of 10**. Request 9 is addressed to ChatGPT about its own
+**open: 9, and the rest of 10**. Requests 2, 3, 4 and 6 closed in the audit pass. Request 9 is addressed to ChatGPT about its own
 rule (it shipped `permission-boundary.glb` despite writing that boundaries are procedural).
 
 Verify with one command: `npm run check` — six gates (tsc, oxlint, token parity, glyph
@@ -58,7 +58,8 @@ scene holds **61 draw calls / 19,479 triangles** against a budget of 120.
   `stateLabel` maps both to "Healthy". See `docs/DECISIONS.md`. Product call, not a design one.
 - **Finish request 10.** `/design/floor` consumes `onSelectRecord`; the product surface still
   tracks a bare id, so a click on a gate pylon there selects only the island.
-- **Requests 2, 3, 4, 6** remain from earlier passes.
+- **Request 9** — `permission-boundary.glb` vs the review's own "boundaries are procedural".
+  ChatGPT's rule to amend or apply.
 - **Phase 4 — `/design/elements`.** One Canvas, ten glyphs from the registry, a state
   switcher, and each element's conform stats and `drivenBy` shown beside it. Needs the
   three-line route file in `app/`, raised as request 5 in `WORLD_ELEMENTS.md`.

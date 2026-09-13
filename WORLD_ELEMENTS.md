@@ -45,6 +45,9 @@ Two corollaries the implementation is held to:
 | Standing figure | an agent | one per `Domain.agents[]`; pose from `Agent.activity` | `agent:<id>` |
 | Agent status mote | how loudly the agent's activity asks for a person | `Agent.activity` | `agent:<id>` |
 | Island signal strip, edges, tints | semantic state | `Domain.state` | `domain:<id>` |
+| Island footprint (scale) | share of company activity | `Domain.activeWork` against the busiest domain, 0.92–1.14 | `domain:<id>` |
+| Agent mote motion | how urgently the agent's activity asks for a person, while work flows | `Agent.activity` × `running`; still when paused or reduced-motion | `agent:<id>` |
+| Pulse along a connection | one recent event on that domain; position on the path is recency | one per `feed[]` entry whose `domainId` matches; no event, no pulse | `domain:<id>` |
 
 Every row above resolves to a record you can open. That is not decoration: the island
 merges into two meshes to hold the draw-call budget, so a raycast returns "the island"
@@ -211,7 +214,7 @@ Numbers are never reused, so a reference to "request 5" always means the same th
    *(Agreed with the user and applied as a single-line change; no other line in
    that file was touched.)*
 
-2. **Island footprint should encode share of company activity.** The table above
+2. ✅ **DONE — Island footprint should encode share of company activity.** The table above
    has no row for footprint because this layer cannot set it — `scale` comes from
    `layouts/companyLayout.ts` and the platform size from `DomainIsland.tsx`, both
    shell-owned. Today scale is a hand-tuned composition value (0.96–1.05).
@@ -220,7 +223,7 @@ Numbers are never reused, so a reference to "request 5" always means the same th
    `scale = 0.92 + 0.22 * (activeWork / maxActiveWork)`, applied in the layout so
    the curated composition still owns position.
 
-3. **Agent figures need `running` and `reducedMotion` to animate.** The object
+3. ✅ **DONE — Agent figures need `running` and `reducedMotion` to animate.** The object
    table promises a *moving* figure for an agent mid-task; today they are posed
    by `Agent.activity` but static, with a status mote whose brightness is how
    loudly the activity asks for a person. Animating them properly requires the
@@ -230,7 +233,7 @@ Numbers are never reused, so a reference to "request 5" always means the same th
    break the zero-draw-call idle guarantee, so this layer deliberately did not.
 
 
-4. **Connection pulses should carry real events.** `connections/Connection.tsx`
+4. ✅ **DONE — Connection pulses should carry real events.** `connections/Connection.tsx`
    currently pulses on an index-derived `offset`. `data/company.ts` exports
    `feed: FeedEvent[]` with a `domainId`; one pulse per event on that domain's
    path would make motion mean "this happened" rather than "time is passing",
@@ -252,7 +255,7 @@ Numbers are never reused, so a reference to "request 5" always means the same th
    deliberately — it is the only cross-boundary dependency in the design-system plan,
    and it should not become the thing that blocks it.
 
-6. **Delete tiers 1 and 2 from `app/tokens.css`.** Every one of those 65 declarations is
+6. ✅ **DONE — Delete tiers 1 and 2 from `app/tokens.css`.** Every one of those 65 declarations is
    now emitted from `lib/tokens/`, verified identical name-for-name and value-for-value by
    `npm run check:tokens` (0 mismatches). They currently exist twice with the same values,
    which is harmless but is exactly the duplication this work removes. Keep tier 3
