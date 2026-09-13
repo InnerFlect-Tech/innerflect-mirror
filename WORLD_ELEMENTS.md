@@ -28,20 +28,45 @@ Two corollaries the implementation is held to:
 
 ## Object table
 
-| Object | Represents | Driven by |
-|---|---|---|
-| Workflow bay | one workflow | one per entry in `Domain.workflows[]` |
-| Bay floor plate | the workflow's footprint on the island | constant per bay; grid derived from `workflows.length` |
-| Desk | one human seat working that workflow | one per `Workflow.humans` |
-| Seated figure | a human role currently at that seat | one per `Workflow.humans` |
-| Desk screen | the tooling the seat works through | one per desk |
-| Screen glow intensity | how much of that workflow runs itself | `Workflow.autonomy` |
-| Throughput column | volume moving through that workflow | height ∝ `Workflow.throughput` |
-| Column lit segments | the autonomous share of that volume | `Workflow.autonomy` × column height |
-| Partition | boundary between adjacent workflows | derived from the bay grid |
-| Gate pylon | a workflow stopped and awaiting a human | present when `Workflow.state` is `attention`/`critical` |
-| Standing / moving figure | an agent mid-task | one per `Domain.agents[]`, posed by `Agent.activity` |
-| Island signal strip, edges, tints | semantic state | `Domain.state` (existing state layer) |
+| Object | Represents | Driven by | Resolves to |
+|---|---|---|---|
+| Workflow bay | one workflow | one per entry in `Domain.workflows[]` | `workflow:<id>` |
+| Bay floor plate | the workflow's footprint on the island | constant per bay; grid from `workflows.length` | `workflow:<id>` |
+| Desk | one human seat working that workflow | one per `Workflow.humans` | `workflow:<id>` |
+| Seated figure | a human role at that seat | one per `Workflow.humans` | `workflow:<id>` |
+| Desk screen | the tooling the seat works through | one per desk | `workflow:<id>` |
+| Screen glow intensity | how much of that workflow runs itself | `Workflow.autonomy` | — |
+| Throughput column | volume moving through that workflow | height ∝ `Workflow.throughput` | `workflow:<id>` |
+| Column lit segment | the autonomous share of that volume | `Workflow.autonomy` × height | `workflow:<id>` |
+| Partition | boundary between adjacent workflows | derived from the bay grid | `workflow:<id>` |
+| **Gate pylon** | **a decision waiting on a person** | **one per `Decision` record whose `workflowId` matches** | `decision:<id>` |
+| **Hotspot** | **something wrong, uncertain or unsafe** | **one per OPEN `Exception` record for that workflow** | `exception:<id>` |
+| Standing figure | an agent | one per `Domain.agents[]`; pose from `Agent.activity` | `agent:<id>` |
+| Island signal strip, edges, tints | semantic state | `Domain.state` | `domain:<id>` |
+
+Every row above resolves to a record you can open. That is not decoration: the island
+merges into two meshes to hold the draw-call budget, so a raycast returns "the island"
+unless something maps the hit back. `assets/pickTable.ts` records the triangle range each
+part occupies as it is built, and `refAt()` binary-searches a `faceIndex` back to the
+record. One draw call preserved, per-object picking gained. `npm run check:picks` fails if
+the table ever stops covering every triangle exactly once.
+
+### What changed, and why it matters
+
+Two rows used to be justified by a colour rather than a record:
+
+- **Gate pylon** was `present when Workflow.state is attention/critical`. A pylon inferred
+  from state stands for nothing — it cannot be opened, and it claims a person is needed
+  without saying what for. It is now one per `Decision` record.
+- **Hotspot** did not exist; risk was implied by `Domain.openItems`, a count derived from
+  which workflows happened to be coloured. `openItems` now counts OPEN `Exception` records,
+  and each one draws its own object.
+
+They are deliberately separate shapes, because a decision waiting and an exception open are
+not the same fact. Drawing one shape for both was why the world could not tell you which it
+was. The visible consequence: `mk-signal` gains a pylon (it has a real decision pending) and
+`fn-revrec` loses one (it has an exception, not a decision) — the world is now reporting
+what is actually true rather than what the colour suggested.
 
 ### What each mapping is worth reading as
 
@@ -151,6 +176,7 @@ world — so nothing here may cost a draw call per object.
 | Baseline before this work | 100 | 21,000 | 60 |
 | **After** | **61** | **19,400** | **60.3** |
 | After the design-system phases 1–3 | **61** | **19,407** | demand-idle |
+| After record-driven objects + picking (7/8) | **61** | **19,479** | 60 |
 
 Phases 1–3 moved every token into `lib/tokens/`, generated the glyph ids, and added a
 typed conformance layer — and cost the scene nothing, which was the point: none of it is
@@ -280,6 +306,14 @@ These sit in files this layer does not own.
    the rule should be amended (a boundary has a stable form even if its extent is procedural),
    or the asset should go and the boundary be drawn from the authority record's scope. Raised
    rather than silently resolved, because it is the review's own rule.
+
+10. **Widen selection to a `RecordRef`.** `DomainIsland` now resolves a click to the exact
+    record under the cursor — a workflow, a decision, an exception, an agent — and calls
+    `onSelectRecord(ref)`. Nothing consumes it yet: `CompanyWorkspace` tracks a `focusedId`
+    string and does `domains.find((d) => d.id === focusedId)`, so a click on a gate pylon
+    still selects only the island. The change is to carry `{ type, id }` instead of a bare
+    id and resolve it against the matching collection. Until then the mechanism is proven
+    (`npm run check:picks`) but not visible.
 
 ## Semantic review for the next element pass
 

@@ -13,6 +13,7 @@ import { DomainIsland } from './nodes/DomainIsland';
 import type { WorldDomain } from './nodes/NodeState';
 import { CompanyLabel, WorldLabel } from './labels/WorldLabel';
 import { companyLayout } from './layouts/companyLayout';
+import { worldRecords } from '@/data/world-records';
 import { stateTokens } from './tokens/sceneStates';
 
 export function Scene({
@@ -76,6 +77,7 @@ export function Scene({
         <DomainIsland
           key={domain.id}
           visual={{ domain, position: slots[i].position, scale: slots[i].scale }}
+          records={worldRecords}
           index={i}
           selected={i === selectedIndex}
           subdued={hasSelection && i !== selectedIndex}

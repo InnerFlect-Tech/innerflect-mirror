@@ -9,6 +9,9 @@ import { shell } from '../tokens/sceneColors';
 import { stateTokens } from '../tokens/sceneStates';
 import type { DomainVisual } from './NodeState';
 import { DomainContent } from './DomainContent';
+import { refAt, type PickTable } from '../assets/pickTable';
+import type { IslandRecords } from '../assets/primitives';
+import type { RecordRef } from '@/lib/model/record';
 
 /**
  * Four stacked layers, which is what separates a WebGL prototype from a
@@ -28,6 +31,8 @@ export function DomainIsland({
   selected,
   subdued,
   onSelect,
+  onSelectRecord,
+  records,
   reducedMotion,
 }: {
   visual: DomainVisual;
@@ -35,6 +40,9 @@ export function DomainIsland({
   selected: boolean;
   subdued: boolean;
   onSelect: () => void;
+  /** Fired with the specific record clicked, where the hit resolves to one. */
+  onSelectRecord?: (ref: RecordRef) => void;
+  records?: IslandRecords;
   reducedMotion: boolean;
 }) {
   const group = useRef<Group>(null);
@@ -67,6 +75,13 @@ export function DomainIsland({
         scale={scale}
         onClick={(e) => {
           e.stopPropagation();
+          // Resolve the exact object under the cursor. The island is two merged
+          // meshes, so without the pick table every hit would be "the island";
+          // with it, a raycast's faceIndex maps back to the record that owns
+          // those triangles.
+          const picks = (e.object.userData as { picks?: PickTable }).picks;
+          const hit = picks && e.faceIndex != null ? refAt(picks, e.faceIndex) : null;
+          if (hit && onSelectRecord) onSelectRecord(hit);
           onSelect();
         }}
         onPointerOver={(e) => {
@@ -127,7 +142,7 @@ export function DomainIsland({
           />
         </mesh>
 
-        <DomainContent domain={domain} accent={token.edge} />
+        <DomainContent domain={domain} accent={token.edge} records={records} />
       </group>
     </group>
   );

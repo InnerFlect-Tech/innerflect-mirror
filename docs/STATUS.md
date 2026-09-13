@@ -17,7 +17,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
-| Claude · 3D/design | Phase 7/8 — record-driven objects + picking | `components/company-world/**`, `WORLD_ELEMENTS.md` | 2026-09-13 |
+| Claude · 3D/design | — idle — | — | 2026-09-13 |
 | Claude · UI shell | unknown (has not adopted this board yet) | `app/**`, `components/company/**` | — |
 | ChatGPT | landed the V2 fifteen-element kit (`8acb18d`) | `tools/glyph-kit/**`, `public/models/**`, `lib/design/**` | 2026-09-13 |
 
@@ -38,10 +38,13 @@ numbered request in `WORLD_ELEMENTS.md`.
   belongs to the UI-shell session — raised as a numbered request in `WORLD_ELEMENTS.md`:
   delete tiers 1 and 2 from `app/tokens.css` now that `lib/tokens` emits every one of
   those 65 declarations with an identical value. Tier 3 stays hand-authored.
-- **Phase 7/8 — object table rewrite and per-object picking.** The world still draws gate
-  pylons from `Workflow.state` in `assets/primitives.tsx`; the records now exist to drive
-  them properly. Picking resolves a merged geometry's `faceIndex` to a `RecordRef` via a
-  triangle-range table, keeping one draw call. Owner: Claude · 3D/design.
+- **Phase 9 — the design routes.** `ElementSheet` over the fifteen glyphs, and `/design/floor`
+  rendering the real `<CompanyWorld>`. Both route files are three lines in `app/design/**` —
+  request 5, outstanding since Phase 0 and now the last blocker. Owner: Claude · 3D/design
+  (components), UI-shell session (route files).
+- **`onSelectRecord` is wired but nothing consumes it.** `DomainIsland` resolves a click to a
+  `RecordRef` and calls the prop; `CompanyWorkspace` still only takes a domain id. Widening
+  that is request 10.
 - **Phase 4 — `/design/elements`.** One Canvas, ten glyphs from the registry, a state
   switcher, and each element's conform stats and `drivenBy` shown beside it. Needs the
   three-line route file in `app/`, raised as request 5 in `WORLD_ELEMENTS.md`.

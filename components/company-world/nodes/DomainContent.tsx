@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from 'react';
 import type { WorldDomain } from '@/lib/model/domain';
-import { buildAgentGeometry, buildIslandGeometry } from '../assets/primitives';
+import { buildAgentGeometry, buildIslandGeometry, type IslandRecords } from '../assets/primitives';
 
 /**
  * What sits on an island.
@@ -22,25 +22,31 @@ import { buildAgentGeometry, buildIslandGeometry } from '../assets/primitives';
 export function DomainContent({
   domain,
   accent,
+  records,
 }: {
   domain: WorldDomain;
   accent: string;
+  /** The records that justify the gate pylons and hotspots on this island. */
+  records?: IslandRecords;
 }) {
   // Rebuilt only when the model or the state colour changes — never per frame,
   // never on hover or selection.
   const island = useMemo(
-    () => buildIslandGeometry(domain.workflows, accent),
-    [domain.workflows, accent],
+    () => buildIslandGeometry(domain.workflows, accent, records),
+    [domain.workflows, accent, records],
   );
 
-  const activities = useMemo(
-    () => domain.agents.map((a) => a.activity),
+  // The figure stands for the Agent; the pose stands for its activity. Passing
+  // both keeps identity and activity as separate fields, which the contract
+  // requires and a bare activity list could not express.
+  const agentGlyphs = useMemo(
+    () => domain.agents.map((a) => ({ id: a.id, activity: a.activity as string })),
     [domain.agents],
   );
 
   const agents = useMemo(
-    () => buildAgentGeometry(activities, accent),
-    [activities, accent],
+    () => buildAgentGeometry(agentGlyphs, accent),
+    [agentGlyphs, accent],
   );
 
   // Merged geometry is created imperatively, so disposing it is this
@@ -59,20 +65,20 @@ export function DomainContent({
     <group position={[0, 0.032, 0]}>
       {/* Two draw calls for the whole island, whether it holds seven workflows
           or twelve. Per-object tone survives the merge as a vertex colour. */}
-      <mesh geometry={island.body} castShadow={false} receiveShadow={false}>
+      <mesh geometry={island.body} userData={{ picks: island.bodyPicks }} castShadow={false} receiveShadow={false}>
         <meshStandardMaterial vertexColors roughness={0.66} metalness={0.05} />
       </mesh>
-      <mesh geometry={island.accent}>
+      <mesh geometry={island.accent} userData={{ picks: island.accentPicks }}>
         {/* Unlit and untone-mapped, so brightness carries meaning directly.
             Only the gate pylons are scaled above 1, which keeps bloom
             selective — attention interrupts the field, screens do not. */}
         <meshBasicMaterial vertexColors toneMapped={false} />
       </mesh>
 
-      <mesh geometry={agents.body}>
+      <mesh geometry={agents.body} userData={{ picks: agents.bodyPicks }}>
         <meshStandardMaterial vertexColors roughness={0.6} metalness={0.05} />
       </mesh>
-      <mesh geometry={agents.accent}>
+      <mesh geometry={agents.accent} userData={{ picks: agents.accentPicks }}>
         <meshBasicMaterial vertexColors toneMapped={false} />
       </mesh>
     </group>

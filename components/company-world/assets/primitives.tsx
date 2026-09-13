@@ -10,7 +10,9 @@ import {
   type BufferGeometry,
 } from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { needsHuman, type Workflow } from '@/lib/model/domain';
+import type { Workflow } from '@/lib/model/domain';
+import { ref } from '@/lib/model/record';
+import { PickBuilder, type PickTable } from './pickTable';
 import { massing } from '../tokens/sceneColors';
 
 /**
@@ -118,7 +120,27 @@ export function bayGrid(count: number): { cols: number; rows: number } {
   return { cols, rows: Math.ceil(count / cols) };
 }
 
-export type IslandGeometry = { body: BufferGeometry; accent: BufferGeometry };
+export type IslandGeometry = {
+  body: BufferGeometry;
+  accent: BufferGeometry;
+  /** Which record owns which triangles, so the merge stays clickable. */
+  bodyPicks: PickTable;
+  accentPicks: PickTable;
+};
+
+/**
+ * The records that justify what gets drawn on an island.
+ *
+ * A gate pylon exists because a Decision is waiting, and a hotspot because an
+ * Exception is open — not because a workflow happens to be coloured. Passed in
+ * rather than inferred, which is the whole correction.
+ */
+export type IslandRecords = {
+  /** Workflow id to the decision gating it. */
+  decisionByWorkflow: Map<string, string>;
+  /** Workflow id to its open exception. */
+  exceptionByWorkflow: Map<string, string>;
+};
 
 /**
  * Builds one island's static content from its workflow set.
@@ -130,14 +152,19 @@ export type IslandGeometry = { body: BufferGeometry; accent: BufferGeometry };
 export function buildIslandGeometry(
   workflows: Workflow[],
   accentHex: string,
+  records: IslandRecords = { decisionByWorkflow: new Map(), exceptionByWorkflow: new Map() },
 ): IslandGeometry {
-  const bodyParts: BufferGeometry[] = [];
-  const accentParts: BufferGeometry[] = [];
+  const body = new PickBuilder();
+  const accent_ = new PickBuilder();
 
   const sorted = [...workflows].sort((a, b) => b.throughput - a.throughput);
   const { cols, rows } = bayGrid(sorted.length);
   if (!cols) {
-    return { body: paint(new BoxGeometry(0, 0, 0), tint), accent: paint(new BoxGeometry(0, 0, 0), tint) };
+    return {
+      body: paint(new BoxGeometry(0, 0, 0), tint),
+      accent: paint(new BoxGeometry(0, 0, 0), tint),
+      bodyPicks: [], accentPicks: [],
+    };
   }
 
   const cw = FLOOR_W / cols;
@@ -151,16 +178,17 @@ export function buildIslandGeometry(
   const accent = new Color(accentHex);
 
   sorted.forEach((w, i) => {
+    const wRef = ref('workflow', w.id);
     const col = i % cols;
     const row = Math.floor(i / cols);
     const bx = -FLOOR_W / 2 + cw * (col + 0.5);
     const bz = -FLOOR_D / 2 + cd * (row + 0.5);
 
     // --- the bay itself ---------------------------------------------------
-    bodyParts.push(box(cw * 0.86, 0.006, cd * 0.84, bx, 0.003, bz, cPlate).geo);
+    body.push(box(cw * 0.86, 0.006, cd * 0.84, bx, 0.003, bz, cPlate).geo, wRef);
     // Partition along the back edge: the boundary between this workflow and
     // the one behind it.
-    bodyParts.push(box(cw * 0.86, 0.036, 0.007, bx, 0.018, bz - cd * 0.42, cPartition).geo);
+    body.push(box(cw * 0.86, 0.036, 0.007, bx, 0.018, bz - cd * 0.42, cPartition).geo, wRef);
 
     // --- throughput column ------------------------------------------------
     // Height is volume. Shared world scale, never per-island normalisation:
@@ -170,14 +198,14 @@ export function buildIslandGeometry(
     const h = columnHeight(w.throughput);
     const colX = bx - cw * 0.28;
     const colZ = bz - cd * 0.2;
-    bodyParts.push(box(COLUMN_W, h, COLUMN_W, colX, h / 2, colZ, cColumn).geo);
+    body.push(box(COLUMN_W, h, COLUMN_W, colX, h / 2, colZ, cColumn).geo, wRef);
 
     // The lit share of the column is the share of that volume the company has
     // genuinely handed over. A tall dark column is work humans still drive.
     const lit = h * (w.autonomy / 100);
     if (lit > 0.004) {
       tint.copy(accent).multiplyScalar(0.6);
-      accentParts.push(box(COLUMN_W + 0.005, lit, COLUMN_W + 0.005, colX, lit / 2, colZ, tint).geo);
+      accent_.push(box(COLUMN_W + 0.005, lit, COLUMN_W + 0.005, colX, lit / 2, colZ, tint).geo, wRef);
     }
 
     // --- desks and the humans at them ------------------------------------
@@ -185,36 +213,55 @@ export function buildIslandGeometry(
       const dx = bx + cw * 0.12 + s * 0.15;
       const dz = bz + cd * 0.1;
       // Desk: top plus a pedestal, so it reads as furniture and not a floating tile.
-      bodyParts.push(box(0.125, 0.009, 0.078, dx, 0.056, dz, cDesk).geo);
-      bodyParts.push(box(0.016, 0.05, 0.016, dx, 0.028, dz, cPartition).geo);
+      body.push(box(0.125, 0.009, 0.078, dx, 0.056, dz, cDesk).geo, wRef);
+      body.push(box(0.016, 0.05, 0.016, dx, 0.028, dz, cPartition).geo, wRef);
 
       // Screen brightness is how much of this workflow runs itself.
       tint.copy(accent).multiplyScalar(0.3 + 0.65 * (w.autonomy / 100));
-      accentParts.push(box(0.072, 0.042, 0.005, dx, 0.082, dz - 0.03, tint).geo);
+      accent_.push(box(0.072, 0.042, 0.005, dx, 0.082, dz - 0.03, tint).geo, wRef);
 
       // The seated figure, and the chair behind it. One per seat — this is why
       // Delivery has five and Market has two.
-      bodyParts.push(...figure(dx, 0.016, dz + 0.058, cHuman, true));
-      bodyParts.push(box(0.044, 0.038, 0.01, dx, 0.035, dz + 0.084, cDesk).geo);
+      body.pushAll(figure(dx, 0.016, dz + 0.058, cHuman, true), wRef);
+      body.push(box(0.044, 0.038, 0.01, dx, 0.035, dz + 0.084, cDesk).geo, wRef);
     }
 
-    // --- gate pylon -------------------------------------------------------
-    // The only object allowed to interrupt the field, and the only accent that
-    // reaches the bloom threshold: a workflow stopped, waiting on a person.
-    if (needsHuman(w)) {
+    // --- gate pylon: a decision is waiting -------------------------------
+    // Driven by a Decision RECORD, not by `Workflow.state`. A pylon inferred
+    // from a colour is an object standing for nothing: it cannot be opened, and
+    // it claims a person is needed without saying what for.
+    const decisionId = records.decisionByWorkflow.get(w.id);
+    if (decisionId) {
       tint.copy(accent).multiplyScalar(1.5);
       const px = bx + cw * 0.34;
       const pz = bz + cd * 0.3;
-      accentParts.push(box(0.019, 0.165, 0.019, px, 0.082, pz, tint).geo);
-      accentParts.push(box(0.07, 0.006, 0.07, px, 0.005, pz, tint).geo);
+      const dRef = ref('decision', decisionId);
+      accent_.push(box(0.019, 0.165, 0.019, px, 0.082, pz, tint).geo, dRef);
+      accent_.push(box(0.07, 0.006, 0.07, px, 0.005, pz, tint).geo, dRef);
+    }
+
+    // --- hotspot: something is wrong ---------------------------------------
+    // A separate object for a separate fact. A decision waiting and an exception
+    // open are not the same thing, and drawing one shape for both was why the
+    // world could not tell you which it was.
+    const exceptionId = records.exceptionByWorkflow.get(w.id);
+    if (exceptionId) {
+      tint.copy(accent).multiplyScalar(1.2);
+      const ex = bx - cw * 0.34;
+      const ez = bz + cd * 0.3;
+      const eRef = ref('exception', exceptionId);
+      accent_.push(box(0.052, 0.005, 0.052, ex, 0.004, ez, tint).geo, eRef);
+      accent_.push(box(0.03, 0.03, 0.03, ex, 0.055, ez, tint).geo, eRef);
     }
   });
 
   return {
-    body: mergeGeometries(bodyParts, false)!,
-    accent: accentParts.length
-      ? mergeGeometries(accentParts, false)!
+    body: mergeGeometries(body.parts, false)!,
+    accent: accent_.parts.length
+      ? mergeGeometries(accent_.parts, false)!
       : paint(new BoxGeometry(0, 0, 0), tint),
+    bodyPicks: body.table,
+    accentPicks: accent_.table,
   };
 }
 
@@ -228,21 +275,23 @@ export function buildIslandGeometry(
  * without breaking that. See request 4 in `WORLD_ELEMENTS.md`.
  */
 export function buildAgentGeometry(
-  activities: string[],
+  agents: { id: string; activity: string }[],
   accentHex: string,
 ): IslandGeometry {
-  const bodyParts: BufferGeometry[] = [];
-  const accentParts: BufferGeometry[] = [];
+  const body = new PickBuilder();
+  const accent_ = new PickBuilder();
   const accent = new Color(accentHex);
   const cAgent = new Color(massing.mid);
 
-  activities.forEach((activity, i) => {
+  agents.forEach(({ id, activity }, i) => {
     // Agents stand on the front apron of the island, clear of the bays, spread
-    // across however many there are.
-    const x = (i - (activities.length - 1) / 2) * 0.34;
+    // across however many there are. Each figure IS its Agent record: identity
+    // is the glyph, activity is only the pose.
+    const aRef = ref('agent', id);
+    const x = (i - (agents.length - 1) / 2) * 0.34;
     const z = FLOOR_D / 2 + 0.12;
 
-    bodyParts.push(...figure(x, 0.008, z, cAgent, false));
+    body.pushAll(figure(x, 0.008, z, cAgent, false), aRef);
 
     // A status mote above the agent. Brightness is how loudly the activity is
     // asking for a person: escalating and waiting read across the room, acting
@@ -255,11 +304,13 @@ export function buildAgentGeometry(
       : activity === 'acting' ? 0.42
       : 0.2;
     tint.copy(accent).multiplyScalar(loudness);
-    accentParts.push(box(0.026, 0.026, 0.026, x, 0.15, z, tint).geo);
+    accent_.push(box(0.026, 0.026, 0.026, x, 0.15, z, tint).geo, aRef);
   });
 
   return {
-    body: bodyParts.length ? mergeGeometries(bodyParts, false)! : paint(new BoxGeometry(0, 0, 0), tint),
-    accent: accentParts.length ? mergeGeometries(accentParts, false)! : paint(new BoxGeometry(0, 0, 0), tint),
+    body: body.parts.length ? mergeGeometries(body.parts, false)! : paint(new BoxGeometry(0, 0, 0), tint),
+    accent: accent_.parts.length ? mergeGeometries(accent_.parts, false)! : paint(new BoxGeometry(0, 0, 0), tint),
+    bodyPicks: body.table,
+    accentPicks: accent_.table,
   };
 }
