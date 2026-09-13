@@ -33,6 +33,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 ## Next up
 
+- **Semantic gate before new geometry.** Review the corrections, five missing concepts and eight acceptance criteria in `WORLD_ELEMENTS.md` with the user. Do not change or add GLBs until that vocabulary is accepted.
 - **Phase 1 is done** (see Recently landed). Remaining follow-up, needs `app/**` and so
   belongs to the UI-shell session — raised as a numbered request in `WORLD_ELEMENTS.md`:
   delete tiers 1 and 2 from `app/tokens.css` now that `lib/tokens` emits every one of
@@ -45,6 +46,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 ## Recently landed
 
+- `03728a8` — The next element pass now has explicit semantic corrections, five missing concepts and outcome-based acceptance criteria.
 - `92d9060` — Request 7 records the approved Mirror/Builder operating loop, actor/control separation, execution identity, canonical-workflow requirement and Record Token direction for the owning sessions.
 Read `git log --oneline` for the full record. This section is only for things whose
 consequences another agent needs to know about:
