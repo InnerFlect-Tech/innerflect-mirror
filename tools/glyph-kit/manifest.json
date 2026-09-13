@@ -1,0 +1,190 @@
+{
+  "name": "InnerFlect Mirror V1 Operational Glyph System",
+  "version": "1.0.0",
+  "generator": "source/generate_innerflect_v1.py",
+  "originalGeometry": true,
+  "thirdPartyModels": false,
+  "coordinateSystem": "Y-up",
+  "unit": "metre",
+  "palette": {
+    "canvas": "#0A0A0A",
+    "surface": "#161616",
+    "text": "#F5F5F3",
+    "secondary": "#8A8A85",
+    "autonomy": "#4F9E94",
+    "active": "#8AD8CC",
+    "attention": "#E0A100",
+    "danger": "#D6342A"
+  },
+  "states": {
+    "human": "neutral grey",
+    "supervised": "grey-to-teal transition with a decision gate",
+    "autonomous": "continuous teal flow",
+    "attention": "amber hotspot",
+    "unsafe": "red, intentionally absent from normal V1 assets"
+  },
+  "assets": [
+    {
+      "id": "company-core",
+      "label": "COMPANY CORE",
+      "semantic": "The organisation above; its living Mirror integrated below.",
+      "file": "models/company-core.glb",
+      "parts": 11,
+      "vertices": 1464,
+      "triangles": 488,
+      "dimensions": {
+        "x": 3.3,
+        "y": 2.78,
+        "z": 3.3
+      },
+      "bytes": 42864
+    },
+    {
+      "id": "function-platform",
+      "label": "FUNCTION PLATFORM",
+      "semantic": "A coherent operational area such as Sales, Finance, or Support.",
+      "file": "models/function-platform.glb",
+      "parts": 15,
+      "vertices": 1920,
+      "triangles": 640,
+      "dimensions": {
+        "x": 3.35,
+        "y": 1.2144,
+        "z": 3.0
+      },
+      "bytes": 56576
+    },
+    {
+      "id": "human-glyph",
+      "label": "HUMAN GLYPH",
+      "semantic": "Embodied responsibility, judgement, relationships, and authority.",
+      "file": "models/human-glyph.glb",
+      "parts": 7,
+      "vertices": 948,
+      "triangles": 316,
+      "dimensions": {
+        "x": 1.1216,
+        "y": 2.44,
+        "z": 0.635
+      },
+      "bytes": 27672
+    },
+    {
+      "id": "agent-glyph",
+      "label": "AGENT GLYPH",
+      "semantic": "Computational agency that observes, decides within policy, and acts.",
+      "file": "models/agent-glyph.glb",
+      "parts": 9,
+      "vertices": 3012,
+      "triangles": 1004,
+      "dimensions": {
+        "x": 2.09,
+        "y": 1.845,
+        "z": 1.475
+      },
+      "bytes": 78820
+    },
+    {
+      "id": "tool-glyph",
+      "label": "TOOL GLYPH",
+      "semantic": "A software system through which work is read or executed.",
+      "file": "models/tool-glyph.glb",
+      "parts": 6,
+      "vertices": 900,
+      "triangles": 300,
+      "dimensions": {
+        "x": 1.795,
+        "y": 1.74,
+        "z": 1.4205
+      },
+      "bytes": 26668
+    },
+    {
+      "id": "knowledge-slab",
+      "label": "KNOWLEDGE SLAB",
+      "semantic": "A document, policy, rule, instruction, or company memory.",
+      "file": "models/knowledge-slab.glb",
+      "parts": 7,
+      "vertices": 924,
+      "triangles": 308,
+      "dimensions": {
+        "x": 1.9043,
+        "y": 2.2497,
+        "z": 0.4702
+      },
+      "bytes": 27956
+    },
+    {
+      "id": "workflow-line",
+      "label": "WORKFLOW LINE",
+      "semantic": "Work moving through actors and systems; grey becomes autonomous teal.",
+      "file": "models/workflow-line.glb",
+      "parts": 6,
+      "vertices": 1128,
+      "triangles": 376,
+      "dimensions": {
+        "x": 3.0998,
+        "y": 1.2618,
+        "z": 1.0922
+      },
+      "bytes": 31352
+    },
+    {
+      "id": "decision-gate",
+      "label": "DECISION GATE",
+      "semantic": "A point where authority, judgement, or explicit approval is required.",
+      "file": "models/decision-gate.glb",
+      "parts": 7,
+      "vertices": 3600,
+      "triangles": 1200,
+      "dimensions": {
+        "x": 2.84,
+        "y": 2.025,
+        "z": 0.28
+      },
+      "bytes": 91380
+    },
+    {
+      "id": "action-pulse",
+      "label": "ACTION PULSE",
+      "semantic": "A discrete autonomous action travelling toward completion.",
+      "file": "models/action-pulse.glb",
+      "parts": 5,
+      "vertices": 1086,
+      "triangles": 362,
+      "dimensions": {
+        "x": 2.9302,
+        "y": 1.23,
+        "z": 1.1209
+      },
+      "bytes": 30552
+    },
+    {
+      "id": "risk-hotspot",
+      "label": "RISK HOTSPOT",
+      "semantic": "Uncertainty, friction, policy conflict, or an unsafe condition.",
+      "file": "models/risk-hotspot.glb",
+      "parts": 7,
+      "vertices": 3468,
+      "triangles": 1156,
+      "dimensions": {
+        "x": 2.5,
+        "y": 2.275,
+        "z": 2.236
+      },
+      "bytes": 88680
+    }
+  ],
+  "showcase": {
+    "file": "models/innerflect-v1-showcase.glb",
+    "parts": 100,
+    "vertices": 21090,
+    "triangles": 7030,
+    "dimensions": {
+      "x": 21.85,
+      "y": 3.02,
+      "z": 9.25
+    },
+    "bytes": 566064
+  }
+}
