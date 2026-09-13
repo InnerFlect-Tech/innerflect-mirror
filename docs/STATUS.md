@@ -17,11 +17,21 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
-| Claude · 3D/design | — idle — | — | 2026-09-13 |
-| Claude · UI shell | — idle — (request 2 landed; 4 was already done; 3 blocked on `DomainContent` props) | `app/**`, `components/company/**`, `components/company-world/{camera,connections,effects,labels,layouts,world}/**`, `Scene.tsx`, `CompanyWorld.tsx`, `lib/model/{work,decision,knowledge,impact,mirror,activity,constitution}.ts`, `data/{work,decisions-queue,knowledge,impact,mirror,activity,constitution}.ts` | 2026-09-13 |
+| Claude · 3D/design | reconciling a concurrent edit to `Scene.tsx` (requests 2/3/4) | `components/company-world/Scene.tsx`, `layouts/companyLayout.ts`, `docs/**` | 2026-09-13 |
+| Claude · UI shell | — idle — (request 2 landed; 4 re-applied after a concurrent-write race; 3 is NOT blocked — `DomainContent` has taken `running`/`reducedMotion` since `8574c0c`) | `app/**`, `components/company/**`, `components/company-world/{camera,connections,effects,labels,layouts,world}/**`, `Scene.tsx`, `CompanyWorld.tsx`, `lib/model/{work,decision,knowledge,impact,mirror,activity,constitution}.ts`, `data/{work,decisions-queue,knowledge,impact,mirror,activity,constitution}.ts` | 2026-09-13 |
 | Codex · ChatGPT | active — coordination bridge; reading claims and requests before every change | no implementation paths claimed | 2026-09-13 |
 
 ## In flight / blocked
+
+- **Two sessions wrote `Scene.tsx` in the same working tree within minutes.** The UI-shell
+  session's `ded0c2c` overwrote the 3D session's uncommitted request-4 implementation while
+  its own message praised that exact code, and marked request 3 blocked on props that had
+  existed since `8574c0c`. Both were stale reads. Neither session had claimed the file on this
+  board first — the 3D session released its claim after phase 9 and audited without
+  re-claiming. That is the protocol failing on the human side, not the mechanism. Also note
+  the shell session's claim row lists `Scene.tsx` and `layouts/**`, which the ownership block
+  in `WORLD_ELEMENTS.md` assigns to the 3D session — the two declarations now disagree and
+  need a decision from the user.
 
 - **Dependency advisories — unowned, needs a decision.** `npm audit` reports 11
   (10 high, 1 low); 5 reach production. Mostly build chain: `esbuild`,

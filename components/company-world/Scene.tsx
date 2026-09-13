@@ -14,6 +14,7 @@ import type { WorldDomain } from './nodes/NodeState';
 import { CompanyLabel, WorldLabel } from './labels/WorldLabel';
 import { companyLayout, scaleForActivity } from './layouts/companyLayout';
 import { worldRecords } from '@/data/world-records';
+import { feed } from '@/data/company';
 import type { RecordRef } from '@/lib/model/record';
 import { stateTokens } from './tokens/sceneStates';
 import { stateLabel } from '@/lib/model/state';
@@ -37,6 +38,16 @@ export function Scene({
 }) {
   const slots = useMemo(() => companyLayout(domains.length), [domains.length]);
   const selectedIndex = domains.findIndex((d) => d.id === selectedId);
+
+  // Request 4: pulses carry real events. A domain with a recent feed event gets a
+  // pulse whose position along the path reflects recency — the freshest arrives
+  // nearest the core. A domain with no event gets no pulse at all, so a moving
+  // light always means something happened rather than that the clock is running.
+  const RECENCY: Record<string, number> = { now: 0.02, '2m': 0.28, '5m': 0.55, '8m': 0.8 };
+  const pulseFor = (domainId: string) => {
+    const ev = feed.find((e) => e.domainId === domainId);
+    return ev ? { offset: RECENCY[ev.at] ?? 0.5, live: true } : { offset: 0, live: false };
+  };
   // Footprint comes from the record, not the composition: a domain carrying
   // 146 items in flight should look like a bigger place than one carrying 19.
   // Request 2 from the 3D session.
@@ -72,8 +83,8 @@ export function Scene({
           state={domain.state}
           active={i === selectedIndex}
           subdued={hasSelection && i !== selectedIndex}
-          running={running && !reducedMotion}
-          offset={i * 0.27}
+          running={running && !reducedMotion && pulseFor(domain.id).live}
+          offset={pulseFor(domain.id).offset}
         />
       ))}
 
@@ -98,6 +109,7 @@ export function Scene({
           subdued={hasSelection && i !== selectedIndex}
           onSelect={() => onSelect(domain.id)}
           onSelectRecord={onSelectRecord}
+          running={running}
           reducedMotion={reducedMotion}
         />
       ))}

@@ -415,17 +415,6 @@ a.panel-cta{text-decoration:none}
 
 /* ── Outcomes rail ───────────────────────────────────────────────────────── */
 .outcomes-rail{display:flex;flex-direction:column;gap:12px}
-.value-bars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:13px}
-.value-bar-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-.value-bar-top b{font-size:var(--fs-sm);font-weight:500}
-.value-bar-top em{font-style:normal;font-size:var(--fs-sm);color:#9aa8a4}
-.value-bar{display:block;height:4px;background:#17221f;border-radius:2px;margin:6px 0 4px}
-.value-bar i{display:block;height:100%;border-radius:2px}
-.value-bars small{font-size:var(--fs-xs);color:var(--text-faint)}
-.trace-note{display:flex;gap:11px;align-items:flex-start}
-.trace-note svg{color:var(--teal);flex:none;margin-top:2px}
-.trace-note b{display:block;font-size:var(--fs-sm);font-weight:520}
-.trace-note p{margin:6px 0 0;font-size:var(--fs-xs);color:var(--text-muted);line-height:1.55}
 
 /* ── Knowledge extras ────────────────────────────────────────────────────── */
 .answer{margin-top:12px;padding:13px 14px;border:1px solid #245f58;border-radius:8px;background:#0b1a19}
