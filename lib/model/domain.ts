@@ -1,4 +1,5 @@
 import type { AgentActivity, SceneState } from './state';
+import { ref, type RecordRef } from './record';
 
 /**
  * A Domain record, as the contract's shared domain model describes it. The 3D
@@ -114,3 +115,15 @@ export function defineDomain(
     openItems: d.workflows.filter(needsHuman).length,
   };
 }
+
+/**
+ * Typed pointers to these records.
+ *
+ * Derived rather than stored: adding a `recordType` field would mean editing 38
+ * workflow literals and 8 agent literals for a value that is constant per type
+ * and already known at every call site. The helper gives the same guarantee — you
+ * cannot get a `domain` ref out of a `Workflow` — with no data churn.
+ */
+export const domainRef = (d: Pick<Domain, 'id'>): RecordRef => ref('domain', d.id);
+export const workflowRef = (w: Pick<Workflow, 'id'>): RecordRef => ref('workflow', w.id);
+export const agentRef = (a: Pick<Agent, 'id'>): RecordRef => ref('agent', a.id);

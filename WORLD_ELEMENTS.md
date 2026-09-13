@@ -365,9 +365,16 @@ Declared here rather than in conversation, because conversation does not survive
 - `components/company-world/**`
 - `lib/tokens/**`
 - `lib/design/**`
+- `lib/model/**`
+- `data/**`
 - `public/models/**`
 - `tools/glyph-kit/**`
-- `WORLD_ELEMENTS.md`
+- `WORLD_ELEMENTS.md`, `PRODUCT_STRUCTURE.md`
+
+`lib/model/**`, `data/**` and `PRODUCT_STRUCTURE.md` moved here on 2026-09-13. The semantic
+review asks for objects justified by records rather than by aggregates, and a 3D layer that
+cannot add a record cannot satisfy that. Where a change reaches an HTML surface it is still
+raised as a numbered request first.
 
 **Owned by the UI-shell session:** `app/**`, `components/company/**`, and everything
 not listed above.

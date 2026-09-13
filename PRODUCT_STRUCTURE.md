@@ -13,6 +13,12 @@ Innerflect Mirror is the operational digital twin of a company. It observes how 
 
 `Human-led → Observed → Assisted → Supervised → Autonomous`
 
+Mirror has two modes over one company model. **Mirror mode** reconstructs and shows how the company actually operates. **Builder mode** lets a person redesign how it should operate. The system should reconstruct workflows from connected tools first; people review and correct that evidence-backed model rather than drawing the company from a blank canvas.
+
+The operating loop is `Connect → Observe → Reconstruct → Improve → Simulate → Approve → Automate → Verify → Learn`. Builder mode is a constrained visual language, not a generic node canvas. Every workflow retains the canonical spine `Trigger → Context → Work → Decision → Action → Verification → Outcome`, and every published step names the record moving through it, its actor, control mode, tools, authority, evidence and observable result.
+
+The product distinction is deliberate: workflow tools primarily describe what software should execute; Mirror shows what the company is actually doing across people, AI agents, deterministic systems, knowledge, decisions, permissions, exceptions and verified business outcomes.
+
 The visible product object is the company. Agents appear only as workers acting inside that company model.
 
 Promise: **See how your company works. Make it run itself.**
@@ -129,6 +135,13 @@ Settings defines machine-readable boundaries: organisation structure, integratio
 ## Shared domain model
 
 `Company · Domain · Workflow · Step · Tool · Person/Role · Knowledge · Policy · Authority · Agent · Action · Event · Decision · Outcome · Audit Record`
+
+Four invariants hold across every surface:
+
+- **Actor identity and control mode are separate axes.** Actor kinds are human, AI agent, deterministic system and external system. Control modes are human-led, assisted, supervised, autonomous and blocked. Neither implies the other: a deterministic system can be blocked, and a human can work under supervision.
+- **This is not the autonomy ladder.** `Human-led → Observed → Assisted → Supervised → Autonomous` is *earned maturity* of a workflow, moved only by evidence. Control mode is *how a step runs right now*. `Observed` is a rung, not a mode; `blocked` is a mode, not a rung. Conflating them is the mistake this paragraph exists to prevent.
+- **Every selectable visual object carries a stable record id and record type.** Clicking it resolves to the same object the HTML surfaces use. An `id` alone is not identity — ids repeat across collections.
+- **A workflow definition is not an execution.** An execution carries the specific business record moving through the steps, with its events, timestamps, decisions, verification and outcome.
 
 Objects retain identity across surfaces. Information is organised by why it matters now, not by its source system.
 

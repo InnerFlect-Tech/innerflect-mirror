@@ -7,6 +7,36 @@ Keep entries short: what was decided, why, and what it rules out. Link the commi
 
 ---
 
+## 2026-09-13 — The semantic gate is passed; the vocabulary is accepted
+
+**Decided:** the corrections, five missing concepts and eight acceptance criteria in
+`WORLD_ELEMENTS.md` are accepted, together with the Mirror/Builder product direction, which
+is now written into `PRODUCT_STRUCTURE.md`. Geometry work is unblocked.
+
+**Why:** `docs/STATUS.md` carried a hard stop — "Do not change or add GLBs until that
+vocabulary is accepted." It has now been reviewed with the user and accepted, in full, in one
+pass rather than staged. Recorded here because a gate satisfied in a conversation nobody else
+can read is not satisfied at all.
+
+**Rules out:** treating any of those 38 items as still open for negotiation. Reopen one only
+with a reason, recorded here.
+
+## 2026-09-13 — `Observed` stays a ladder rung; `blocked` stays a control mode
+
+**Decided:** `AUTONOMY_LADDER` keeps `Human-led → Observed → Assisted → Supervised →
+Autonomous` unchanged. Control mode is a separate five-value axis — `human-led, assisted,
+supervised, autonomous, blocked` — in the new `lib/model/actor.ts`.
+
+**Why:** the review's invariant listed control modes as "human-led, assisted, supervised,
+autonomous and blocked", which drops `Observed` and adds `blocked`, and read like a
+contradiction of the contract's ladder. It is not one: the model already had both axes and had
+simply conflated them. `StageMode` in `work.ts` was the control axis all along, missing only
+`assisted`. So the review's list and the contract's ladder are describing different things and
+both survive intact.
+
+**Rules out:** a single "mode" enum. `Observed` is a rung, not a mode; `blocked` is a mode, not
+a rung. `PRODUCT_STRUCTURE.md` now says so explicitly under Shared domain model.
+
 ## 2026-09-13 — RESOLVED: the human glyph stays fully neutral
 
 **Decided (provisionally):** `ELEMENTS.human-glyph.takesState = false`, so every material

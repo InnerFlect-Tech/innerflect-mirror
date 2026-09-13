@@ -65,3 +65,7 @@ export type Decision = {
    */
   policySuggestion?: { timesSeen: number; proposal: string };
 };
+
+import { ref, type RecordRef } from './record';
+
+export const decisionRef = (d: Pick<Decision, 'id'>): RecordRef => ref('decision', d.id);

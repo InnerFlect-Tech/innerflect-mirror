@@ -92,3 +92,7 @@ export type MemoryUpgrade = {
   detail: string;
   cta: string;
 };
+
+import { ref, type RecordRef } from './record';
+
+export const knowledgeRef = (o: Pick<KnowledgeObject, 'id'>): RecordRef => ref('knowledge', o.id);
