@@ -3,6 +3,8 @@
 Status: active product contract  
 Last aligned with UI: 2026-09-13
 
+Implementation baseline: React Three Fiber 9.7.0 · Drei 10.7.8 · Three.js 0.186.0 · React 19.2
+
 ## Product definition
 
 Innerflect Mirror is the operational digital twin of a company. It observes how the organisation works, reconstructs operational reality, preserves organisational knowledge, and progressively moves eligible work through:
@@ -95,6 +97,20 @@ Objects retain identity across surfaces. Information is organised by why it matt
 - The company world dominates. Supporting panels remain subordinate.
 - Motion explains live events, execution, handoffs, verification, learning, or escalation. No ambient particles.
 - Gamification represents earned maturity, evidence, and verified outcomes. No arbitrary points.
+
+## 3D implementation architecture
+
+The production visual world is a React Three Fiber scene whose objects are projections of the same Company and Domain records used by the HTML interface. The scene is never a separate source of truth.
+
+- React Three Fiber owns the scene graph and interaction bridge.
+- Drei provides cameras, model loading, line geometry, shadows, instancing, and adaptive performance helpers.
+- Three.js is pinned beneath the stable R3F line. Experimental R3F alpha releases are not used in production.
+- Each scene object receives a stable domain-object identifier and emits selection intent back to application state.
+- Accessible HTML controls remain available for every meaningful 3D interaction.
+- The Canvas provides a non-WebGL fallback, respects reduced motion, limits device pixel ratio, and uses on-demand complexity rather than unlimited effects.
+- Custom GLB assets will replace procedural prototype geometry without changing the domain contract.
+- Animation states express work: idle, moving, acting, waiting, verifying, escalating, and handing off.
+- The official pmndrs documentation and MCP-compatible documentation endpoint are the technical authority for R3F/Drei implementation patterns.
 
 ## Prototype alignment
 

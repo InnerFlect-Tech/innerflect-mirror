@@ -1,6 +1,7 @@
 import type {Metadata} from 'next';
 import {Inter} from 'next/font/google';
 import './globals.css';
+import './world.css';
 const inter=Inter({variable:'--font-inter',subsets:['latin']});
 export const metadata:Metadata={
  metadataBase:new URL('https://innerflect-mirror.snappy-dell-4014.chatgpt.site'),

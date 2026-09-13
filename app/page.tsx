@@ -1,6 +1,9 @@
 'use client';
 import {useEffect,useState} from 'react';
-import {Activity,ArrowRight,Bell,BookOpen,Box,Check,ChevronRight,CircleAlert,Clock3,Eye,FileCheck2,Gauge,Menu,Pause,Play,Search,Settings2,ShieldCheck,Target,Zap} from 'lucide-react';
+import dynamic from 'next/dynamic';
+import {Activity,ArrowRight,Bell,BookOpen,Check,ChevronRight,CircleAlert,Clock3,Eye,FileCheck2,Gauge,Menu,Pause,Play,Search,Settings2,ShieldCheck,Target,Zap} from 'lucide-react';
+
+const CompanyWorld3D=dynamic(()=>import('@/components/company-world-3d').then(module=>module.CompanyWorld3D),{ssr:false,loading:()=> <div className="world-loading">Building the living model…</div>});
 
 type Dept={name:string;mode:string;people:number;progress:number;accent:string;agents:{id:string,name:string,job:string,initials:string,state:string}[]};
 const departments:Dept[]=[
@@ -33,11 +36,10 @@ export default function Home(){
    <section className="command-deck">
     <div className="deck-head"><div><span className="eyebrow">Live company floor</span><h2>{view==='visual'?'See who is working on what':'Current operating state'}</h2></div><div className="deck-controls"><div className="segmented"><button className={view==='visual'?'active':''} onClick={()=>setView('visual')}>Visual</button><button className={view==='practical'?'active':''} onClick={()=>setView('practical')}>Practical</button></div><button className="pause" onClick={()=>{setRunning(!running);notify(running?'Company view paused':'Company view resumed')}}>{running?<Pause size={13}/>:<Play size={13}/>} {running?'Pause':'Resume'}</button></div></div>
 
-    {view==='visual'?<div className="floor">
-     <svg className="routes" viewBox="0 0 1000 460" preserveAspectRatio="none" aria-hidden="true"><path d="M500 230 C410 230 410 100 280 100"/><path d="M500 230 C590 230 590 100 720 100"/><path d="M500 230 C410 230 410 360 280 360"/><path d="M500 230 C590 230 590 360 720 360"/><circle cx="500" cy="230" r="112"/><g className="signal-dots"><circle cx="424" cy="174" r="4"/><circle cx="576" cy="174" r="4"/><circle cx="424" cy="286" r="4"/><circle cx="576" cy="286" r="4"/></g></svg>
-     <div className="company-core"><span className="core-rings"><i/><i/><i/></span><span className="mirror-glyph big"><i/><i/><i/></span><small>Living model</small><b>Innerflect</b><em>{running?'observing 286 events':'observation paused'}</em></div>
-     {departments.map((d,i)=><Department key={d.name} dept={d} index={i} selected={selected.name===d.name} onClick={()=>setSelected(d)}/>) }
-     <div className="agent-traveler a1"><span>RS</span><small>Signal qualified</small></div><div className="agent-traveler a2"><span>KK</span><small>Memory updated</small></div><div className="agent-traveler a3"><span>QA</span><small>Check complete</small></div>
+    {view==='visual'?<div className="floor three-floor">
+     <CompanyWorld3D domains={departments} selected={selected.name} onSelect={name=>{const next=departments.find(d=>d.name===name);if(next)setSelected(next)}} running={running}/>
+     <div className="world-hud"><span className="hud-state"><i/>{running?'Live model · 286 events observed':'Observation paused'}</span><span>Drag to inspect · Select a domain</span></div>
+     <div className="domain-controls" aria-label="Company domains">{departments.map(d=><button key={d.name} className={selected.name===d.name?'active':''} onClick={()=>setSelected(d)} style={{'--domain':d.accent} as React.CSSProperties}><i/><span><b>{d.name}</b><small>{d.mode} · {d.progress}%</small></span></button>)}</div>
     </div>:<div className="practical-view"><div className="practical-head"><span>Area</span><span>State</span><span>Work</span><span>Autonomy</span><span>Attention</span></div>{departments.map((d,i)=><button key={d.name} onClick={()=>{setSelected(d);setView('visual')}}><span><i style={{background:d.accent}}/><b>{d.name}</b></span><span>{d.mode==='Autonomous'?'Healthy':d.mode==='Escalated'?'At risk':'Attention'}</span><span>{[82,146,47,19][i]} active</span><span><em><i style={{width:`${d.progress}%`}}/></em>{d.progress}%</span><span className={d.mode==='Escalated'?'has-attention':''}>{[0,1,2,0][i]}</span></button>)}</div>}
 
     <div className="work-strip"><span className="strip-label"><Activity size={13}/>Work happening now</span><div className="ticker">{feed.map(([agent,event,dept,time])=><button key={agent} onClick={()=>{const d=departments.find(x=>x.name===dept);if(d)setSelected(d)}}><span className="mini-avatar">{agent.split(' ').map(x=>x[0]).join('')}</span><span><b>{event}</b><small>{agent} · {time}</small></span><i/></button>)}</div></div>
@@ -53,4 +55,3 @@ export default function Home(){
  </main>
 }
 function Nav({icon,label,active,badge}:{icon:React.ReactNode,label:string,active?:boolean,badge?:string}){return <button className={active?'active':''}>{icon}<span>{label}</span>{badge&&<em>{badge}</em>}</button>}
-function Department({dept,index,selected,onClick}:{dept:Dept,index:number,selected:boolean,onClick:()=>void}){return <button className={`department d${index+1} ${selected?'selected':''}`} style={{'--dept':dept.accent} as React.CSSProperties} onClick={onClick}><div className="dept-top"><span><Box size={14}/>{dept.name}</span><em>{dept.mode}</em></div><div className="desks">{dept.agents.map(a=><span className={`desk ${a.state}`} key={a.id}><i className="person-dot"><b>{a.initials}</b><em/></i><span><b>{a.name}</b><small>{a.job}</small></span><i className="work-pulse"/></span>)}</div><div className="dept-foot"><span>{dept.people} humans</span><span>{dept.progress}% autonomy</span></div></button>}
