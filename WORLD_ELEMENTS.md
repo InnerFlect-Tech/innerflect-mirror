@@ -220,6 +220,47 @@ These sit in files this layer does not own.
    step to values only CSS reads. Keep the file and its header comment; delete the two
    blocks. Run `npm run check` afterwards.
 
+7. **Record the observe → build → verify product loop in `PRODUCT_STRUCTURE.md`.** This is
+   the current product direction and belongs in the product authority before either layer
+   implements it. Insert the following after the autonomy ladder in **Product definition**:
+
+   > Mirror has two modes over one company model. **Mirror mode** reconstructs and shows
+   > how the company actually operates. **Builder mode** lets a person redesign how it
+   > should operate. The system should reconstruct workflows from connected tools first;
+   > people review and correct that evidence-backed model rather than drawing the company
+   > from a blank canvas.
+   >
+   > The operating loop is `Connect → Observe → Reconstruct → Improve → Simulate → Approve
+   > → Automate → Verify → Learn`. Builder mode is a constrained visual language, not a
+   > generic node canvas. Every workflow retains the canonical spine `Trigger → Context →
+   > Work → Decision → Action → Verification → Outcome`, and every published step names
+   > the record moving through it, its actor, control mode, tools, authority, evidence and
+   > observable result.
+   >
+   > The product distinction is deliberate: workflow tools primarily describe what
+   > software should execute; Mirror shows what the company is actually doing across
+   > people, AI agents, deterministic systems, knowledge, decisions, permissions,
+   > exceptions and verified business outcomes.
+
+   Then add these implementation invariants under **Shared domain model**:
+
+   - Actor identity and control mode are separate. Actor kinds are human, AI agent,
+     deterministic system and external system; control modes are human-led, assisted,
+     supervised, autonomous and blocked.
+   - Every selectable visual object carries a stable record id and record type. Clicking
+     it resolves to the same object used by the HTML surfaces.
+   - A workflow definition is not an execution. An execution carries the specific business
+     record moving through the steps, events, timestamps, decisions, verification and
+     outcome.
+   - `lib/model/work.ts` and `lib/model/domain.ts` currently declare separate `Workflow`
+     shapes. Before Builder mode, establish one canonical workflow identity and derive the
+     small world projection from it; do not let two independently authored truths persist.
+
+   Once the product contract lands, the 3D/design plan should express the visual grammar
+   from it. Stable nouns may be GLBs; state, motion, history, selection and boundaries are
+   procedural. The most important missing world concept is a **Record Token**: the uniquely
+   identifiable lead, order, project, invoice or ticket moving through an execution.
+
 ## Ownership
 
 This file is the coordination channel between the two sessions working this branch.
