@@ -17,18 +17,12 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
-| Claude · 3D/design | Phase 3 — conformance layer to typed TS | `components/company-world/glyphs/**`, `components/company-world/assets/**`, `tsconfig.json` | 2026-09-13 |
+| Claude · 3D/design | — idle — | — | 2026-09-13 |
 | Claude · UI shell | unknown (has not adopted this board yet) | `app/**`, `components/company/**` | — |
 | ChatGPT | — not yet started — | — | — |
 
 ## In flight / blocked
 
-- **Owed: a draw-call measurement after the Phase 1 token move.** The change is token
-  values only, proven identical by `npm run check:tokens` (0 mismatches), and touches no
-  geometry, material or scene code — so a budget change is implausible. But it was not
-  measured: the browser pane was not compositing, so `requestAnimationFrame` never fired
-  and `window.__mirrorGL` reported 0 frames. Next agent with a visible browser should run
-  the snippet in `AGENTS.md` and record the number in the `WORLD_ELEMENTS.md` perf table.
 - **Dependency advisories — unowned, needs a decision.** `npm audit` reports 11
   (10 high, 1 low); 5 reach production. Mostly build chain: `esbuild`,
   `@cloudflare/vite-plugin`, `miniflare`, `vinext`, plus `undici`, `sharp` and
@@ -43,10 +37,10 @@ numbered request in `WORLD_ELEMENTS.md`.
   belongs to the UI-shell session — raised as a numbered request in `WORLD_ELEMENTS.md`:
   delete tiers 1 and 2 from `app/tokens.css` now that `lib/tokens` emits every one of
   those 65 declarations with an identical value. Tier 3 stays hand-authored.
-- **Phase 3 — port the conformance layer to typed TS.** `conformGlyph.js` becomes
-  `components/company-world/glyphs/conformGlyph.ts` against the new `MATERIAL_ROLES`;
-  delete `assets/elements/elementBuilders.js` and the base64 `models.json` transport; add
-  `"**/*.js"` to tsconfig `include` in the same commit. Owner: Claude · 3D/design.
+- **Phase 4 — `/design/elements`.** One Canvas, ten glyphs from the registry, a state
+  switcher, and each element's conform stats and `drivenBy` shown beside it. Needs the
+  three-line route file in `app/`, raised as request 5 in `WORLD_ELEMENTS.md`.
+  Owner: Claude · 3D/design (component), UI-shell session (route file).
 - Phases 2–6 are described in `WORLD_ELEMENTS.md` and `docs/DECISIONS.md`.
 
 ## Recently landed
@@ -55,6 +49,12 @@ numbered request in `WORLD_ELEMENTS.md`.
 Read `git log --oneline` for the full record. This section is only for things whose
 consequences another agent needs to know about:
 
+- **Phase 3 — conformance layer in typed TS.** `components/company-world/glyphs/`
+  now holds `conformGlyph.ts`, `materialCache.ts` and `Glyph.tsx`. All four dead `.js`
+  files are deleted and `**/*.js` is in tsconfig `include`, so untypechecked JS cannot
+  reappear. Merges are cached by `(id, state)` and handed out as clones, so N platforms in
+  one state cost one merge. **Nothing imports this from the render path yet** — the home
+  scene measured 61 calls / 19,407 tris, exactly the baseline.
 - **Phase 2 — generated glyph IDs.** The seven hand-maintained lists of the ten element
   ids are now one generated module (`components/company-world/generated/glyphIds.ts`) plus
   one authored registry (`lib/design/elements.ts`). The generator emits each asset's glTF

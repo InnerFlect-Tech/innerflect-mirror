@@ -150,6 +150,13 @@ world — so nothing here may cost a draw call per object.
 | Budget | < 120 | < 200,000 | — |
 | Baseline before this work | 100 | 21,000 | 60 |
 | **After** | **61** | **19,400** | **60.3** |
+| After the design-system phases 1–3 | **61** | **19,407** | demand-idle |
+
+Phases 1–3 moved every token into `lib/tokens/`, generated the glyph ids, and added a
+typed conformance layer — and cost the scene nothing, which was the point: none of it is
+imported from the render path yet. The fps column reads "demand-idle" because an
+unchanging scene on a demand frame loop draws only a handful of frames per second by
+design; the per-frame counts are what the budget is about.
 
 Merging the island content *freed* roughly 39 draw calls against the baseline,
 because the previous abstract towers, trees and warehouses were one mesh each
