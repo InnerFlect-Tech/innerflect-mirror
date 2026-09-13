@@ -23,7 +23,13 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 ## In flight / blocked
 
-- Nothing blocked.
+- **Dependency advisories — unowned, needs a decision.** `npm audit` reports 11
+  (10 high, 1 low); 5 reach production. Mostly build chain: `esbuild`,
+  `@cloudflare/vite-plugin`, `miniflare`, `vinext`, plus `undici`, `sharp` and
+  `react-server-dom-webpack`. Not acted on because `npm audit fix --force` would bump
+  `vinext`, which is on a `1.0.0-beta` and pinned deliberately — a forced upgrade is as
+  likely to break the build as to fix anything. Whoever owns the toolchain should take
+  this; it became visible when the repo went public and GitHub enabled Dependabot.
 
 ## Next up
 
