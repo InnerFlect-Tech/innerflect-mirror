@@ -211,6 +211,15 @@ These sit in files this layer does not own.
    deliberately — it is the only cross-boundary dependency in the design-system plan,
    and it should not become the thing that blocks it.
 
+6. **Delete tiers 1 and 2 from `app/tokens.css`.** Every one of those 65 declarations is
+   now emitted from `lib/tokens/`, verified identical name-for-name and value-for-value by
+   `npm run check:tokens` (0 mismatches). They currently exist twice with the same values,
+   which is harmless but is exactly the duplication this work removes. Keep tier 3
+   (`--panel-*`, `--card-radius`, `--pill-radius`, `--summary-gap`) hand-authored — it is
+   per-component plumbing with no TypeScript consumer, and generating it would add a build
+   step to values only CSS reads. Keep the file and its header comment; delete the two
+   blocks. Run `npm run check` afterwards.
+
 ## Ownership
 
 This file is the coordination channel between the two sessions working this branch.

@@ -17,12 +17,18 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
-| Claude · 3D/design | Phase 1 — one token root | `lib/tokens/**`, `components/company-world/tokens/**` | 2026-09-13 |
+| Claude · 3D/design | — idle — | — | 2026-09-13 |
 | Claude · UI shell | unknown (has not adopted this board yet) | `app/**`, `components/company/**` | — |
 | ChatGPT | — not yet started — | — | — |
 
 ## In flight / blocked
 
+- **Owed: a draw-call measurement after the Phase 1 token move.** The change is token
+  values only, proven identical by `npm run check:tokens` (0 mismatches), and touches no
+  geometry, material or scene code — so a budget change is implausible. But it was not
+  measured: the browser pane was not compositing, so `requestAnimationFrame` never fired
+  and `window.__mirrorGL` reported 0 frames. Next agent with a visible browser should run
+  the snippet in `AGENTS.md` and record the number in the `WORLD_ELEMENTS.md` perf table.
 - **Dependency advisories — unowned, needs a decision.** `npm audit` reports 11
   (10 high, 1 low); 5 reach production. Mostly build chain: `esbuild`,
   `@cloudflare/vite-plugin`, `miniflare`, `vinext`, plus `undici`, `sharp` and
@@ -33,11 +39,13 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 ## Next up
 
-- **Phase 1 — one token root.** Collapse the four competing palettes into
-  `lib/tokens/source/*`, generate `app/tokens.generated.css`, leave `sceneColors.ts` as a
-  re-export shim. Discipline: generate the *same* names and values first and diff against
-  `app/tokens.css` until empty; do not redesign the ink ramp in the same commit as the
-  mechanism. Owner: Claude · 3D/design.
+- **Phase 1 is done** (see Recently landed). Remaining follow-up, needs `app/**` and so
+  belongs to the UI-shell session — raised as a numbered request in `WORLD_ELEMENTS.md`:
+  delete tiers 1 and 2 from `app/tokens.css` now that `lib/tokens` emits every one of
+  those 65 declarations with an identical value. Tier 3 stays hand-authored.
+- **Phase 2 — generated glyph IDs.** Two-line change in `tools/glyph-kit` to emit material
+  names into the manifest, then a generated `glyphIds.ts` collapsing the seven
+  hand-maintained id lists into one. Owner: Claude · 3D/design.
 - Phases 2–6 are described in `WORLD_ELEMENTS.md` and `docs/DECISIONS.md`.
 
 ## Recently landed
@@ -45,6 +53,12 @@ numbered request in `WORLD_ELEMENTS.md`.
 Read `git log --oneline` for the full record. This section is only for things whose
 consequences another agent needs to know about:
 
+- **Phase 1 — one token root.** `lib/tokens/` is now the only place a colour, space, type
+  or state value is authored. `components/company-world/tokens/sceneColors.ts` and
+  `lib/tokens/state.ts` are re-export shims, so existing imports still work.
+  `stateCssVariables()` kept its name deliberately — it now emits the *whole* token set, so
+  `app/layout.tsx` gained every token without an edit across an ownership boundary.
+  `npm run check:tokens` proves parity and is wired into `npm run check`.
 - `c2d5bd2` — `AGENTS.md` + `docs/DECISIONS.md` exist now. Read them before working.
 - `6b15fdb` — the glyph generator is vendored at `tools/glyph-kit/` and writes straight to
   `public/models/innerflect-v1/`. Regeneration is **not** byte-reproducible; see its README.
