@@ -7,6 +7,22 @@ Keep entries short: what was decided, why, and what it rules out. Link the commi
 
 ---
 
+## 2026-09-13 — The human glyph is forced fully neutral, and that loses an accent
+
+**Decided (provisionally):** `ELEMENTS.human-glyph.takesState = false`, so every material
+on the figure resolves through the neutral set.
+
+**Why:** a person is not a state. The kit agrees — its figure is built mostly from
+`Human Neutral`.
+
+**But:** the manifest shows `human-glyph` also carries `Active Teal` and `Warm White`.
+Forcing the whole glyph neutral greys out that teal accent, which the kit author may have
+intended as "this person is engaged". So the current rule is slightly blunter than the
+asset. Open question for a design pass: keep the figure grey but let the accent follow
+state, or keep it fully neutral. Visible on `/design/elements` once that route exists.
+
+**Rules out:** nothing yet. Flagged so it is a decision rather than an accident.
+
 ## 2026-09-13 — ChatGPT gets full write on the shared branch; repo is public
 
 **Decided:** the repo is published publicly and ChatGPT commits directly to

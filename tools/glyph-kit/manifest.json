@@ -23,12 +23,31 @@
     "attention": "amber hotspot",
     "unsafe": "red, intentionally absent from normal V1 assets"
   },
+  "materialNames": [
+    "Active Teal",
+    "Attention Amber",
+    "Autonomy Teal",
+    "Graphite",
+    "Graphite Light",
+    "Human Neutral",
+    "Mirror Glass",
+    "Risk Field",
+    "Smoky Glass",
+    "Warm White"
+  ],
   "assets": [
     {
       "id": "company-core",
       "label": "COMPANY CORE",
       "semantic": "The organisation above; its living Mirror integrated below.",
-      "file": "models/company-core.glb",
+      "file": "public/models/innerflect-v1/company-core.glb",
+      "materialNames": [
+        "Graphite",
+        "Graphite Light",
+        "Smoky Glass",
+        "Mirror Glass",
+        "Active Teal"
+      ],
       "parts": 11,
       "vertices": 1464,
       "triangles": 488,
@@ -43,7 +62,16 @@
       "id": "function-platform",
       "label": "FUNCTION PLATFORM",
       "semantic": "A coherent operational area such as Sales, Finance, or Support.",
-      "file": "models/function-platform.glb",
+      "file": "public/models/innerflect-v1/function-platform.glb",
+      "materialNames": [
+        "Graphite",
+        "Graphite Light",
+        "Human Neutral",
+        "Smoky Glass",
+        "Mirror Glass",
+        "Autonomy Teal",
+        "Active Teal"
+      ],
       "parts": 15,
       "vertices": 1920,
       "triangles": 640,
@@ -58,7 +86,12 @@
       "id": "human-glyph",
       "label": "HUMAN GLYPH",
       "semantic": "Embodied responsibility, judgement, relationships, and authority.",
-      "file": "models/human-glyph.glb",
+      "file": "public/models/innerflect-v1/human-glyph.glb",
+      "materialNames": [
+        "Human Neutral",
+        "Warm White",
+        "Active Teal"
+      ],
       "parts": 7,
       "vertices": 948,
       "triangles": 316,
@@ -73,7 +106,13 @@
       "id": "agent-glyph",
       "label": "AGENT GLYPH",
       "semantic": "Computational agency that observes, decides within policy, and acts.",
-      "file": "models/agent-glyph.glb",
+      "file": "public/models/innerflect-v1/agent-glyph.glb",
+      "materialNames": [
+        "Graphite Light",
+        "Smoky Glass",
+        "Autonomy Teal",
+        "Active Teal"
+      ],
       "parts": 9,
       "vertices": 3012,
       "triangles": 1004,
@@ -88,7 +127,14 @@
       "id": "tool-glyph",
       "label": "TOOL GLYPH",
       "semantic": "A software system through which work is read or executed.",
-      "file": "models/tool-glyph.glb",
+      "file": "public/models/innerflect-v1/tool-glyph.glb",
+      "materialNames": [
+        "Graphite",
+        "Graphite Light",
+        "Smoky Glass",
+        "Autonomy Teal",
+        "Active Teal"
+      ],
       "parts": 6,
       "vertices": 900,
       "triangles": 300,
@@ -103,7 +149,14 @@
       "id": "knowledge-slab",
       "label": "KNOWLEDGE SLAB",
       "semantic": "A document, policy, rule, instruction, or company memory.",
-      "file": "models/knowledge-slab.glb",
+      "file": "public/models/innerflect-v1/knowledge-slab.glb",
+      "materialNames": [
+        "Human Neutral",
+        "Warm White",
+        "Smoky Glass",
+        "Mirror Glass",
+        "Active Teal"
+      ],
       "parts": 7,
       "vertices": 924,
       "triangles": 308,
@@ -118,7 +171,11 @@
       "id": "workflow-line",
       "label": "WORKFLOW LINE",
       "semantic": "Work moving through actors and systems; grey becomes autonomous teal.",
-      "file": "models/workflow-line.glb",
+      "file": "public/models/innerflect-v1/workflow-line.glb",
+      "materialNames": [
+        "Human Neutral",
+        "Active Teal"
+      ],
       "parts": 6,
       "vertices": 1128,
       "triangles": 376,
@@ -133,7 +190,12 @@
       "id": "decision-gate",
       "label": "DECISION GATE",
       "semantic": "A point where authority, judgement, or explicit approval is required.",
-      "file": "models/decision-gate.glb",
+      "file": "public/models/innerflect-v1/decision-gate.glb",
+      "materialNames": [
+        "Graphite Light",
+        "Human Neutral",
+        "Attention Amber"
+      ],
       "parts": 7,
       "vertices": 3600,
       "triangles": 1200,
@@ -148,7 +210,13 @@
       "id": "action-pulse",
       "label": "ACTION PULSE",
       "semantic": "A discrete autonomous action travelling toward completion.",
-      "file": "models/action-pulse.glb",
+      "file": "public/models/innerflect-v1/action-pulse.glb",
+      "materialNames": [
+        "Warm White",
+        "Mirror Glass",
+        "Autonomy Teal",
+        "Active Teal"
+      ],
       "parts": 5,
       "vertices": 1086,
       "triangles": 362,
@@ -163,7 +231,13 @@
       "id": "risk-hotspot",
       "label": "RISK HOTSPOT",
       "semantic": "Uncertainty, friction, policy conflict, or an unsafe condition.",
-      "file": "models/risk-hotspot.glb",
+      "file": "public/models/innerflect-v1/risk-hotspot.glb",
+      "materialNames": [
+        "Graphite",
+        "Smoky Glass",
+        "Attention Amber",
+        "Risk Field"
+      ],
       "parts": 7,
       "vertices": 3468,
       "triangles": 1156,
@@ -174,17 +248,5 @@
       },
       "bytes": 88680
     }
-  ],
-  "showcase": {
-    "file": "models/innerflect-v1-showcase.glb",
-    "parts": 100,
-    "vertices": 21090,
-    "triangles": 7030,
-    "dimensions": {
-      "x": 21.85,
-      "y": 3.02,
-      "z": 9.25
-    },
-    "bytes": 566064
-  }
+  ]
 }

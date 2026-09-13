@@ -702,7 +702,12 @@ def write_glb(parts: list[Part], output: Path, title: str, semantic: str) -> dic
 
     dimensions = all_vertices.max(axis=0) - all_vertices.min(axis=0)
     return {
-        "file": f"models/{output.name}",
+        "file": f"public/models/innerflect-v1/{output.name}",
+        # The glTF material NAME on each mesh is the contract the runtime role map
+        # keys on -- "Active Teal", not the internal key "teal_bright". Emitting it
+        # here is what lets an unmapped material become a compile error instead of
+        # a silent fallback.
+        "materialNames": [MATERIALS[name].name for name in used_names],
         "parts": len(parts),
         "vertices": vertex_total,
         "triangles": triangle_total,
@@ -900,20 +905,23 @@ def main(previews: bool = False) -> None:
             render_asset(shifted(parts, (0, 0.03, 0)), render_path)
             renders[slug] = render_path
 
-    showcase = build_showcase(assets)
-    showcase_path = MODELS_DIR / "innerflect-v1-showcase.glb"
-    stats["innerflect-v1-showcase"] = write_glb(
-        showcase,
-        showcase_path,
-        "INNERFLECT MIRROR V1 SHOWCASE",
-        "A display scene containing all ten V1 operational glyphs.",
-    )
-    validate_glb(showcase_path)
-
+    # The showcase is a single 566KB model that only the kit's own contact sheet
+    # uses. It follows previews rather than shipping to public/, where it would be
+    # real bandwidth on every uncached request.
     if previews:
+        showcase = build_showcase(assets)
+        showcase_path = PREVIEWS_DIR / "innerflect-v1-showcase.glb"
+        stats["innerflect-v1-showcase"] = write_glb(
+            showcase,
+            showcase_path,
+            "INNERFLECT MIRROR V1 SHOWCASE",
+            "A display scene containing all ten V1 operational glyphs.",
+        )
+        validate_glb(showcase_path)
+
         make_contact_sheet(renders, PREVIEWS_DIR / "innerflect-v1-contact-sheet.png")
-    if REFERENCE_IMAGE.exists():
-        shutil.copy2(REFERENCE_IMAGE, PREVIEWS_DIR / "concept-reference.png")
+        if REFERENCE_IMAGE.exists():
+            shutil.copy2(REFERENCE_IMAGE, PREVIEWS_DIR / "concept-reference.png")
 
     manifest = {
         "name": "InnerFlect Mirror V1 Operational Glyph System",
@@ -940,6 +948,7 @@ def main(previews: bool = False) -> None:
             "attention": "amber hotspot",
             "unsafe": "red, intentionally absent from normal V1 assets",
         },
+        "materialNames": sorted({n for slug in ASSET_BUILDERS for n in stats[slug]["materialNames"]}),
         "assets": [
             {
                 "id": slug,
@@ -949,7 +958,7 @@ def main(previews: bool = False) -> None:
             }
             for slug in ASSET_BUILDERS
         ],
-        "showcase": stats["innerflect-v1-showcase"],
+        **({"showcase": stats["innerflect-v1-showcase"]} if "innerflect-v1-showcase" in stats else {}),
     }
     (ROOT / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"status": "ok", "assets": len(assets), "models": len(list(MODELS_DIR.glob('*.glb'))), "manifest": str(ROOT / 'manifest.json')}, indent=2))

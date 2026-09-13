@@ -17,7 +17,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
-| Claude · 3D/design | Phase 2 — generated glyph IDs | `tools/glyph-kit/**`, `components/company-world/generated/**`, `lib/design/**`, `scripts/**` | 2026-09-13 |
+| Claude · 3D/design | — idle — | — | 2026-09-13 |
 | Claude · UI shell | unknown (has not adopted this board yet) | `app/**`, `components/company/**` | — |
 | ChatGPT | — not yet started — | — | — |
 
@@ -43,9 +43,10 @@ numbered request in `WORLD_ELEMENTS.md`.
   belongs to the UI-shell session — raised as a numbered request in `WORLD_ELEMENTS.md`:
   delete tiers 1 and 2 from `app/tokens.css` now that `lib/tokens` emits every one of
   those 65 declarations with an identical value. Tier 3 stays hand-authored.
-- **Phase 2 — generated glyph IDs.** Two-line change in `tools/glyph-kit` to emit material
-  names into the manifest, then a generated `glyphIds.ts` collapsing the seven
-  hand-maintained id lists into one. Owner: Claude · 3D/design.
+- **Phase 3 — port the conformance layer to typed TS.** `conformGlyph.js` becomes
+  `components/company-world/glyphs/conformGlyph.ts` against the new `MATERIAL_ROLES`;
+  delete `assets/elements/elementBuilders.js` and the base64 `models.json` transport; add
+  `"**/*.js"` to tsconfig `include` in the same commit. Owner: Claude · 3D/design.
 - Phases 2–6 are described in `WORLD_ELEMENTS.md` and `docs/DECISIONS.md`.
 
 ## Recently landed
@@ -53,6 +54,12 @@ numbered request in `WORLD_ELEMENTS.md`.
 Read `git log --oneline` for the full record. This section is only for things whose
 consequences another agent needs to know about:
 
+- **Phase 2 — generated glyph IDs.** The seven hand-maintained lists of the ten element
+  ids are now one generated module (`components/company-world/generated/glyphIds.ts`) plus
+  one authored registry (`lib/design/elements.ts`). The generator emits each asset's glTF
+  material names, so `MATERIAL_ROLES` is `satisfies Record<KitMaterialName, MaterialRole>`
+  — an unmapped material is now a compile error naming the material, verified by removing
+  one. `npm run check:glyphs` fails if the generated module drifts from the manifest.
 - **Phase 1 — one token root.** `lib/tokens/` is now the only place a colour, space, type
   or state value is authored. `components/company-world/tokens/sceneColors.ts` and
   `lib/tokens/state.ts` are re-export shims, so existing imports still work.
