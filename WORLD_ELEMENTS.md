@@ -195,9 +195,10 @@ in this layer runs a frame loop, so the demand frame loop is unaffected.
 
 ## Requests to the UI-shell session
 
-These sit in files this layer does not own.
+These sit in files this layer does not own. ✅ marks one that has landed; the rest are open.
+Numbers are never reused, so a reference to "request 5" always means the same thing.
 
-1. **`nodes/DomainIsland.tsx`** — `<DomainContent shape={index} …>` passes an
+1. ✅ **DONE — `nodes/DomainIsland.tsx`** — `<DomainContent shape={index} …>` passes an
    array position, which is the reason island content could not mean anything.
    Needs to pass the record: `<DomainContent domain={domain} accent={token.edge} />`.
    *(Agreed with the user and applied as a single-line change; no other line in
@@ -253,7 +254,7 @@ These sit in files this layer does not own.
    step to values only CSS reads. Keep the file and its header comment; delete the two
    blocks. Run `npm run check` afterwards.
 
-7. **Record the observe → build → verify product loop in `PRODUCT_STRUCTURE.md`.** This is
+7. ✅ **DONE (commit `94c7960`) — Record the observe → build → verify product loop in `PRODUCT_STRUCTURE.md`.** This is
    the current product direction and belongs in the product authority before either layer
    implements it. Insert the following after the autonomy ladder in **Product definition**:
 
@@ -294,7 +295,7 @@ These sit in files this layer does not own.
    procedural. The most important missing world concept is a **Record Token**: the uniquely
    identifiable lead, order, project, invoice or ticket moving through an execution.
 
-8. **`ProcessesSurface` now takes `DocumentedWorkflow[]`.** Applied as a two-line change
+8. ✅ **DONE — `ProcessesSurface` now takes `DocumentedWorkflow[]`.** Applied as a two-line change
    (the type import and the prop type); no other line in that file was touched. The workflow
    catalogue is now one array, with the deeply-mapped subset narrowed by `isDocumented()`.
    The surface renders exactly as before — same four workflows, same fields — but they are now

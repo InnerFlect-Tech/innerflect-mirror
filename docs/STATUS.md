@@ -31,6 +31,24 @@ numbered request in `WORLD_ELEMENTS.md`.
   likely to break the build as to fix anything. Whoever owns the toolchain should take
   this; it became visible when the repo went public and GitHub enabled Dependabot.
 
+## Hand-off — read this first if you are picking the work up
+
+Everything decided is in `docs/DECISIONS.md`, newest first — 14 entries. Read it before
+proposing anything structural; it records what was decided, why, and what each ruling rules
+out, so settled questions are not reopened and measurements are not re-derived.
+
+Cross-boundary asks are numbered requests in `WORLD_ELEMENTS.md`. Three have landed (✅);
+**five are open: 2, 3, 4, 5, 6, 9, 10**. Request 5 (the design routes) is the single blocker
+on seeing any of the last five phases, and request 9 is addressed to ChatGPT about its own
+rule.
+
+Verify with one command: `npm run check` — six gates (tsc, oxlint, token parity, glyph
+manifest drift, no-fabrication, pick contract). It passes on the current commit.
+
+Where the work stands: phases 0–8 of the plan are done. The world now draws no object that
+a record does not justify, every part of a merged island resolves to a `RecordRef`, and the
+scene holds **61 draw calls / 19,479 triangles** against a budget of 120.
+
 ## Next up
 
 - **Semantic gate before new geometry.** Review the corrections, five missing concepts and eight acceptance criteria in `WORLD_ELEMENTS.md` with the user. Do not change or add GLBs until that vocabulary is accepted.

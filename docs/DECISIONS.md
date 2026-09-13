@@ -7,6 +7,92 @@ Keep entries short: what was decided, why, and what it rules out. Link the commi
 
 ---
 
+## 2026-09-13 — Gate pylons stand for Decisions; hotspots stand for Exceptions
+
+**Decided:** a gate pylon is drawn once per `Decision` record whose `workflowId` matches, and
+a hotspot once per OPEN `Exception` record. They are separate shapes.
+
+**Why:** both were previously inferred from colour — the pylon from `Workflow.state`, risk from
+`Domain.openItems` (a count of workflows in those same colours). Neither could be opened, and
+neither could say what was wrong. A decision waiting and an exception open are different facts;
+one shape for both is why the world could not tell you which it was.
+
+**Visible consequence, and the proof it is real:** `mk-signal` gains a pylon (it has a real
+decision pending) and `fn-revrec` loses one (it has an exception, not a decision).
+
+**Rules out:** any object whose existence is derived from a colour or an aggregate.
+`npm run check:records` fails if an aggregate drifts from the records it summarises.
+Commit `e79fedf`.
+
+## 2026-09-13 — The merge is kept; picking resolves through a triangle-range table
+
+**Decided:** islands stay merged into two meshes. Clicks resolve by mapping a raycast's
+`faceIndex` through `assets/pickTable.ts` back to a `RecordRef`.
+
+**Why:** merging is what holds the scene at 61 draw calls, and it is also why nothing on an
+island could be clicked — once merged, a bay, a desk and a pylon are one mesh. Parts are pushed
+in a per-workflow loop, so the owning record is known at build time and the range can be
+recorded as it goes in. One draw call preserved, per-object picking gained.
+
+**Rules out:** splitting the island into one mesh per object to make it clickable, which was
+the obvious fix and would have cost roughly forty draw calls per island. `npm run check:picks`
+fails if the table stops covering every triangle exactly once — a gap makes an object
+unclickable, an overlap opens the wrong record, and both fail silently.
+
+## 2026-09-13 — One workflow catalogue; the documented set is a view over it
+
+**Decided:** `lib/model/work.ts` holds the one canonical `Workflow`. `data/work.ts` is a VIEW —
+`domains.flatMap(d => d.workflows).filter(isDocumented)` — not a second catalogue.
+
+**Why:** there were two `Workflow` types with **disjoint ids** (4 rich records vs 38 small ones)
+and incompatible numbers. The Processes surface listed one Delivery workflow while the Delivery
+island drew twelve bays labelled "12 processes".
+
+**Also decided:** the four rich records' `autonomy` values were **dropped**, not kept. Each
+equalled its DOMAIN's autonomy rather than its own — the Gate 1 record claimed 73 where the
+workflow's real figure is 30.
+
+**Rules out:** reading the difference between "12 processes" and "1 documented workflow" as a
+bug. It now means how much is mapped, not which file you are reading. Commit `62c13bd`.
+
+## 2026-09-13 — `lib/model` must never import `data`
+
+**Decided:** `defineDomain()` takes a `DomainContext` parameter carrying the detail map and the
+exception list. It does not import them.
+
+**Why:** the first attempt had `lib/model/domain.ts` importing `@/data/workflow-detail`. It
+typechecked and **failed at runtime** in the RSC environment. The resolution error was the
+symptom; the fault was the dependency running backwards. A model that describes shapes must not
+depend on the data filling them, or it cannot be pointed at a real integration later.
+
+**Rules out:** any import from `data/` inside `lib/model/`.
+
+## 2026-09-13 — Record identity is derived, not stored
+
+**Decided:** `RecordRef = { type, id }` in `lib/model/record.ts`, produced by typed helpers
+(`domainRef`, `workflowRef`, `agentRef`, …) rather than a `recordType` field on every record.
+
+**Why:** ids alone were never identity — `data/mirror.ts` row ids are `market`, `sales`,
+`delivery`, `finance`, byte-identical to the `Domain` ids, and a grep for
+`recordType|recordId|entityType` returned zero hits repo-wide. Storing the field would have
+meant editing 38 workflow and 8 agent literals to carry a value constant per type and already
+known at every call site. The helper gives the same guarantee with no data churn.
+
+## 2026-09-13 — ChatGPT's V2 kit is accepted, including work inside this session's zone
+
+**Decided:** `8acb18d` (the fifteen-element V2 glyph kit) stands, though it landed in
+`tools/glyph-kit/**`, `public/models/**` and `lib/design/**` — all declared as this session's.
+
+**Why:** it was verified before being built on: all gates pass, `glyphUrl()` correctly
+repointed to `/models/innerflect-v2/`, 15/15 checksums verify, renames are right
+(`function-platform` → `domain-platform`, `knowledge-slab` → `knowledge-object`), and
+`modelled: false` was left honestly on the six without records. Good work that did the planned
+geometry; territory is not worth more than the work.
+
+**Still open:** it ships `permission-boundary.glb` despite its own review stating that
+boundaries are procedural rather than GLBs. Raised as request 9 rather than resolved
+unilaterally, because it is ChatGPT's own rule to amend or apply.
+
 ## 2026-09-13 — The semantic gate is passed; the vocabulary is accepted
 
 **Decided:** the corrections, five missing concepts and eight acceptance criteria in
