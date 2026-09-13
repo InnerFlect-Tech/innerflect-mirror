@@ -333,6 +333,27 @@ The next pass is correct when all of the following are true:
 8. Generated-id, material-role and checksum checks still pass, and the composed floor holds
    the measured performance line rather than merely remaining below the 120-call ceiling.
 
+### Verified: the two `Workflow` types describe entirely different catalogues
+
+Request 7 flagged that `lib/model/work.ts` and `lib/model/domain.ts` declare separate
+`Workflow` shapes. Checked, and it is worse than divergent fields — the two carry
+**disjoint sets of workflows with zero shared ids**:
+
+| Source | Type | Count | Delivery |
+|---|---|---|---|
+| `data/work.ts` | rich (`outcome`, `stages`, `steps`, `evidence`…) | 4 | 1 |
+| `data/company.ts` | small (`throughput`, `autonomy`, `humans`, `state`) | 38 | 12 |
+
+So the product currently tells two stories about the same company: the Processes surface
+lists one Delivery workflow, while the Delivery island renders twelve bays and its label
+reads "12 processes". Neither is wrong on its own terms; they are simply not the same
+catalogue, and nothing relates them but `domainId`.
+
+This is the same failure as the four palettes — two independently authored truths — and it
+should be settled the same way: one canonical workflow identity, with the small world
+projection derived from it, exactly as request 7 asks. It needs `data/work.ts` and
+`components/company/**`, so it cannot be done from this side alone.
+
 ## Ownership
 
 This file is the coordination channel between the two sessions working this branch.

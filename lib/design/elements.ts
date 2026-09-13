@@ -19,29 +19,46 @@ export type ElementDef = {
    * renderer never has to branch on an id, which the contract forbids.
    */
   takesState: boolean;
+  /**
+   * Does the record named by `drivenBy` actually exist in `lib/model/`?
+   *
+   * False means the object is currently justified by an aggregate or an inferred
+   * state rather than by a record you could click and open — which the semantic
+   * review in `WORLD_ELEMENTS.md` rejects. Carried as data so the gap is visible
+   * on the design surface instead of living in a document nobody opens.
+   */
+  modelled: boolean;
 };
 
 export const ELEMENTS: readonly ElementDef[] = [
-  { id: 'company-core', name: 'Company Core', takesState: true,
+  { id: 'company-core', name: 'Company Core', takesState: true, modelled: true,
     drivenBy: 'Company record' },
-  { id: 'function-platform', name: 'Function Platform', takesState: true,
+  // Named for the domain it represents, never a department. The glyph id stays
+  // `function-platform` because it is the kit's filename.
+  { id: 'function-platform', name: 'Domain Platform', takesState: true, modelled: true,
     drivenBy: 'Domain record' },
-  { id: 'human-glyph', name: 'Human Glyph', takesState: false,
+  { id: 'human-glyph', name: 'Human Glyph', takesState: false, modelled: true,
     drivenBy: 'Workflow.humans / Person record' },
-  { id: 'agent-glyph', name: 'Agent Glyph', takesState: true,
-    drivenBy: 'Domain.agents[].activity' },
-  { id: 'tool-glyph', name: 'Tool Glyph', takesState: true,
+  // The glyph is the Agent; pose may express activity. Identity and activity are
+  // separate fields and must not collapse into one.
+  { id: 'agent-glyph', name: 'Agent Glyph', takesState: true, modelled: true,
+    drivenBy: 'Agent record (pose from Agent.activity)' },
+  { id: 'tool-glyph', name: 'Tool Glyph', takesState: true, modelled: false,
     drivenBy: 'Tool record' },
-  { id: 'knowledge-slab', name: 'Knowledge Slab', takesState: true,
+  // The knowledge object itself, not the file. A document is evidence FOR it.
+  { id: 'knowledge-slab', name: 'Knowledge Object', takesState: true, modelled: false,
     drivenBy: 'Knowledge object in use at a step' },
-  { id: 'workflow-line', name: 'Workflow Line', takesState: true,
+  { id: 'workflow-line', name: 'Workflow Line', takesState: true, modelled: true,
     drivenBy: 'Workflow record' },
-  { id: 'decision-gate', name: 'Decision Gate', takesState: true,
-    drivenBy: 'Workflow.state is attention or critical' },
-  { id: 'action-pulse', name: 'Action Pulse', takesState: true,
-    drivenBy: 'Action / event stream' },
-  { id: 'risk-hotspot', name: 'Risk Hotspot', takesState: true,
-    drivenBy: 'Domain.openItems' },
+  // Must be justified by an actual decision, not inferred from a colour. No
+  // Decision record reaches the world yet, so this is currently unmodelled.
+  { id: 'decision-gate', name: 'Decision Gate', takesState: true, modelled: false,
+    drivenBy: 'Decision / Authority record' },
+  { id: 'action-pulse', name: 'Action Pulse', takesState: true, modelled: false,
+    drivenBy: 'Action / event record' },
+  // An aggregate count is not a record you can open. Needs an Exception record.
+  { id: 'risk-hotspot', name: 'Risk Hotspot', takesState: true, modelled: false,
+    drivenBy: 'Risk / Exception / Policy conflict record' },
 ];
 
 export const ELEMENTS_BY_ID = Object.fromEntries(
