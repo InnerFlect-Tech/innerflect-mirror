@@ -4,6 +4,16 @@ import type { Workflow } from '@/lib/model/work';
 export const workflows: Workflow[] = [
   {
     id: 'lead-intake',
+    steps: [
+      { label: 'Customer request', note: 'Email / Form', mode: 'autonomous' },
+      { label: 'Understand', note: 'Extract intent', mode: 'autonomous' },
+      { label: 'Check policy', note: 'Company rules', mode: 'autonomous' },
+      { label: 'Qualify', note: 'Criteria v4', mode: 'autonomous' },
+      { label: 'Assign owner', note: 'CRM', mode: 'autonomous' },
+      { label: 'Notify', note: 'Email', mode: 'autonomous' },
+      { label: 'Verify routing', note: 'Sampled', mode: 'supervised' },
+      { label: 'Log outcome', note: 'Audit trail', mode: 'autonomous' },
+    ],
     name: 'Lead intake and qualification',
     outcome: 'Every inbound lead reaches the right owner, qualified, within an hour',
     domainId: 'sales',
@@ -34,6 +44,15 @@ export const workflows: Workflow[] = [
   },
   {
     id: 'demand-signals',
+    steps: [
+      { label: 'Signal captured', note: 'Web intelligence', mode: 'autonomous' },
+      { label: 'Extract claim', note: 'Parse source', mode: 'autonomous' },
+      { label: 'Score source', note: 'Trust levels', mode: 'autonomous' },
+      { label: 'Verify', note: 'Second source', mode: 'supervised' },
+      { label: 'Accept or discard', note: 'Threshold 0.8', mode: 'supervised' },
+      { label: 'Human review', note: 'Sampled weekly', mode: 'human' },
+      { label: 'Publish to Sales', note: 'CRM', mode: 'autonomous' },
+    ],
     name: 'Demand signal verification',
     outcome: 'Market signals are verified against source before they reach a human',
     domainId: 'market',
@@ -64,6 +83,15 @@ export const workflows: Workflow[] = [
   },
   {
     id: 'delivery-gate',
+    steps: [
+      { label: 'Milestone marked', note: 'Project tracker', mode: 'autonomous' },
+      { label: 'Collect artefact', note: 'Document store', mode: 'autonomous' },
+      { label: 'Quality checks', note: '4 criteria', mode: 'autonomous' },
+      { label: 'Approve gate', note: 'Human required', mode: 'human' },
+      { label: 'Raise invoice', note: 'Irreversible', mode: 'blocked' },
+      { label: 'Client countersign', note: 'Often skipped', mode: 'human' },
+      { label: 'Log outcome', note: 'Audit trail', mode: 'supervised' },
+    ],
     name: 'Delivery gate review',
     outcome: 'No milestone is billed before its artefact passes quality checks',
     domainId: 'delivery',
@@ -94,6 +122,15 @@ export const workflows: Workflow[] = [
   },
   {
     id: 'invoice-recon',
+    steps: [
+      { label: 'Payment received', note: 'Bank feed', mode: 'autonomous' },
+      { label: 'Match to invoice', note: 'Accounting', mode: 'supervised' },
+      { label: 'Flag exception', note: 'Unmatched', mode: 'supervised' },
+      { label: 'Assign owner', note: 'No owner exists', mode: 'blocked' },
+      { label: 'Approve match', note: 'Human required', mode: 'human' },
+      { label: 'Reconcile', note: 'Blocked', mode: 'blocked' },
+      { label: 'Log outcome', note: 'Manual', mode: 'human' },
+    ],
     name: 'Invoice reconciliation',
     outcome: 'Payments received are matched to invoices without manual chasing',
     domainId: 'finance',

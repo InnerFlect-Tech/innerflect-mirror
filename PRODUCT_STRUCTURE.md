@@ -24,10 +24,10 @@ Governing rule: **Every autonomous action must have authority, evidence, an obse
 | Surface | Question | Primary object |
 |---|---|---|
 | Company | Is my company okay, and where should I look? | Operational digital twin |
-| Work | What work exists, how does it happen, and what should change? | Workflows and capabilities |
-| Decisions | Where does the company need human judgement? | Human authority layer |
+| Processes | How does work flow through the company, and what should change? | Workflows and capabilities |
+| Approvals | Where does the company need human judgement? | Human authority layer |
 | Knowledge | What does the company know, why, and where is it used? | Trusted knowledge objects |
-| Impact | Is autonomy making the company better? | Verified business value |
+| Outcomes | Is autonomy making the company better? | Verified business value |
 | Settings | What may the system know, access, and do? | Company constitution |
 
 Adaptive workspaces may reorganise around a user's intent, but they must not replace this stable world.
@@ -71,9 +71,11 @@ Mirror is the Strategic Assessment made continuous: the assessment maps how work
 
 Desktop is exploratory. Mobile is a compact Company Pulse focused on health, activity, and exceptions. Healthy systems become quiet; information moves from the periphery to the centre only when necessary.
 
-## Work
+## Processes
 
-Use **Work**, not Processes. Every workflow follows:
+**Naming changed 2026-09-13.** This surface was called *Work*, on the reasoning that "Work" names the thing and "Processes" names the paperwork. The interface direction went the other way: owners say *processes*, and the word carries its own mental model of a sequence with steps. The underlying object is still a Workflow, and the seven canonical stages are unchanged — only the surface name moved. Same reasoning applies to Decisions → **Approvals** and Impact → **Outcomes**.
+
+Every workflow follows:
 
 `Trigger → Context → Work → Decision → Action → Verification → Outcome`
 
@@ -81,7 +83,7 @@ A Work object can expose outcome, trigger, inputs, participants, systems, steps,
 
 Autonomy is earned, not toggled. Progress requires evidence: successful observations, decision agreement, policy coverage, reversibility, low exception rate, and passed evaluations.
 
-## Decisions
+## Approvals
 
 A large queue is a system failure. Default message: **3 decisions need you. Everything else is running.**
 
@@ -97,11 +99,11 @@ Knowledge objects include policies, procedures, decisions, experience, exception
 
 Mirror should reveal differences between documented procedures and observed behaviour.
 
-## Impact
+## Outcomes
 
-Impact is the proof layer. Prefer human capacity returned, operating cost avoided, revenue protected, response and cycle-time improvement, errors prevented, SLA improvement, verified autonomous work, human correction, unsafe actions, and safe recovery.
+Outcomes are the proof layer. Prefer human capacity returned, operating cost avoided, revenue protected, response and cycle-time improvement, errors prevented, SLA improvement, verified autonomous work, human correction, unsafe actions, and safe recovery.
 
-Every claim is traceable: `Impact → Work → Execution → Action → Decision → Policy → Evidence → Source event`.
+Every claim is traceable: `Outcome → Process → Execution → Action → Decision → Policy → Evidence → Source event`.
 
 ## Company constitution
 

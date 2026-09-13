@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BookOpen, Eye, FileCheck2, Settings2, Target, Zap } from 'lucide-react';
+import { BookOpen, Eye, FileCheck2, Settings2, Target, Workflow } from 'lucide-react';
 
 /**
  * Navigation, so it is built from links. These were six <button>s with no
@@ -8,14 +8,14 @@ import { BookOpen, Eye, FileCheck2, Settings2, Target, Zap } from 'lucide-react'
  *
  * Server component: it renders once and ships no JavaScript.
  */
-export type Surface = 'company' | 'work' | 'decisions' | 'knowledge' | 'impact' | 'settings';
+export type Surface = 'company' | 'processes' | 'approvals' | 'knowledge' | 'outcomes' | 'settings';
 
 const SURFACES: { id: Surface; href: string; label: string; icon: React.ReactNode }[] = [
   { id: 'company', href: '/', label: 'Company', icon: <Eye /> },
-  { id: 'work', href: '/work', label: 'Work', icon: <Zap /> },
-  { id: 'decisions', href: '/decisions', label: 'Decisions', icon: <FileCheck2 /> },
+  { id: 'processes', href: '/processes', label: 'Processes', icon: <Workflow /> },
+  { id: 'approvals', href: '/approvals', label: 'Approvals', icon: <FileCheck2 /> },
   { id: 'knowledge', href: '/knowledge', label: 'Knowledge', icon: <BookOpen /> },
-  { id: 'impact', href: '/impact', label: 'Impact', icon: <Target /> },
+  { id: 'outcomes', href: '/outcomes', label: 'Outcomes', icon: <Target /> },
 ];
 
 export function Rail({ active, decisionsWaiting }: { active: Surface; decisionsWaiting: number }) {
@@ -37,12 +37,14 @@ export function Rail({ active, decisionsWaiting }: { active: Surface; decisionsW
           >
             {s.icon}
             <span>{s.label}</span>
-            {s.id === 'decisions' && decisionsWaiting > 0 && (
+            {s.id === 'approvals' && decisionsWaiting > 0 && (
               <em aria-label={`${decisionsWaiting} waiting`}>{decisionsWaiting}</em>
             )}
           </Link>
         ))}
       </nav>
+
+      <p className="rail-tagline">A more capable company, by design.</p>
 
       <div className="rail-foot">
         <div className="operator">

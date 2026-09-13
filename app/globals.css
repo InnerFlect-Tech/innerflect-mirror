@@ -35,3 +35,4 @@
 /* The view switch and domain picker are groups of related controls, so they are
    fieldsets. Reset the default chrome the element brings with it. */
 .segmented,.domain-controls{margin:0;min-inline-size:0}
+.rail-tagline{margin:auto 8px 16px;font-size:var(--fs-xs);color:#4d5a57;line-height:1.45}

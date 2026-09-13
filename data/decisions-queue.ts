@@ -7,6 +7,12 @@ import type { Decision } from '@/lib/model/decision';
 export const decisionQueue: Decision[] = [
   {
     id: 'gate-1-essencia',
+    amount: '€1,334',
+    breachedRule: 'Outside autonomous authority (irreversible billing)',
+    priority: 'high',
+    raised: '12 min ago',
+    reason: 'All gate criteria passed, client confirmed receipt, four prior gates unchanged.',
+    recommended: 'Approve',
     title: 'Approve Essência Gate 1',
     situation:
       'The Gate 1 artefact passed all four quality checks two days ago. Billing is blocked until a human with billing authority approves, because the invoice it unlocks cannot be reversed.',
@@ -49,6 +55,12 @@ export const decisionQueue: Decision[] = [
   },
   {
     id: 'invoice-ownership',
+    amount: '€6,910',
+    breachedRule: 'No accountable owner for 56 days',
+    priority: 'high',
+    raised: '56 days ago',
+    reason: 'Four payments unmatched; workflow blocked at Action and Verification.',
+    recommended: 'Review',
     title: 'Assign invoice reconciliation ownership',
     situation:
       'Invoice reconciliation has had no accountable owner for 56 days. Four unmatched payments have accumulated and the workflow cannot progress past Decision without someone holding the authority.',
@@ -84,6 +96,12 @@ export const decisionQueue: Decision[] = [
   },
   {
     id: 'signal-threshold',
+    amount: '8 signals / wk',
+    breachedRule: 'Policy change requires approval',
+    priority: 'medium',
+    raised: '1h ago',
+    reason: 'Sampling shows a third of discarded signals were genuine.',
+    recommended: 'Approve',
     title: 'Lower the demand signal trust threshold',
     situation:
       'Signal Watcher is discarding 31% of inbound market signals because their source trust falls below the configured threshold. Sampling suggests roughly a third of those were genuine.',

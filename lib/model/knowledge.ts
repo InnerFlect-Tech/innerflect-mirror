@@ -46,3 +46,49 @@ export type KnowledgeObject = {
   };
   conflicts?: string[];
 };
+
+/**
+ * The knowledge map. Positions are a designed composition in a 0–100 coordinate
+ * space, not a force layout — the same reasoning as the 3D world's curated
+ * layouts: an auto-arranged graph is technically clever and visually terrible.
+ */
+export type MapNode = {
+  id: string;
+  label: string;
+  /** Percent coordinates within the map viewport. */
+  x: number;
+  y: number;
+  /** The centre node is drawn larger and brighter. */
+  core?: boolean;
+  count: number;
+};
+
+export type MapEdge = {
+  from: string;
+  to: string;
+  strength: 'strong' | 'related' | 'other';
+  /** What the relationship means, shown along strong edges. */
+  label?: string;
+};
+
+/** One retrieved source behind an answer. */
+export type RetrievedSource = {
+  id: string;
+  label: string;
+  detail: string;
+  badge: string;
+};
+
+export type Learning = {
+  id: string;
+  label: string;
+  capturedFrom: string;
+  at: string;
+};
+
+export type MemoryUpgrade = {
+  id: string;
+  title: string;
+  detail: string;
+  cta: string;
+};

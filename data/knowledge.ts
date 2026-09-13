@@ -98,3 +98,84 @@ export const knowledgeObjects: KnowledgeObject[] = [
     relatedDecisions: 6,
   },
 ];
+
+import type { Learning, MapEdge, MapNode, MemoryUpgrade, RetrievedSource } from '@/lib/model/knowledge';
+
+/** Curated composition — a hub with nine surrounding kinds of knowledge. */
+export const mapNodes: MapNode[] = [
+  { id: 'knowledge', label: 'Knowledge', x: 50, y: 50, core: true, count: 1842 },
+  { id: 'people', label: 'People', x: 34, y: 16, count: 96 },
+  { id: 'procedures', label: 'Procedures', x: 68, y: 18, count: 214 },
+  { id: 'policies', label: 'Policies', x: 13, y: 33, count: 148 },
+  { id: 'projects', label: 'Projects', x: 86, y: 39, count: 167 },
+  { id: 'clients', label: 'Clients', x: 10, y: 58, count: 127 },
+  { id: 'tools', label: 'Tools', x: 83, y: 63, count: 74 },
+  { id: 'decisions', label: 'Decisions', x: 20, y: 82, count: 391 },
+  { id: 'exceptions', label: 'Exceptions', x: 47, y: 88, count: 88 },
+  { id: 'workflows', label: 'Workflows', x: 74, y: 85, count: 137 },
+];
+
+export const mapEdges: MapEdge[] = [
+  { from: 'knowledge', to: 'policies', strength: 'strong', label: 'Guides decisions' },
+  { from: 'knowledge', to: 'procedures', strength: 'strong', label: 'Powers autonomy' },
+  { from: 'knowledge', to: 'decisions', strength: 'strong', label: 'Learns from experience' },
+  { from: 'knowledge', to: 'workflows', strength: 'strong', label: 'Enables better work' },
+  { from: 'knowledge', to: 'people', strength: 'related' },
+  { from: 'knowledge', to: 'projects', strength: 'related' },
+  { from: 'knowledge', to: 'clients', strength: 'related' },
+  { from: 'knowledge', to: 'tools', strength: 'related' },
+  { from: 'knowledge', to: 'exceptions', strength: 'related' },
+  { from: 'policies', to: 'people', strength: 'other' },
+  { from: 'procedures', to: 'projects', strength: 'other' },
+  { from: 'clients', to: 'decisions', strength: 'other' },
+  { from: 'tools', to: 'workflows', strength: 'other' },
+  { from: 'exceptions', to: 'decisions', strength: 'other' },
+];
+
+export const exampleQuestion = 'Vendor payment exception';
+
+export const retrievedSources: RetrievedSource[] = [
+  { id: 'policy', label: 'Payment policy', detail: 'Finance / Policies', badge: 'Core policy' },
+  { id: 'similar', label: 'Similar decisions (3)', detail: 'Previously approved', badge: 'Past decisions' },
+  { id: 'supplier', label: 'Supplier history', detail: 'Acme Supplies Ltd', badge: 'Client context' },
+  { id: 'workflow', label: 'Exception workflow', detail: 'Finance operations', badge: 'Process context' },
+  { id: 'evidence', label: 'Supporting evidence', detail: 'Invoices, emails, notes', badge: 'Operational data' },
+];
+
+export const retrievalReasoning =
+  'This answer is based on your company’s payment policy, 3 similar approved exceptions, supplier history with Acme Supplies, and the current finance workflow. These sources were selected because they match your question, context and past decision patterns.';
+
+export const knowledgeHealth = {
+  items: 1842,
+  retrievalConfidence: 96,
+  newLearnings: 42,
+  policyGaps: 18,
+};
+
+export const recentLearnings: Learning[] = [
+  { id: 'l1', label: 'Vendor payment exception', capturedFrom: 'Captured from Finance workflow', at: '2h ago' },
+  { id: 'l2', label: 'Client requested custom terms', capturedFrom: 'Captured from Sales call', at: '5h ago' },
+  { id: 'l3', label: 'Repeated NDA approval pattern', capturedFrom: 'Identified from 6 similar cases', at: '1d ago' },
+  { id: 'l4', label: 'New regulatory requirement', capturedFrom: 'Captured from legal update', at: '2d ago' },
+];
+
+export const memoryUpgrades: MemoryUpgrade[] = [
+  {
+    id: 'formalise',
+    title: 'Formalise repeated exception into policy',
+    detail: 'This exception has occurred 6 times in 3 months. Consider creating a policy update.',
+    cta: 'Create policy',
+  },
+  {
+    id: 'consolidate',
+    title: 'Consolidate duplicate procedure',
+    detail: '3 similar procedures found across departments. Merge into one standard process.',
+    cta: 'Review duplicates',
+  },
+  {
+    id: 'connect',
+    title: 'Connect CRM notes to support workflow',
+    detail: 'Customer context from CRM is not yet linked to support procedures.',
+    cta: 'Set up connection',
+  },
+];

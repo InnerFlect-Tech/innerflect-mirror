@@ -16,9 +16,25 @@ export const DECISION_ACTIONS: DecisionAction[] = [
 
 export type Reversibility = 'reversible' | 'partially-reversible' | 'irreversible';
 
+/** What the system proposes doing, shown next to its confidence. */
+export type RecommendedVerb = 'Approve' | 'Review' | 'Decline';
+
+export type Priority = 'high' | 'medium' | 'low';
+
 export type Decision = {
   id: string;
   title: string;
+  /** The amount or object at stake, shown large on the card. */
+  amount: string;
+  /** Why this needs a human at all — the rule that was exceeded. */
+  breachedRule: string;
+  priority: Priority;
+  /** How long it has been waiting. */
+  raised: string;
+  /** The one-line reason behind the recommendation, shown on the card. */
+  reason: string;
+  recommended: RecommendedVerb;
+  reviewed?: boolean;
   /** What happened, in plain language. */
   situation: string;
   domainId: string;

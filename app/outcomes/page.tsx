@@ -11,7 +11,7 @@ export default function ImpactPage() {
   const verified = impactClaims.filter((c) => c.verified).length;
 
   return (
-    <AppShell active="impact" status={companyHeadline[state].top} state={state} decisionsWaiting={company.decisionsWaiting}>
+    <AppShell active="outcomes" status={companyHeadline[state].top} state={state} decisionsWaiting={company.decisionsWaiting}>
       <SurfaceHead
         eyebrow="Verified business value"
         title="Impact"

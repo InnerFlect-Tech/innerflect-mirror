@@ -52,6 +52,18 @@ export type Evidence = {
   met: boolean;
 };
 
+/**
+ * A concrete step in this particular process, as opposed to the seven canonical
+ * stages every workflow shares. The stages let you compare workflows; the steps
+ * are what actually happens in this one.
+ */
+export type ProcessStep = {
+  label: string;
+  /** The system or note under the step — "ERP", "Automated", "If required". */
+  note: string;
+  mode: StageMode;
+};
+
 export type Workflow = {
   id: string;
   name: string;
@@ -64,6 +76,8 @@ export type Workflow = {
   autonomy: number;
   /** Per-stage mode, in the fixed stage order. */
   stages: Record<WorkStage, StageMode>;
+  /** The real sequence of this process, shown on the Flow tab. */
+  steps: ProcessStep[];
   owner: string;
   volume: string;
   cycleTime: string;
