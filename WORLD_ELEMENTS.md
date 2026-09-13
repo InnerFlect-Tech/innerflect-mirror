@@ -268,6 +268,71 @@ These sit in files this layer does not own.
    procedural. The most important missing world concept is a **Record Token**: the uniquely
    identifiable lead, order, project, invoice or ticket moving through an execution.
 
+## Semantic review for the next element pass
+
+The ten V1 GLBs are present and their geometry is unchanged from the imported kit. The
+token root, generated glyph ids, exhaustive material-role contract and typed conformance
+layer now exist around them. The conformance layer is not yet used by the home render path.
+
+### Existing elements that need semantic correction
+
+- **Function Platform → Domain Platform.** It represents one portable operating domain,
+  never a department. Its definition must not cite rejected org-chart categories such as
+  Support.
+- **Knowledge Slab → Knowledge Object.** It represents trusted company knowledge in use.
+  A document or file may be evidence for that knowledge, but is not the knowledge object.
+- **Decision Gate.** Its existence must be justified by a Decision or Authority record,
+  not inferred only from a workflow colour or aggregate state.
+- **Risk Hotspot.** Its existence must be justified by an identifiable Risk, Exception,
+  Policy Conflict or Unsafe Condition record, not by the aggregate `Domain.openItems`.
+- **Agent Glyph.** The glyph represents an Agent record; pose and motion may represent
+  `Agent.activity`. Identity and activity must not collapse into one field.
+- **Human Glyph.** The complete person remains neutral grey. State belongs to the work
+  around the person, never to the person or a decorative accent on them.
+
+These are semantic corrections first. Geometry changes only where the neutral silhouette
+fails to communicate the corrected meaning.
+
+### Missing concepts required by Mirror and Builder
+
+- **Step Node** — one concrete step, belonging to one of the seven canonical stages:
+  Trigger, Context, Work, Decision, Action, Verification or Outcome.
+- **Record Token** — the uniquely identifiable lead, order, project, invoice, ticket or
+  other business object moving through one execution.
+- **Verification Marker** — the recorded check of an action and its pass/fail result.
+- **Outcome Marker** — an observable, traceable business result rather than completed
+  activity.
+- **Permission Boundary** — the authority limit within which an actor may read, decide or
+  act.
+
+Handoffs, historical trails, current progress, selection and movement are behaviours or
+compositions of these elements, not additional standalone GLBs unless a later semantic
+review proves that shape must carry a distinct meaning.
+
+### Acceptance criteria
+
+The next pass is correct when all of the following are true:
+
+1. Every visible semantic object has a row in this file and resolves to a stable record id
+   and record type; clicking the 3D object opens the same record used by the HTML surface.
+2. Shape identifies object kind without relying on colour. Colour communicates only state,
+   and every human remains neutral grey in every state.
+3. Actor kind and control mode can vary independently: a human, AI agent, deterministic
+   system or external system can participate under the applicable human-led, assisted,
+   supervised, autonomous or blocked mode.
+4. A composed workflow can visibly answer: what started it, which record is moving, which
+   actor performs each step, which tools and knowledge are used, where authority is needed,
+   how the action is verified and which outcome resulted.
+5. Decision, risk, verification and outcome objects appear only when their corresponding
+   records exist. Aggregate counts may summarise those records but never fabricate them.
+6. The seven stage variants read as one family while remaining distinguishable by shape or
+   composition; labels remain HTML.
+7. `/design/elements` proves every element in isolation across all scene states, and
+   `/design/floor` proves the same components in one end-to-end execution. Neither route
+   reimplements production objects.
+8. Generated-id, material-role and checksum checks still pass, and the composed floor holds
+   the measured performance line rather than merely remaining below the 120-call ceiling.
+
 ## Ownership
 
 This file is the coordination channel between the two sessions working this branch.
