@@ -174,7 +174,7 @@ export function CompanyWorkspace({
 
       <section className="bottom-grid">
         <DomainInspector domain={selected} focused={focusedId !== null} onOpenAgent={(n) => notify(`${n} opened`)} />
-        <NeedsYou decisions={decisions} waiting={decisionsWaiting} onOpen={(t) => notify(`${t} opened`)} />
+        <NeedsYou decisions={decisions} waiting={decisionsWaiting} />
         {impact}
       </section>
 

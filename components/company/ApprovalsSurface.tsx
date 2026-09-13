@@ -1,8 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { Check, ChevronRight, Clock3, Lightbulb, RotateCcw, ShieldAlert } from 'lucide-react';
 import { DECISION_ACTIONS, type Decision, type Priority } from '@/lib/model/decision';
+import { authorityLimits } from '@/data/constitution';
 import { stateColors } from '@/lib/tokens/state';
 
 const PRIORITY_LABEL: Record<Priority, string> = {
@@ -47,6 +49,9 @@ export function ApprovalsSurface({ decisions }: { decisions: Decision[] }) {
   const pending = decisions.filter((d) => !resolved[d.id]).length;
   const reviewed = decisions.length - pending;
 
+  const suggestions = decisions.filter((d) => d.policySuggestion).length;
+  const reviewedList = decisions.filter((d) => resolved[d.id]);
+
   return (
     <div className="approvals">
       <div className="approvals-bar">
@@ -79,6 +84,8 @@ export function ApprovalsSurface({ decisions }: { decisions: Decision[] }) {
         </label>
       </div>
 
+      <div className="approvals-body">
+      <div className="approvals-main">
       {visible.length === 0 ? (
         <p className="approvals-empty">
           Nothing waiting. Everything else is running.
@@ -203,6 +210,47 @@ export function ApprovalsSurface({ decisions }: { decisions: Decision[] }) {
           })}
         </ul>
       )}
+      </div>
+
+      <aside className="approvals-rail">
+        <section className="panel">
+          <div className="panel-head"><div><h3>Your authority</h3><small>What you can approve without anyone else.</small></div></div>
+          <ul className="authority-list">
+            {authorityLimits.slice(0, 4).map((a) => (
+              <li key={a.id} className={a.owner === 'Unassigned' ? 'unowned' : undefined}>
+                <b>{a.action}</b>
+                <small>Autonomous up to {a.autonomousUpTo}</small>
+                <em>{a.owner}</em>
+              </li>
+            ))}
+          </ul>
+          <Link className="panel-cta" href="/settings">Open the constitution <ChevronRight size={13} /></Link>
+        </section>
+
+        <section className="panel">
+          <div className="panel-head"><div><h3>Reviewed today</h3></div><span className="count-pill">{reviewedList.length}</span></div>
+          {reviewedList.length === 0 ? (
+            <p className="rail-empty">Nothing reviewed yet.</p>
+          ) : (
+            <ul className="reviewed-list">
+              {reviewedList.map((d) => (
+                <li key={d.id}><b>{d.title}</b><em>{resolved[d.id]}</em></li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        {suggestions > 0 && (
+          <section className="panel policy-rail">
+            <Lightbulb size={15} aria-hidden="true" />
+            <div>
+              <b>{suggestions} repeated {suggestions === 1 ? 'decision' : 'decisions'} could become policy.</b>
+              <p>Turning a repeated judgement into a rule is how tacit knowledge becomes institutional memory.</p>
+            </div>
+          </section>
+        )}
+      </aside>
+      </div>
     </div>
   );
 }

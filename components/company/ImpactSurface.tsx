@@ -57,7 +57,8 @@ export function ImpactSurface({
         })}
       </ul>
 
-      <aside className="safety-panel">
+      <aside className="outcomes-rail">
+      <section className="safety-panel">
         <div className="section-head">
           <div>
             <span className="eyebrow">Safety record</span>
@@ -70,6 +71,33 @@ export function ImpactSurface({
           <div><dt>Unsafe actions</dt><dd className={safety.unsafeActions > 0 ? 'has-attention' : undefined}>{safety.unsafeActions}</dd></div>
           <div><dt>Safe recovery</dt><dd>{safety.safeRecovery}</dd></div>
         </dl>
+      </section>
+
+      <section className="panel">
+        <div className="panel-head"><div><h3>Where the value comes from</h3><small>By process, this period.</small></div></div>
+        <ul className="value-bars">
+          {claims.map((c) => {
+            const width = Math.round((c.verified ? 1 : 0.35) * 100);
+            return (
+              <li key={c.id}>
+                <span className="value-bar-top"><b>{c.domainLabel}</b><em>{c.value}</em></span>
+                <span className="value-bar" aria-hidden="true">
+                  <i style={{ width: `${width}%`, background: c.verified ? 'var(--state-active-label)' : 'var(--state-attention-label)' }} />
+                </span>
+                <small>{c.workflowName}</small>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section className="panel trace-note">
+        <ShieldCheck size={15} aria-hidden="true" />
+        <div>
+          <b>Every claim traces to a source event.</b>
+          <p>A number without that chain is marketing, not proof. Open any claim to walk it back.</p>
+        </div>
+      </section>
       </aside>
     </div>
   );

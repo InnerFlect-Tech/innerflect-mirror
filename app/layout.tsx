@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import {Inter} from 'next/font/google';
+import './tokens.css';
 import './globals.css';
 import './world.css';
 import './surfaces.css';

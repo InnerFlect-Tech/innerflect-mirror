@@ -1,16 +1,13 @@
-'use client';
-
+import Link from 'next/link';
 import { ChevronRight, CircleAlert, FileCheck2 } from 'lucide-react';
 import type { decisions as Decisions } from '@/data/company';
 
 export function NeedsYou({
   decisions,
   waiting,
-  onOpen,
 }: {
   decisions: typeof Decisions;
   waiting: number;
-  onOpen: (title: string) => void;
 }) {
   return (
     <article className="needs-you">
@@ -19,18 +16,18 @@ export function NeedsYou({
           <span className="eyebrow">Needs you</span>
           <h3>{waiting} decisions. Everything else is running.</h3>
         </div>
-        <span className="urgent-dot" aria-label={`${waiting} waiting`}>{waiting}</span>
+        <Link href="/approvals" className="urgent-dot" aria-label={`${waiting} waiting, open approvals`}>{waiting}</Link>
       </div>
       <ul>
         {decisions.map((d) => (
           <li key={d.id}>
-            <button type="button" onClick={() => onOpen(d.title)}>
+            <Link href="/approvals">
               <span className={`need-icon ${d.tone}`} aria-hidden="true">
                 {d.tone === 'red' ? <CircleAlert size={17} /> : <FileCheck2 size={17} />}
               </span>
               <span><b>{d.title}</b><small>{d.detail}</small></span>
               <ChevronRight size={16} aria-hidden="true" />
-            </button>
+            </Link>
           </li>
         ))}
       </ul>

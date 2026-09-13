@@ -26,6 +26,7 @@ export function ProcessesSurface({ workflows }: { workflows: Workflow[] }) {
   const [query, setQuery] = useState('');
   const [department, setDepartment] = useState('all');
   const [status, setStatus] = useState('all');
+  const [creating, setCreating] = useState(false);
 
   const departments = useMemo(() => {
     const map = new Map<string, number>();
@@ -78,10 +79,25 @@ export function ProcessesSurface({ workflows }: { workflows: Workflow[] }) {
           </select>
         </label>
 
-        <button type="button" className="btn-primary">
+        <button type="button" className="btn-primary" aria-expanded={creating} onClick={() => setCreating(!creating)}>
           <Plus size={14} aria-hidden="true" /> New process
         </button>
       </div>
+
+      {creating && (
+        <section className="new-process">
+          <h3>A process is observed before it is designed</h3>
+          <p>
+            Mirror does not start from a blank diagram. Point it at the work — a mailbox, a tracker,
+            a form — and it reconstructs the sequence from what actually happens, then shows you
+            where it differs from what you assumed. That reconstruction is the process.
+          </p>
+          <div className="new-process-actions">
+            <button type="button" className="btn-primary">Choose a source to observe</button>
+            <button type="button" onClick={() => setCreating(false)}>Cancel</button>
+          </div>
+        </section>
+      )}
 
       <div className="processes-body">
         <nav className="dept-list" aria-label="Departments">

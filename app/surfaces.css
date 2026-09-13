@@ -306,8 +306,8 @@
 .knowledge-head .segmented{justify-self:center;margin-top:10px}
 .knowledge-motto{margin:10px 0 0;text-align:right;justify-self:end;font-size:var(--fs-md);color:#8b9995;line-height:1.4}
 
-.knowledge-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) minmax(0,.85fr);grid-template-areas:"map ask health" "why ask learn" "why up up";gap:12px;align-items:start}
-.kmap-panel{grid-area:map}.ask-panel{grid-area:ask}.health-panel{grid-area:health}
+.knowledge-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) minmax(0,.9fr);grid-template-areas:"map ask learn" "why ask learn" "up up up";gap:12px;align-items:start}
+.kmap-panel{grid-area:map}.ask-panel{grid-area:ask}
 .why-panel{grid-area:why}.learnings-panel{grid-area:learn}.upgrades-panel{grid-area:up}
 
 .panel{border:1px solid #2a3a37;border-radius:9px;background:#0a1010;padding:16px 17px}
@@ -373,12 +373,209 @@
 .upgrade-list p{margin:0;font-size:var(--fs-xs);color:#7e8c88;line-height:1.55}
 
 @media(max-width:1180px){
- .knowledge-grid{grid-template-columns:1fr 1fr;grid-template-areas:"map map" "ask health" "why learn" "up up"}
+ .knowledge-grid{grid-template-columns:1fr 1fr;grid-template-areas:"map map" "ask learn" "why learn" "up up"}
  .upgrade-list{grid-template-columns:1fr}
  .knowledge-viewbar{margin-top:0}
 }
 @media(max-width:760px){
  .knowledge{margin:0 10px 18px}
- .knowledge-grid{grid-template-columns:1fr;grid-template-areas:"map" "ask" "health" "why" "learn" "up"}
+ .knowledge-grid{grid-template-columns:1fr;grid-template-areas:"map" "ask" "why" "learn" "up"}
  .knowledge-motto{display:none}
+}
+
+/* ── Fill the viewport ───────────────────────────────────────────────────────
+   Surfaces should reach the bottom of the screen rather than floating in a
+   short block with dead space beneath. The shell is a column; the content area
+   grows into whatever is left. */
+.mirror{align-items:stretch}
+.main{display:flex;flex-direction:column;min-height:100vh}
+.approvals,.processes,.knowledge,.impact-surface,.settings-grid,.surface-stub{flex:1}
+
+/* ── Approvals: context rail ─────────────────────────────────────────────── */
+.approvals-body{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px;align-items:start}
+.approvals-main{display:flex;flex-direction:column;gap:10px}
+.approvals-rail{display:flex;flex-direction:column;gap:12px}
+.authority-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.authority-list li{padding:10px 11px;border:1px solid var(--line2);border-radius:7px;background:#0c1413}
+.authority-list li.unowned{border-color:#69332d;background:#150d0c}
+.authority-list b{display:block;font-size:var(--fs-sm);font-weight:500}
+.authority-list small{display:block;font-size:var(--fs-xs);color:#65716e;margin-top:3px}
+.authority-list em{display:block;font-style:normal;font-size:var(--fs-xs);color:#7e8c88;margin-top:5px}
+.authority-list li.unowned em{color:var(--state-critical-label)}
+a.panel-cta{text-decoration:none}
+.count-pill{font-size:var(--fs-xs);min-width:21px;height:21px;padding:0 6px;border-radius:11px;display:grid;place-items:center;background:#20302d;color:#9ab3ae}
+.rail-empty{margin:0;font-size:var(--fs-sm);color:#65716e}
+.reviewed-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.reviewed-list li{display:flex;justify-content:space-between;gap:10px;font-size:var(--fs-sm);color:#aebbb7}
+.reviewed-list em{font-style:normal;color:#7fd0c3;font-size:var(--fs-xs);flex:none}
+.policy-rail{display:flex;gap:11px;align-items:flex-start;border-color:#245f58;background:linear-gradient(160deg,rgba(47,130,120,.12),rgba(10,16,16,.9))}
+.policy-rail svg{color:var(--teal);flex:none;margin-top:2px}
+.policy-rail b{display:block;font-size:var(--fs-sm);font-weight:520}
+.policy-rail p{margin:6px 0 0;font-size:var(--fs-xs);color:#8b9995;line-height:1.55}
+
+/* ── Outcomes rail ───────────────────────────────────────────────────────── */
+.outcomes-rail{display:flex;flex-direction:column;gap:12px}
+.value-bars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:13px}
+.value-bar-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.value-bar-top b{font-size:var(--fs-sm);font-weight:500}
+.value-bar-top em{font-style:normal;font-size:var(--fs-sm);color:#9aa8a4}
+.value-bar{display:block;height:4px;background:#17221f;border-radius:2px;margin:6px 0 4px}
+.value-bar i{display:block;height:100%;border-radius:2px}
+.value-bars small{font-size:var(--fs-xs);color:#65716e}
+.trace-note{display:flex;gap:11px;align-items:flex-start}
+.trace-note svg{color:var(--teal);flex:none;margin-top:2px}
+.trace-note b{display:block;font-size:var(--fs-sm);font-weight:520}
+.trace-note p{margin:6px 0 0;font-size:var(--fs-xs);color:#8b9995;line-height:1.55}
+
+/* ── Knowledge extras ────────────────────────────────────────────────────── */
+.answer{margin-top:12px;padding:13px 14px;border:1px solid #245f58;border-radius:8px;background:#0b1a19}
+.answer p{margin:0;font-size:var(--fs-sm);color:#c0cdc9;line-height:1.6}
+.answer-caveat{margin-top:9px!important;color:var(--state-attention-label)!important;font-size:var(--fs-xs)!important}
+.panel-cta.is-done{color:#7fd0c3;border-color:#245f58;cursor:default}
+
+/* ── Processes: new process panel ────────────────────────────────────────── */
+.new-process{border:1px solid #245f58;border-radius:9px;background:linear-gradient(150deg,rgba(47,130,120,.12),rgba(10,16,16,.95));padding:20px 22px;margin-bottom:14px}
+.new-process h3{margin:0 0 9px;font-size:var(--fs-lg);font-weight:520}
+.new-process p{margin:0 0 16px;font-size:var(--fs-sm);color:#9aa8a4;line-height:1.6;max-width:72ch}
+.new-process-actions{display:flex;gap:9px}
+.new-process-actions button:not(.btn-primary){height:34px;padding:0 15px;border:1px solid var(--line);border-radius:6px;background:#111918;color:#c4d0cd;font-size:var(--fs-sm);cursor:pointer}
+.new-process-actions .btn-primary{margin-left:0}
+.process-detail{min-height:520px}
+
+/* ── Top bar panels ──────────────────────────────────────────────────────── */
+.command-wrap,.notif-wrap{position:relative}
+.command-wrap{width:100%}
+.command-panel,.notif-panel{position:absolute;top:calc(100% + 8px);z-index:20;border:1px solid #2a3a37;border-radius:9px;background:#0b1211;box-shadow:0 18px 44px rgba(0,0,0,.55);padding:13px 14px}
+.command-panel{left:0;right:0}
+.notif-panel{right:0;width:290px}
+.command-panel ul,.notif-panel ul{list-style:none;margin:9px 0 0;padding:0;display:flex;flex-direction:column;gap:3px}
+.command-panel a,.notif-panel a{display:block;padding:9px 10px;border-radius:6px;color:#c4d0cd;text-decoration:none;font-size:var(--fs-sm)}
+.command-panel a:hover,.notif-panel a:hover{background:#141f1d;color:#e6f3f0}
+.notif-panel b{display:block;font-size:var(--fs-sm);font-weight:500}
+.notif-panel small{display:block;font-size:var(--fs-xs);color:#65716e;margin-top:3px}
+
+/* ── Settings ────────────────────────────────────────────────────────────── */
+.settings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 27px 26px;align-items:start}
+.settings-grid .span-2{grid-column:span 2}
+.settings-grid .span-all{grid-column:1/-1}
+.constitution-gap{display:flex;gap:12px;align-items:flex-start;border-color:#69332d;background:linear-gradient(150deg,rgba(140,52,42,.14),rgba(10,16,16,.95))}
+.constitution-gap svg{color:var(--state-critical-label);flex:none;margin-top:2px}
+.constitution-gap b{display:block;font-size:var(--fs-md);font-weight:520}
+.constitution-gap p{margin:6px 0 0;font-size:var(--fs-sm);color:#9aa8a4;line-height:1.6;max-width:80ch}
+.panel-head h3{display:flex;align-items:center;gap:7px}
+.settings-table{width:100%;border-collapse:collapse}
+.settings-table thead th{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.12em;color:#60706c;font-weight:500;text-align:left;padding:0 12px 9px 0;border-bottom:1px solid #263633}
+.settings-table tbody th,.settings-table td{font-size:var(--fs-sm);color:#aebbb7;text-align:left;font-weight:400;padding:11px 12px 11px 0;border-bottom:1px solid var(--line2);vertical-align:top}
+.settings-table tbody th{color:#e2e9e7;font-weight:500}
+.settings-table tbody tr:last-child th,.settings-table tbody tr:last-child td{border-bottom:0}
+.permission-list,.integration-list,.role-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.permission-list li{display:flex;gap:10px;align-items:flex-start;padding:10px 11px;border:1px solid var(--line2);border-radius:7px;background:#0c1413}
+.permission-list li>span:first-child{width:20px;height:20px;flex:none;border-radius:5px;display:grid;place-items:center}
+.permission-list li.allowed>span:first-child{background:#16302c;color:var(--state-active-label)}
+.permission-list li.denied>span:first-child{background:#2a1512;color:var(--state-critical-label)}
+.permission-list b{display:block;font-size:var(--fs-sm);font-weight:500}
+.permission-list small{display:block;font-size:var(--fs-xs);color:#65716e;margin-top:3px}
+.integration-list li{display:flex;align-items:center;gap:10px;padding:10px 11px;border:1px solid var(--line2);border-radius:7px;background:#0c1413}
+.integration-dot{width:7px;height:7px;border-radius:50%;flex:none;background:#3d514e}
+.integration-list li[data-status=connected] .integration-dot{background:var(--state-active-label);box-shadow:0 0 7px var(--state-active-label)}
+.integration-list li[data-status=degraded] .integration-dot{background:var(--state-attention-label)}
+.integration-list li>span:nth-child(2){flex:1;min-width:0}
+.integration-list b{display:block;font-size:var(--fs-sm);font-weight:500}
+.integration-list small{display:block;font-size:var(--fs-xs);color:#65716e;margin-top:3px}
+.integration-meta{text-align:right;flex:none}
+.integration-meta em{font-style:normal;font-size:var(--fs-xs);color:#8ca09b;display:block}
+.scope-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.scope-list b{font-size:var(--fs-sm);font-weight:520}
+.scope-list p{margin:6px 0 0;font-size:var(--fs-xs);color:#8b9995;line-height:1.55}
+.scope-list .excluded{color:#7e8c88}
+.role-list li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 11px;border:1px solid var(--line2);border-radius:7px;background:#0c1413}
+.role-list li.unfilled{border-color:#69332d;background:#150d0c}
+.role-list b{display:block;font-size:var(--fs-sm);font-weight:500}
+.role-list small{display:block;font-size:var(--fs-xs);color:#65716e;margin-top:3px}
+.role-list em{font-style:normal;font-size:var(--fs-xs);color:#8ca09b;flex:none}
+.role-list li.unfilled em{color:var(--state-critical-label)}
+.audit-note{margin:14px 0 0;padding-top:13px;border-top:1px solid var(--line2);font-size:var(--fs-xs);color:#8b9995;line-height:1.55}
+.audit-note .eyebrow{display:block;margin-bottom:5px}
+
+@media(max-width:1180px){
+ .approvals-body,.settings-grid{grid-template-columns:1fr}
+ .settings-grid .span-2{grid-column:span 1}
+}
+
+/* ── Mobile correctness ──────────────────────────────────────────────────────
+   Grid and flex children default to min-width:auto, which means a long word or
+   a fixed-width control refuses to shrink and pushes the page sideways. Every
+   layout container here opts out explicitly. */
+.approvals-body,.approvals-main,.approvals-rail,.processes-body,.settings-grid,
+.knowledge-grid,.impact-surface,.work-surface,.decision-columns,.upgrade-list,
+.approval-card,.claim>button,.flow,.stage-row,.health-grid{min-width:0}
+.approvals-body>*,.processes-body>*,.settings-grid>*,.knowledge-grid>*,
+.impact-surface>*,.approval-card>*,.claim>button>*,.panel,.panel-head>div{min-width:0}
+
+@media(max-width:760px){
+  .approvals,.processes,.knowledge,.settings-grid,.impact-surface,.approval-list{margin-left:10px;margin-right:10px}
+  .settings-grid,.impact-surface{grid-template-columns:1fr}
+
+  /* Toolbars wrap instead of scrolling the page sideways. */
+  .approvals-bar,.processes-bar{flex-wrap:wrap;gap:8px}
+  .approvals-bar .tabs,.processes-bar .field-search{width:100%}
+  .approvals-bar .tabs button{flex:1;justify-content:center;padding:0 8px}
+  .sort-select,.sort-select select,.field-select,.field-select select{width:100%}
+  .processes-bar .btn-primary{margin-left:0;width:100%;justify-content:center}
+
+  /* Department list becomes a horizontal scroller of its own, not the page. */
+  .dept-list ul{flex-direction:row;overflow-x:auto;gap:7px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .dept-list li{flex:0 0 auto}
+  .dept-list button{width:auto;white-space:nowrap}
+
+  .approval-card{grid-template-columns:1fr}
+  .approval-actions{flex-direction:row;flex-wrap:wrap;min-width:0}
+  .approval-actions button{flex:1;min-width:120px}
+  .approval-actions button.link{flex-basis:100%}
+  .approvals-rail{margin-top:12px}
+
+  .settings-table,.knowledge-table{display:block;overflow-x:auto}
+  .settings-grid .span-2,.settings-grid .span-all{grid-column:span 1}
+  .constitution-gap{flex-direction:column}
+
+  .decision-facts,.work-facts{grid-template-columns:1fr 1fr}
+  .trace li{grid-template-columns:1fr;gap:4px}
+  .trace-step{padding-left:14px}
+  .command-panel{left:-56px;right:-56px}
+}
+
+/* Long unbroken strings (policy names, emails) must not widen the page. */
+.approval-rule,.scope-list p,.settings-table td,.trace-value,.decision-alts li,
+.source-body b,.source-body small,.authority-list small{overflow-wrap:anywhere}
+
+@media(max-width:760px){
+  /* Four tabs do not fit at 375px. Scroll the tab strip, never the page. */
+  .process-tabs{display:flex;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .process-tabs::-webkit-scrollbar{display:none}
+  .process-tabs button{flex:0 0 auto}
+  .process-detail{min-height:0;padding:16px 14px}
+}
+
+/* ── Summary strip ───────────────────────────────────────────────────────────
+   Tier one of Summary → Context → Details. Capped at five numbers: past that a
+   summary stops summarising. Only attention and critical break the calm. */
+.summary-strip{list-style:none;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:var(--summary-gap);margin:0 var(--space-6) var(--space-4);padding:0}
+.summary-strip li{border:1px solid var(--panel-border);border-radius:var(--card-radius);background:var(--panel-bg);padding:var(--space-3) var(--space-4)}
+.summary-strip li[data-tone=attention]{border-color:#5c4826}
+.summary-strip li[data-tone=critical]{border-color:#69332d}
+.summary-strip a{display:block;text-decoration:none;color:inherit}
+.summary-strip a:hover b{color:var(--text-accent)}
+.summary-strip b{display:block;font-size:var(--fs-xl);font-weight:var(--weight-strong);letter-spacing:var(--tracking-tight);color:var(--text-primary);transition:color var(--dur-fast) var(--ease-out)}
+.summary-strip b[data-tone=good]{color:var(--state-active-label)}
+.summary-strip b[data-tone=attention]{color:var(--state-attention-label)}
+.summary-strip b[data-tone=critical]{color:var(--state-critical-label)}
+.summary-strip small{display:block;font-size:var(--fs-xs);color:var(--text-faint);margin-top:var(--space-1);line-height:1.35}
+
+/* With a summary strip carrying the numbers, the head only needs the sentence. */
+.surface-head p{max-width:64ch}
+
+@media(max-width:1180px){.summary-strip{grid-auto-flow:row;grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){
+  .summary-strip{grid-template-columns:repeat(2,1fr);margin-left:10px;margin-right:10px}
+  .summary-strip b{font-size:var(--fs-lg)}
 }

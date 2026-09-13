@@ -1,10 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  ArrowRight, BookOpen, Boxes, FileText, Info, Layers, Link2, Lightbulb,
-  Search, TriangleAlert, Users,
-} from 'lucide-react';
+import { ArrowRight, BookOpen, FileText, Layers, Link2, Search } from 'lucide-react';
 import type { KnowledgeObject } from '@/lib/model/knowledge';
 import {
   exampleQuestion, knowledgeHealth, mapEdges, mapNodes, memoryUpgrades,
@@ -12,6 +9,7 @@ import {
 } from '@/data/knowledge';
 import { KnowledgeMap } from './KnowledgeMap';
 import { KnowledgeTable } from './KnowledgeTable';
+import { SurfaceSummary } from './SurfaceSummary';
 
 const UPGRADE_ICON = [<FileText key="a" size={15} />, <Layers key="b" size={15} />, <Link2 key="c" size={15} />];
 
@@ -25,6 +23,10 @@ export function KnowledgeSurface({ objects }: { objects: KnowledgeObject[] }) {
   const [view, setView] = useState<'visual' | 'practical'>('visual');
   const [question, setQuestion] = useState(exampleQuestion);
   const [showReasoning, setShowReasoning] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [allLearnings, setAllLearnings] = useState(false);
+  const [proposed, setProposed] = useState<string[]>([]);
+  const drifting = objects.filter((o) => o.drift).length;
 
   return (
     <div className="knowledge">
@@ -41,6 +43,16 @@ export function KnowledgeSurface({ objects }: { objects: KnowledgeObject[] }) {
         </fieldset>
         <p className="knowledge-motto">From experience<br />to a smarter tomorrow.</p>
       </div>
+
+      <SurfaceSummary
+        stats={[
+          { value: knowledgeHealth.items.toLocaleString(), label: 'Knowledge items' },
+          { value: `${knowledgeHealth.retrievalConfidence}%`, label: 'Retrieval confidence', tone: 'good' },
+          { value: String(drifting), label: 'Drifting from reality', tone: drifting ? 'attention' : 'good' },
+          { value: String(knowledgeHealth.policyGaps), label: 'Policy gaps', tone: 'critical' },
+          { value: String(knowledgeHealth.newLearnings), label: 'Learned this week' },
+        ]}
+      />
 
       {view === 'practical' ? (
         <KnowledgeTable objects={objects} />
@@ -74,17 +86,23 @@ export function KnowledgeSurface({ objects }: { objects: KnowledgeObject[] }) {
                 </li>
               ))}
             </ul>
-            <button type="button" className="panel-cta">View full, traceable answer <ArrowRight size={13} /></button>
-          </section>
-
-          <section className="panel health-panel">
-            <div className="panel-head"><div><h3>Knowledge health</h3></div><Info size={15} aria-hidden="true" /></div>
-            <dl className="health-grid">
-              <div><Boxes size={15} aria-hidden="true" /><dt>{knowledgeHealth.items.toLocaleString()}</dt><dd>Knowledge items</dd></div>
-              <div><Users size={15} aria-hidden="true" /><dt>{knowledgeHealth.retrievalConfidence}%</dt><dd>Retrieval confidence</dd></div>
-              <div><Lightbulb size={15} aria-hidden="true" /><dt>{knowledgeHealth.newLearnings}</dt><dd>New learnings this week</dd></div>
-              <div className="gap"><TriangleAlert size={15} aria-hidden="true" /><dt>{knowledgeHealth.policyGaps}</dt><dd>Policy gaps detected</dd></div>
-            </dl>
+            <button type="button" className="panel-cta" aria-expanded={showAnswer} onClick={() => setShowAnswer(!showAnswer)}>
+              {showAnswer ? 'Hide answer' : 'View full, traceable answer'} <ArrowRight size={13} />
+            </button>
+            {showAnswer && (
+              <div className="answer">
+                <p>
+                  Payments to Acme Supplies outside standard terms have been approved three times in
+                  the last quarter, each time because the goods were received and the PO matched.
+                  Your payment policy permits this under the exceptional payments clause, but that
+                  policy has not been verified for eight months and names a finance owner who does
+                  not exist.
+                </p>
+                <p className="answer-caveat">
+                  Confidence is limited by one stale source. Assigning a finance owner would raise it.
+                </p>
+              </div>
+            )}
           </section>
 
           <section className="panel why-panel">
@@ -109,10 +127,12 @@ export function KnowledgeSurface({ objects }: { objects: KnowledgeObject[] }) {
           <section className="panel learnings-panel">
             <div className="panel-head">
               <div><h3>Recent learnings</h3></div>
-              <button type="button" className="panel-cta inline">View all <ArrowRight size={12} /></button>
+              <button type="button" className="panel-cta inline" aria-expanded={allLearnings} onClick={() => setAllLearnings(!allLearnings)}>
+                {allLearnings ? 'Show recent' : 'View all'} <ArrowRight size={12} />
+              </button>
             </div>
             <ul className="learning-list">
-              {recentLearnings.map((l) => (
+              {(allLearnings ? [...recentLearnings, ...recentLearnings.map((l) => ({ ...l, id: `${l.id}-b`, at: 'last week' }))] : recentLearnings).map((l) => (
                 <li key={l.id}>
                   <span className="source-icon" aria-hidden="true"><FileText size={13} /></span>
                   <span className="source-body"><b>{l.label}</b><small>{l.capturedFrom}</small></span>
@@ -133,7 +153,14 @@ export function KnowledgeSurface({ objects }: { objects: KnowledgeObject[] }) {
                   <span className="upgrade-icon" aria-hidden="true">{UPGRADE_ICON[i]}</span>
                   <b>{u.title}</b>
                   <p>{u.detail}</p>
-                  <button type="button" className="panel-cta">{u.cta} <ArrowRight size={13} /></button>
+                  <button
+                    type="button"
+                    className={`panel-cta${proposed.includes(u.id) ? ' is-done' : ''}`}
+                    disabled={proposed.includes(u.id)}
+                    onClick={() => setProposed((p) => [...p, u.id])}
+                  >
+                    {proposed.includes(u.id) ? 'Sent for approval' : u.cta} <ArrowRight size={13} />
+                  </button>
                 </li>
               ))}
             </ul>

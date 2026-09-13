@@ -30,11 +30,10 @@ export function KnowledgeMap({ nodes, edges }: { nodes: MapNode[]; edges: MapEdg
           const a = at(e.from);
           const b = at(e.to);
           const s = STRENGTH_STYLE[e.strength];
-          // Sit the label in the gap between the two hexagons rather than at
-          // the midpoint, which lands on top of a node on the shorter spokes.
-          const t = 0.56;
-          const mx = a.x + (b.x - a.x) * t;
-          const my = a.y + (b.y - a.y) * t;
+          // Collision-aware: sample along the edge and take the point that is
+          // furthest from every node, rather than trusting a fixed fraction.
+          // A fixed midpoint lands on top of a hexagon on the shorter spokes.
+          const { x: mx, y: my } = clearestPoint(a, b, nodes);
           return (
             <g key={`${e.from}-${e.to}`} opacity={isDim([e.from, e.to]) ? 0.18 : 1}>
               <line
@@ -83,6 +82,25 @@ export function KnowledgeMap({ nodes, edges }: { nodes: MapNode[]; edges: MapEdg
       </ul>
     </div>
   );
+}
+
+/**
+ * Walk the middle of an edge and return the sample with the largest clearance
+ * from any node centre, so a label never sits on a hexagon.
+ */
+function clearestPoint(a: MapNode, b: MapNode, nodes: MapNode[]) {
+  let best = { x: 0, y: 0, clearance: -1 };
+  for (let t = 0.3; t <= 0.7; t += 0.04) {
+    const x = a.x + (b.x - a.x) * t;
+    const y = a.y + (b.y - a.y) * t;
+    let clearance = Infinity;
+    for (const n of nodes) {
+      const d = Math.hypot(n.x - x, n.y - y) - (n.core ? 11 : 7.6);
+      if (d < clearance) clearance = d;
+    }
+    if (clearance > best.clearance) best = { x, y, clearance };
+  }
+  return best;
 }
 
 /** Flat-top hexagon, so the nodes read as cells rather than circles. */

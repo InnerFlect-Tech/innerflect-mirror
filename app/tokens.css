@@ -1,0 +1,117 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — three tiers, each referencing the one below.
+
+   Tier 1  Primitive   raw values, no meaning        --c-teal-500, --space-4
+   Tier 2  Semantic    purpose, references tier 1    --bg-surface, --text-muted
+   Tier 3  Component   one component's use of tier 2 --panel-bg, --pill-radius
+
+   The rule that makes this worth having: application CSS may only use tier 2
+   and tier 3. A raw hex or a magic pixel value in a component is a bug, because
+   it cannot be restyled, themed, or audited.
+
+   State colours are NOT defined here — they come from lib/tokens/state.ts and
+   are injected as --state-<state>-<role> so the stylesheet and the WebGL scene
+   cannot drift apart. See app/layout.tsx.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Tier 1 · Primitives ────────────────────────────────────────────────── */
+
+  /* Neutrals, darkest to lightest. A single ramp, so contrast is predictable. */
+  --c-ink-900: #060909;
+  --c-ink-850: #080c0c;
+  --c-ink-800: #0a1010;
+  --c-ink-750: #0b1211;
+  --c-ink-700: #0c1413;
+  --c-ink-650: #101918;
+  --c-ink-600: #111918;
+  --c-ink-550: #141f1d;
+  --c-ink-500: #182321;
+  --c-ink-450: #21302e;
+  --c-ink-400: #2a3a37;
+  --c-ink-300: #3d514e;
+  --c-ink-200: #5d6a66;
+  --c-ink-150: #778581;
+  --c-ink-100: #aebbb7;
+  --c-ink-50:  #cad5d2;
+  --c-ink-0:   #eef3f1;
+
+  --c-teal-600: #12332f;
+  --c-teal-500: #1c7a6d;
+  --c-teal-400: #2f9c8c;
+  --c-teal-300: #55cbbb;
+  --c-teal-200: #a8ede2;
+
+  /* Spacing — a 4px base. Every gap and pad in the product is one of these. */
+  --space-0: 0;
+  --space-1: 0.25rem;  /*  4 */
+  --space-2: 0.5rem;   /*  8 */
+  --space-3: 0.75rem;  /* 12 */
+  --space-4: 1rem;     /* 16 */
+  --space-5: 1.375rem; /* 22 */
+  --space-6: 1.75rem;  /* 28 */
+  --space-7: 2.25rem;  /* 36 */
+  --space-8: 3rem;     /* 48 */
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+
+  /* Type — scale defined in globals.css as --fs-*; weights and tracking here. */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-strong: 520;
+  --weight-bold: 600;
+  --tracking-tight: -0.5px;
+  --tracking-eyebrow: 0.13em;
+  --leading-tight: 1.15;
+  --leading-body: 1.55;
+
+  /* Elevation */
+  --shadow-sm: 0 6px 18px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 12px 34px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 18px 44px rgb(0 0 0 / 0.55);
+
+  /* Motion — short and purposeful. Nothing decorative. */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+
+  /* ── Tier 2 · Semantic ──────────────────────────────────────────────────── */
+  --bg-page: var(--c-ink-850);
+  --bg-surface: var(--c-ink-800);
+  --bg-raised: var(--c-ink-700);
+  --bg-hover: var(--c-ink-650);
+  --bg-active: var(--c-ink-500);
+
+  --border-subtle: var(--c-ink-450);
+  --border-default: var(--c-ink-400);
+  --border-strong: var(--c-ink-300);
+
+  --text-primary: var(--c-ink-0);
+  --text-secondary: var(--c-ink-100);
+  --text-muted: var(--c-ink-150);
+  --text-faint: var(--c-ink-200);
+  --text-accent: var(--c-teal-300);
+
+  --action-bg: var(--c-teal-500);
+  --action-bg-hover: #229083;
+  --action-border: var(--c-teal-400);
+  --action-text: #eafffb;
+
+  --focus-ring: var(--c-teal-300);
+
+  /* ── Tier 3 · Component ─────────────────────────────────────────────────── */
+  --panel-bg: var(--bg-surface);
+  --panel-border: var(--border-default);
+  --panel-radius: var(--radius-lg);
+  --panel-pad: var(--space-4);
+
+  --card-radius: var(--radius-md);
+  --pill-radius: var(--radius-pill);
+
+  --summary-gap: var(--space-3);
+}
