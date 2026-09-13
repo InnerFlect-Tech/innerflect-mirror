@@ -64,7 +64,7 @@ export type Domain = {
   processes: number;
   /** Humans watching this domain. Sum of `workflows[].humans`. */
   people: number;
-  /** Items awaiting a human. Count of workflows in `attention`/`critical`. */
+  /** Items awaiting a human. Count of OPEN `Exception` records in this domain. */
   openItems: number;
 };
 

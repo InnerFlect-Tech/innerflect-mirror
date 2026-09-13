@@ -41,7 +41,15 @@ function Specimen({ id, state, position }: { id: GlyphId; state: SceneState; pos
     return g;
   }, [group]);
 
-  return <primitive object={fitted} position={position} />;
+  // The cell position goes on a WRAPPER. Putting it on <primitive> would have R3F
+  // apply it to the same object after the fit ran, silently discarding the
+  // centring and the -box.min.y term that seats the glyph on the floor — scale
+  // survives (not a prop), so glyphs would be magnified but mis-registered.
+  return (
+    <group position={position}>
+      <primitive object={fitted} />
+    </group>
+  );
 }
 
 export function ElementSheet() {

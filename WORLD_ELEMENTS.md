@@ -178,6 +178,11 @@ world — so nothing here may cost a draw call per object.
 | After the design-system phases 1–3 | **61** | **19,407** | demand-idle |
 | After record-driven objects + picking (7/8) | **61** | **19,479** | 60 |
 
+`/design/elements` renders all fifteen glyphs at once. Counted statically from the manifest
+and the material-role map: **8,314 triangles** (4% of budget) across **64 draw calls** — one
+mesh per material role per glyph, after conformance merges each. 56 calls of headroom, so the
+sheet can grow without threatening the ceiling.
+
 Phases 1–3 moved every token into `lib/tokens/`, generated the glyph ids, and added a
 typed conformance layer — and cost the scene nothing, which was the point: none of it is
 imported from the render path yet. The fps column reads "demand-idle" because an

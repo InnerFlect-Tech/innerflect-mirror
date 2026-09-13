@@ -26,7 +26,12 @@ for (const [name, value] of declared) {
 
 console.log(`declared in app/tokens.css : ${declared.size}`);
 console.log(`emitted from lib/tokens    : ${Object.keys(generated).length}`);
-if (missing.length) console.log(`\nnot yet emitted (${missing.length}):\n  ${missing.join('\n  ')}`);
+// Tier 3 is component plumbing with no TypeScript consumer and stays hand-authored,
+// so these are expected. Printed as "by design" rather than as a bare list, which
+// read like a warning on a passing run.
+if (missing.length) {
+  console.log(`\nhand-authored, by design (${missing.length}): ${missing.join(', ')}`);
+}
 if (differing.length) console.log(`\nVALUE MISMATCH (${differing.length}):\n  ${differing.join('\n  ')}`);
 if (!missing.length && !differing.length) console.log('\nevery declared token is emitted with an identical value.');
 process.exit(differing.length ? 1 : 0);

@@ -99,11 +99,11 @@ export function conformGlyph(
     group.add(new Mesh(merged, materials[role]));
   }
 
-  // The clone's own geometries are no longer referenced by anything.
-  root.traverse((o) => {
-    const mesh = o as Mesh;
-    if (mesh.isMesh) mesh.geometry.dispose();
-  });
+  // Nothing is disposed here, deliberately. `Object3D.clone()` SHARES geometry by
+  // reference, so disposing the clone's geometry would free the buffers owned by
+  // drei's `useGLTF` cache — shared by every other (id, state) conform of the same
+  // asset. The working copies this function owns are the `geometry.clone()` calls
+  // above, and those are either merged (and the inputs disposed) or handed on.
 
   return {
     group,

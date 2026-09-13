@@ -104,6 +104,19 @@ Other rules that follow from three writers and no CI:
 - If a push is rejected, **pull --rebase and push again**. Never `push --force` on this
   branch — it is how another agent's work disappears.
 
+## Seeing the system
+
+Two routes, deliberately unlinked from the product navigation — they are where the visual
+language is inspected, not where the company is operated. Both are `noindex`.
+
+| Route | Shows |
+|---|---|
+| `/design/elements` | every glyph in isolation, across all five states, with what drives it |
+| `/design/floor` | the real `<CompanyWorld>`; click any object to resolve it to its record |
+
+They are built from the product's own components on purpose. A separate preview could only
+assert it matched the product; these break the build if the import does.
+
 ## Before you finish
 
 ```bash

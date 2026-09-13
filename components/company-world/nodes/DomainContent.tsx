@@ -51,15 +51,19 @@ export function DomainContent({
 
   // Merged geometry is created imperatively, so disposing it is this
   // component's job rather than R3F's.
-  useEffect(
-    () => () => {
-      island.body.dispose();
-      island.accent.dispose();
-      agents.body.dispose();
-      agents.accent.dispose();
-    },
-    [island, agents],
-  );
+  // Two effects, not one. `island` and `agents` are memoised on different
+  // dependency sets, so a single effect keyed on both would fire its cleanup when
+  // only the island changed — disposing live agent geometry that the agent memo
+  // will not recreate. Each value disposes on its own schedule.
+  useEffect(() => () => {
+    island.body.dispose();
+    island.accent.dispose();
+  }, [island]);
+
+  useEffect(() => () => {
+    agents.body.dispose();
+    agents.accent.dispose();
+  }, [agents]);
 
   return (
     <group position={[0, 0.032, 0]}>
