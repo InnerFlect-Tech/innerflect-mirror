@@ -7,6 +7,37 @@ Keep entries short: what was decided, why, and what it rules out. Link the commi
 
 ---
 
+## 2026-09-14 — Three open status decisions, resolved by the user
+
+**1. Ownership-vs-active-claim conflict (recurred on `Scene.tsx`, `EcosystemBoard.tsx`,
+`lib/design/**`).** Decided: keep the static Ownership section in `WORLD_ELEMENTS.md` as
+the default for an unclaimed path, but a `docs/STATUS.md` active claim always overrides it
+while it stands. Rules out rewriting the static section every time work moves between
+sessions. See the Ownership section for the exact rule.
+
+**2. Dependency advisories (`npm audit`: 11 issues, 10 high).** Decided: assign
+investigation rather than force-upgrade or defer indefinitely. Investigated immediately as
+part of this decision, since it took one command: every advisory's fix path resolves to
+`vinext@1.0.0-beta.9` (`isSemVerMajor: false`) — the installed version is `beta.5`, four
+betas behind on the *same* pinned `1.0.0-beta` line, not the major jump the standing
+`docs/STATUS.md` note assumed. This does not mean the bump is safe, only that it is not the
+breaking change previously assumed blocking it. Not applied here — a runtime/build-tool
+version bump is outside this session's ownership and needs its own verification pass
+(dev server boots, `npm run check` still green, a real page loads). Assigned in
+`docs/STATUS.md`'s Next Up with these findings, so whoever takes it does not re-derive them.
+
+**3. `healthy` and `active` states.** Decided: merge them into one state. See the comment
+above `SceneState` in `lib/model/state.ts` for the full reasoning; the short version is that
+`stateLabel` mapped both to the single word "Healthy", so the two states were never visible
+as two things to a user. `active` survives as the key because its colour is the one
+PRODUCT_STRUCTURE.md already documents as canonical. Implemented across this session's owned
+files (`lib/model/state.ts`, `lib/tokens/source/state.ts`, `sceneStates.ts`, `data/**`);
+three call sites in files this session does not own now fail `tsc` with the narrowed type —
+filed as request 23 in `WORLD_ELEMENTS.md` with exact diffs rather than edited directly.
+
+**Rules out:** re-opening any of the three without new information; a fourth session
+independently re-deriving the vinext fix-path investigation.
+
 ## 2026-09-14 — This repository is the full Innerflect environment, not a Mirror-only source
 
 **Decided:** the repository and deployment boundary is: this repo is the source and

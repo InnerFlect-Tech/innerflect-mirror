@@ -17,8 +17,9 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
-| Claude · 3D/design | housekeeping this board — released the stale `Scene.tsx` claim (requests 2/3/4 closed, landed `2734696`), consolidated the repeated ownership-conflict note | `docs/STATUS.md` | 2026-09-14 |
-| Claude · UI shell | — idle — landed `aad078b`: `/design/ecosystem` route (request 17, UI-shell half), root `README.md` + `AGENTS.md` scope (request 21, closed), repo-scope decision in `docs/DECISIONS.md`. Filed request 22 (registry `state: 'planned'` -> `'live'` for `ecosystem-design`) against `lib/design/ecosystem.ts`, not owned here | `app/**`, `components/company/**`, `lib/model/{work,decision,knowledge,impact,mirror,activity,constitution}.ts`, `data/{work,decisions-queue,knowledge,impact,mirror,activity,constitution}.ts` | 2026-09-14 |
+| Claude · 3D/design | got the user's decisions on the ownership tie-break, the vinext advisory, and the healthy/active merge; implemented the merge across owned files, filed request 23 for the fallout | `docs/STATUS.md`, `docs/DECISIONS.md`, `WORLD_ELEMENTS.md`, `PRODUCT_STRUCTURE.md`, `lib/model/state.ts`, `lib/tokens/source/state.ts`, `components/company-world/tokens/sceneStates.ts`, `data/company.ts`, `data/mirror.ts`, `data/decisions-queue.ts` | 2026-09-14 |
+| Claude · UI shell | — released at the user's direction so Codex can complete the cockpit production pass; previous work landed in `aad078b` | — | 2026-09-14 |
+| Codex · cockpit production | component shell, Command Centre, ephemeral UI store, responsive/container behavior, state/error surfaces and automated UI quality | `package*.json`, `components/company/{AppShell,CockpitShell,TopBar,Rail,CommandCenter,ViewDrawer,SurfaceState}.tsx`, `lib/{operations,store}/**`, `app/{globals.css,surfaces.css,error.tsx,global-error.tsx,loading.tsx,not-found.tsx}`, `.storybook/**`, `tests/**`, `playwright.config.ts`, `CHANGELOG.md`, `docs/{STATUS.md,PRODUCT_READINESS.md}` | 2026-09-14 |
 
 ## In flight / blocked
 
@@ -26,33 +27,34 @@ numbered request in `WORLD_ELEMENTS.md`.
   `WORLD_ELEMENTS.md` are all ✅. The file-level cause (neither session had claimed it here
   first) is folded into the single ownership-conflict escalation below rather than repeated.
 
-- **Dependency advisories — unowned, needs a decision.** `npm audit` reports 11
-  (10 high, 1 low); 5 reach production. Mostly build chain: `esbuild`,
-  `@cloudflare/vite-plugin`, `miniflare`, `vinext`, plus `undici`, `sharp` and
-  `react-server-dom-webpack`. Not acted on because `npm audit fix --force` would bump
-  `vinext`, which is on a `1.0.0-beta` and pinned deliberately — a forced upgrade is as
-  likely to break the build as to fix anything. Whoever owns the toolchain should take
-  this; it became visible when the repo went public and GitHub enabled Dependabot.
+- **ASSIGNED — dependency advisories.** The user decided: investigate rather than
+  force-upgrade or defer. Findings (`npm audit --json` + `npm view vinext versions`): every
+  one of the 11 advisories' fix path resolves to `vinext@1.0.0-beta.9`
+  (`isSemVerMajor: false`). Installed is `beta.5` — this is four betas behind on the *same*
+  pinned `1.0.0-beta` line, not the major jump the previous note here assumed. That does not
+  make the bump safe, only not the breaking change it was assumed to be. **Still needs:**
+  someone to actually try `vinext@1.0.0-beta.9`, confirm the dev server boots, `npm run
+  check` stays green, and a real page loads, before touching `package.json`. Whoever owns
+  the toolchain — not claimed by any of the three sessions today — should pick this up.
+  Recorded in `docs/DECISIONS.md`.
 
 - **RESOLVED — `npm run check` red on `4b943d5`.** Request 20 (the missing
   `onKeyDown={onPanKeyDown}` in `EcosystemBoard.tsx`) landed in `88eaadc`. `npm run check`
   is green on the current tip.
 
-- **The ownership-conflict pattern has now recurred three times — needs one decision from
-  the user, not three separate notes.** `WORLD_ELEMENTS.md`'s static Ownership section
-  assigns `components/company-world/**`, `lib/design/**`, `lib/model/**`, `data/**`,
-  `public/models/**`, `tools/glyph-kit/**`, `WORLD_ELEMENTS.md` and `PRODUCT_STRUCTURE.md`
-  to "the 3D/design-system session." In practice, Codex's active claim row today covers
-  most of that same list, and has done the actual work on it (`88eaadc`,
-  `EcosystemBoard.tsx`, `lib/design/ecosystem.ts`). The static section has not kept up with
-  who is really building the design system. Two ways to close it, either is fine, but one
-  needs to be chosen: (a) rewrite the Ownership section to name Codex as the design-system
-  owner and narrow "3D/design" to the R3F scene proper
-  (`components/company-world/{nodes,assets,camera,connections,world,labels,tokens,effects}/**`,
-  `Scene.tsx`, `CompanyWorld.tsx`), or (b) keep the static section as the standing default
-  and treat every `docs/STATUS.md` claim as a temporary, session-scoped override of it —
-  written down as the rule, not left implicit. Until one is chosen, do not assume the
-  Ownership section is current for anything Codex has an active claim on today.
+- **RESOLVED — the recurring ownership-conflict pattern.** The user decided option (b): the
+  static Ownership section in `WORLD_ELEMENTS.md` stays as the default for an unclaimed
+  path, and an active claim in this file always overrides it while it stands. Written into
+  `WORLD_ELEMENTS.md`'s Ownership section directly. Recorded in `docs/DECISIONS.md`.
+
+- **DONE (this session) — `healthy` merged into `active`.** The user decided this as a
+  product call. Implemented in every file this session owns; `tsc` now fails on three call
+  sites this session does not own (`components/company/Hero.tsx`,
+  `components/company/DomainInspector.tsx`, `components/company-world/design/ElementSheet.tsx`)
+  — filed as request 23 in `WORLD_ELEMENTS.md` with exact diffs. **`npm run check` is red
+  on this session's own pushed commit until request 23 lands** — deliberately, since the
+  type change is the enforcement mechanism. Whoever owns those three files should take it;
+  each diff is a one-line deletion of an already-redundant branch.
 
 ## Note on this session's own commit
 

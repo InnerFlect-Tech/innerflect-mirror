@@ -84,12 +84,7 @@ const emissive: Record<SceneState, Emissive> = {
     signalEmissive: [0.06, 0.12, 0.12],
     blooms: false,
   },
-  healthy: {
-    surfaceEmissive: [0.04, 0.16, 0.15],
-    emission: 0.55,
-    signalEmissive: [0.07, 1.02, 0.9],
-    blooms: true,
-  },
+  // `healthy` merged into `active` 2026-09-14 — see lib/model/state.ts.
   active: {
     surfaceEmissive: [0.06, 0.26, 0.24],
     emission: 0.8,

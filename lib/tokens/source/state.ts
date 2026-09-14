@@ -22,9 +22,11 @@ export type StateColor = {
   connection: string;
 };
 
+// `healthy` merged into `active` 2026-09-14 — see lib/model/state.ts. `active`'s
+// values survive because #55cbbb is the canonical teal PRODUCT_STRUCTURE.md
+// documents, not #42c8bd.
 export const stateColors: Record<SceneState, StateColor> = {
   neutral: { edge: '#233536', label: '#78827f', surface: '#081214', connection: '#0c3d3b' },
-  healthy: { edge: '#4f9e94', label: '#42c8bd', surface: '#08211f', connection: '#0c5552' },
   active: { edge: '#43cec1', label: '#55cbbb', surface: '#092a28', connection: '#19867c' },
   attention: { edge: '#e0a100', label: '#d8a34d', surface: '#221b0d', connection: '#6d5320' },
   critical: { edge: '#d6342a', label: '#e16d5d', surface: '#150b09', connection: '#6d2b23' },

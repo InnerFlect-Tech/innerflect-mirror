@@ -235,7 +235,7 @@ Objects retain identity across surfaces. Information is organised by why it matt
 - Gamification represents earned maturity, evidence, and verified outcomes. No arbitrary points.
 - The world has five visual layers: dark plane, stable domain islands, low-detail semantic objects, operational connections, and semantic state.
 - Visual hierarchy is strict: Company is brightest and largest; domains are secondary; connections are thin; background geometry nearly disappears; only attention and critical states interrupt teal.
-- Scene states are `neutral · healthy · active · attention · critical`. State—not department identity—determines color.
+- Scene states are `neutral · active · attention · critical`. State—not department identity—determines color. (`healthy` merged into `active` 2026-09-14: they read as one word, "Healthy", everywhere a user saw either; see docs/DECISIONS.md.)
 - Hover is restrained. Selection raises and clarifies an island, dims unrelated context, updates the HTML inspector, and smoothly reframes the camera.
 - A selected domain unfolds in place over time; semantic zoom should preserve context instead of navigating to a disconnected page.
 - Company, Flow, and Decision views must reuse the same objects and animate between curated layout families.

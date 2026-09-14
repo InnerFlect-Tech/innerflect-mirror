@@ -670,6 +670,52 @@ Numbers are never reused, so a reference to "request 5" always means the same th
       Do not expose a command before its journey, error behaviour, telemetry policy and E2E
       acceptance are named.
 
+23. **Product decision landed — `healthy` merged into `active` in `SceneState`.** The user
+    decided this directly: the two states shared one user-facing word ("Healthy" in
+    `stateLabel`) and existed as a distinction nowhere a person could see it. `active`
+    survives as the key because its colour (`#55cbbb`/`#43cec1`) is the one
+    PRODUCT_STRUCTURE.md's visual grammar already documents as canonical; `healthy` does
+    not. Done in this session's owned files: `lib/model/state.ts`, `lib/tokens/source/state.ts`,
+    `components/company-world/tokens/sceneStates.ts`, `data/company.ts`, `data/mirror.ts`,
+    `data/decisions-queue.ts`. `PRODUCT_STRUCTURE.md`'s visual-grammar line ("Scene states are
+    `neutral · healthy · active · attention · critical`") updated to drop `healthy`. Full
+    reasoning is the comment above `SceneState` in `lib/model/state.ts`.
+
+    Three call sites outside this session's ownership now fail `tsc` with the type narrowed —
+    exact diffs, each a pure deletion of a now-redundant branch (the `active` and `healthy`
+    cases were already identical or overlapping in all three):
+
+    ```diff
+    // components/company/Hero.tsx — companyHeadline record
+      neutral: { top: 'Company being observed', lines: ['Your company is', 'being observed.'] },
+    - healthy: { top: 'Company operating normally', lines: ['Your company is', 'operating normally.'] },
+      active: { top: 'Company operating normally', lines: ['Your company is', 'operating normally.'] },
+    ```
+
+    ```diff
+    // components/company/DomainInspector.tsx — pill derivation
+      const pill =
+    -   domain.state === 'active' || domain.state === 'healthy'
+    +   domain.state === 'active'
+          ? 'auto'
+    ```
+
+    ```diff
+    // components/company-world/design/ElementSheet.tsx — STATES array
+      const STATES: SceneState[] = [
+        'neutral',
+    -   'healthy',
+        'active',
+        'attention',
+        'critical',
+      ];
+    ```
+
+    `npm run check`'s `tsc` gate is red on the current tip until these three land — that is
+    deliberate: the type change is the enforcement mechanism, not a note asking someone to
+    remember. Filed rather than applied because two are in `components/company/**`
+    (UI-shell) and one is in `components/company-world/design/**` (Codex's active claim).
+
 ## Semantic review for the next element pass
 
 The ten V1 GLBs are present and their geometry is unchanged from the imported kit. The
@@ -758,9 +804,19 @@ projection derived from it, exactly as request 7 asks. It needs `data/work.ts` a
 
 ## Ownership
 
-This file is the coordination channel between the two sessions working this branch.
+This file is the coordination channel between the sessions working this branch.
 Declared here rather than in conversation, because conversation does not survive a
 `git pull`.
+
+**Tie-break rule, decided by the user 2026-09-14:** the static assignment below is the
+*standing default* for a path nobody has claimed today. A `docs/STATUS.md` active claim
+always overrides it for as long as that claim stands — whoever is genuinely doing the work
+on a path right now owns it, regardless of which session's name is written below. This was
+decided rather than rewriting the static list, because the list would otherwise need
+rewriting every time work moves, which is the failure it is meant to prevent. It resolves
+the ownership-vs-active-claim conflict that recurred on `Scene.tsx`, `EcosystemBoard.tsx`
+and `lib/design/**`: in each case, the `docs/STATUS.md` claim was current and correct, and
+the static section below was not.
 
 **Owned by the 3D / design-system session:**
 

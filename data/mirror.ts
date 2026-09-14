@@ -11,7 +11,7 @@ export const mirrorRows: MirrorRow[] = [
   {
     id: 'market',
     label: 'Market',
-    state: 'healthy',
+    state: 'active',
     people: 2,
     mode: 'Supervised',
     hoursNow: 14,

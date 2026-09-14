@@ -110,7 +110,7 @@ export const decisionQueue: Decision[] = [
       'Signal Watcher is discarding 31% of inbound market signals because their source trust falls below the configured threshold. Sampling suggests roughly a third of those were genuine.',
     domainId: 'market',
     domainLabel: 'Market',
-    state: 'healthy',
+    state: 'active',
     urgency: 'medium',
     deadline: 'This week',
     recommendation: 'Lower the threshold from 0.8 to 0.65 and route the gap to human review',
