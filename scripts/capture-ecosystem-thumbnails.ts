@@ -40,7 +40,11 @@ async function main() {
     const outPath = path.join(OUT_DIR, `${entry.id}.png`);
     try {
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
-      await page.waitForTimeout(400);
+      // Fixed settle wait, not just a network-idle check — several of these
+      // pages (the main website's hero included) fade content in with CSS/JS
+      // after the document is otherwise idle, which network-idle wouldn't
+      // catch and which produced a blank first-capture bug.
+      await page.waitForTimeout(2000);
       await page.screenshot({ path: outPath });
       console.log(`ok    ${entry.id} <- ${url}`);
       ok++;
