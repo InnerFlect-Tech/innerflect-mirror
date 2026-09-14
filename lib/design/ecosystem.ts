@@ -462,6 +462,54 @@ export const ECOSYSTEM_PAGES: readonly EcosystemPage[] = [
   { id: 'ecosystem-design', name: 'Ecosystem board', surface: 'design-system', group: 'system', href: '/design/ecosystem', file: 'app/design/ecosystem/page.tsx', access: 'development', purpose: 'The source-backed index and conformance view of the full environment.', state: 'live' },
 ];
 
+/**
+ * What kind of thing a node *is*, expressed as a shape the board can draw.
+ *
+ * Not a sixth hand-maintained list: every value below is derived from what the
+ * registry already knows, so a node cannot be drawn as one thing and registered
+ * as another. The distinction the network needs at a glance is not category
+ * (which groups by role) but substance — a person is not a website, and a
+ * website is not an engine.
+ *
+ * - `surface`     the node has real entry points in ECOSYSTEM_PAGES: it is a
+ *                 thing you can open. Main website, Mirror, Studio, Admin,
+ *                 Open Mirror and both Shops.
+ * - `people`      an audience or an actor. The Innerflect team is us; the
+ *                 self-builder and the managed client are who we build for.
+ * - `instance`    a product or workspace with no entry point of its own: a
+ *                 deployed copy of the system for someone (Managed OS,
+ *                 Builder-owned OS, Innerflect's own Mirror).
+ * - `engine`      the shared machinery underneath every surface.
+ * - `infrastructure` the boundaries around every read and write.
+ */
+export type EcosystemNodeShape =
+  | 'surface'
+  | 'people'
+  | 'instance'
+  | 'engine'
+  | 'infrastructure';
+
+const NODES_WITH_A_SURFACE: ReadonlySet<string> = new Set(
+  ECOSYSTEM_PAGES.map((page) => page.surface),
+);
+
+export function nodeShape(node: EcosystemNode): EcosystemNodeShape {
+  if (NODES_WITH_A_SURFACE.has(node.id)) return 'surface';
+  if (node.kind === 'audience' || node.kind === 'actor') return 'people';
+  if (node.kind === 'engine') return 'engine';
+  if (node.kind === 'infrastructure') return 'infrastructure';
+  return 'instance';
+}
+
+/** The legend. A shape nobody can read is decoration, not information. */
+export const ECOSYSTEM_SHAPES = [
+  { id: 'surface', name: 'Has a website', description: 'A surface you can open. Its entry points are registered in ECOSYSTEM_PAGES.' },
+  { id: 'people', name: 'People', description: 'An audience we build for, or the Innerflect team operating it.' },
+  { id: 'instance', name: 'An operating system', description: 'A deployed copy of the system for one company — reached through a surface, not its own site.' },
+  { id: 'engine', name: 'Engine', description: 'Shared machinery every surface projects: graph, operations, knowledge, governance.' },
+  { id: 'infrastructure', name: 'Infrastructure', description: 'The boundaries around every read, write, effect and proof.' },
+] as const satisfies readonly { id: EcosystemNodeShape; name: string; description: string }[];
+
 export const ECOSYSTEM_CHANGE_CONTRACT = {
   source: 'PRODUCT_STRUCTURE.md defines meaning; lib/design/ecosystem.ts defines the registered projection.',
   read: 'The board reads nodes, typed relations and ECOSYSTEM_PAGES; it does not invent cards from local state.',

@@ -18,10 +18,13 @@ import {
   ECOSYSTEM_RELATIONS,
   ECOSYSTEM_PAGE_GROUPS,
   ECOSYSTEM_PAGES,
+  ECOSYSTEM_SHAPES,
   REPOSITORY_SCOPE,
+  nodeShape,
   type EcosystemCategoryId,
   type EcosystemNode,
   type EcosystemNodeId,
+  type EcosystemNodeShape,
   type EcosystemPageGroupId,
 } from '@/lib/design/ecosystem';
 import styles from './EcosystemBoard.module.css';
@@ -44,6 +47,37 @@ function clamp(value: number, min: number, max: number) {
 
 function NodeMark({ kind }: { kind: EcosystemNode['kind'] }) {
   return <span className={styles.nodeMark} data-kind={kind} aria-hidden="true" />;
+}
+
+const PAGES_BY_SURFACE = ECOSYSTEM_PAGES.reduce<Record<string, typeof ECOSYSTEM_PAGES[number][]>>(
+  (acc, page) => {
+    (acc[page.surface] ??= []).push(page);
+    return acc;
+  },
+  {},
+);
+
+/** `https://studio.innerflect.tech` → `studio.innerflect.tech`; `/mirror` stays. */
+function displayHref(href: string) {
+  return href.replace(/^https?:\/\//, '');
+}
+
+/**
+ * The strip that makes a `surface` node read as a website rather than a box.
+ * It shows the node's own first registered entry point, so the chrome is not
+ * decoration — it is the address you would actually open.
+ */
+function Chrome({ href }: { href: string }) {
+  return (
+    <span className={styles.chrome} aria-hidden="true">
+      <span className={styles.chromeDots}>
+        <i />
+        <i />
+        <i />
+      </span>
+      <span className={styles.chromeHref}>{displayHref(href)}</span>
+    </span>
+  );
 }
 
 function StateBadge({ state }: { state: EcosystemNode['state'] }) {
@@ -109,6 +143,7 @@ export function EcosystemBoard() {
     () => ECOSYSTEM_PAGES.filter((page) => page.surface === selectedId),
     [selectedId],
   );
+  const selectedShape: EcosystemNodeShape = nodeShape(selected);
 
   const visibleNodes = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -332,6 +367,10 @@ export function EcosystemBoard() {
                 </svg>
                 {visibleNodes.map((node) => {
                   const position = positions[node.id];
+                  const shape = nodeShape(node);
+                  const pages = PAGES_BY_SURFACE[node.id];
+                  // Mirror owns seven pages; `/mirror` names it better than `/`.
+                  const entry = pages?.find((page) => page.id === node.id) ?? pages?.[0];
                   return (
                     <button
                       key={node.id}
@@ -339,9 +378,11 @@ export function EcosystemBoard() {
                       className={styles.card}
                       data-selected={selectedId === node.id}
                       data-state={node.state}
+                      data-shape={shape}
                       style={{ left: position.x, top: position.y }}
                       onClick={() => setSelectedId(node.id)}
                     >
+                      {shape === 'surface' && entry && <Chrome href={entry.href} />}
                       <span className={styles.cardTopline}>
                         <NodeMark kind={node.kind} />
                         <span>{node.category}</span>
@@ -355,6 +396,18 @@ export function EcosystemBoard() {
                 })}
               </div>
               <div className={styles.mapHint}>drag to pan · wheel or +/- to zoom · click a card to inspect</div>
+
+              <div className={styles.legend}>
+                <span className={styles.eyebrow}>Shape = what it is</span>
+                <ul>
+                  {ECOSYSTEM_SHAPES.map((entry) => (
+                    <li key={entry.id} title={entry.description}>
+                      <span className={styles.legendMark} data-shape={entry.id} aria-hidden="true" />
+                      {entry.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
 
@@ -370,6 +423,13 @@ export function EcosystemBoard() {
             <dl className={styles.facts}>
               <div><dt>Stable id</dt><dd>{selected.id}</dd></div>
               <div><dt>Kind</dt><dd>{selected.kind}</dd></div>
+              <div>
+                <dt>Is a</dt>
+                <dd className={styles.factShape}>
+                  <span className={styles.legendMark} data-shape={selectedShape} aria-hidden="true" />
+                  {ECOSYSTEM_SHAPES.find((entry) => entry.id === selectedShape)?.name}
+                </dd>
+              </div>
               <div><dt>State</dt><dd><StateBadge state={selected.state} /></dd></div>
               <div><dt>Authority</dt><dd>{selected.source.authority}</dd></div>
             </dl>
