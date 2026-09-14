@@ -30,6 +30,7 @@ export type EcosystemNodeId =
   | 'self-builder'
   | 'managed-client'
   | 'innerflect-team'
+  | 'main-website'
   | 'os-shop'
   | 'forge-shop'
   | 'open-mirror'
@@ -100,6 +101,7 @@ export type EcosystemRelation = {
 
 export type EcosystemEntryId =
   | 'environment'
+  | 'main-website'
   | 'open-mirror'
   | 'os-shop'
   | 'forge-shop'
@@ -134,10 +136,11 @@ export const REPOSITORY_SCOPE = {
   id: 'innerflect-environment',
   repository: 'InnerFlect-Tech/innerflect-mirror',
   statement:
-    'The source and coordination environment for Mirror, Open Mirror, both Shops, Studio, Admin, shared engines, infrastructure and design system.',
+    'The source and coordination environment for Mirror, Open Mirror, both Shops, Studio, Admin, shared engines, infrastructure and design system. Studio, Admin and the main website are live products hosted outside this repository; this registry only projects their existence and entry points.',
   operationalCore: 'mirror',
   entrySurfaces: [
     'environment',
+    'main-website',
     'open-mirror',
     'os-shop',
     'forge-shop',
@@ -197,6 +200,17 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     state: 'live',
     position: { x: 56, y: 520 },
     source: source.product('PRODUCT_STRUCTURE.md'),
+  },
+  {
+    id: 'main-website',
+    name: 'Main website',
+    kind: 'product',
+    category: 'products',
+    summary: 'Innerflect’s public marketing site and shared entry point.',
+    detail: 'Hosted at innerflect.tech, outside this repository. It is where a visitor first lands and where the team signs in before reaching Admin.',
+    state: 'external',
+    position: { x: 56, y: 748 },
+    source: source.external('innerflect.tech'),
   },
   {
     id: 'os-shop',
@@ -270,10 +284,10 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     kind: 'workspace',
     category: 'delivery',
     summary: 'Client-facing project and collaboration workspace.',
-    detail: 'Studio follows evidence, decisions, delivery progress and the parts of a managed OS the client can see or change.',
-    state: 'building',
+    detail: 'Studio follows evidence, decisions, delivery progress and the parts of a managed OS the client can see or change. Live at studio.innerflect.tech, outside this repository.',
+    state: 'external',
     position: { x: 1170, y: 292 },
-    source: source.product('PRODUCT_STRUCTURE.md'),
+    source: source.external('studio.innerflect.tech'),
   },
   {
     id: 'admin',
@@ -281,10 +295,10 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     kind: 'workspace',
     category: 'delivery',
     summary: 'Innerflect’s internal delivery and governance console.',
-    detail: 'Admin is where the Innerflect team runs managed systems, access, integrations, releases and operational controls.',
-    state: 'building',
+    detail: 'Admin is where the Innerflect team runs managed systems, access, integrations, releases and operational controls. Reached by signing in at innerflect.tech/auth/sign-in; it is a live product outside this repository.',
+    state: 'external',
     position: { x: 1170, y: 520 },
-    source: source.product('PRODUCT_STRUCTURE.md'),
+    source: source.external('innerflect.tech/auth/sign-in'),
   },
   {
     id: 'innerflect-mirror',
@@ -428,6 +442,7 @@ export const ECOSYSTEM_PAGE_GROUPS = [
 
 export const ECOSYSTEM_PAGES: readonly EcosystemPage[] = [
   { id: 'ecosystem-home', name: 'Innerflect environment', surface: 'environment', group: 'environment', href: '/ecosystem', file: 'app/ecosystem/page.tsx', access: 'public', purpose: 'The navigable index of the complete Innerflect environment.', state: 'planned' },
+  { id: 'main-website', name: 'Main website', surface: 'main-website', group: 'environment', href: 'https://innerflect.tech', file: 'https://innerflect.tech', access: 'public', purpose: 'Innerflect’s public marketing site and shared entry point, hosted outside this repository.', state: 'external' },
   { id: 'open-mirror', name: 'Open Mirror', surface: 'open-mirror', group: 'build', href: '/open-mirror', file: 'app/open-mirror/page.tsx', access: 'public', purpose: 'The free/open operational twin for self-builders.', state: 'planned' },
   { id: 'os-shop', name: 'OS Shop', surface: 'os-shop', group: 'build', href: '/shops/os', file: 'app/shops/os/page.tsx', access: 'public', purpose: 'Patterns, playbooks and operating-system architectures.', state: 'planned' },
   { id: 'forge-shop', name: 'Forge Shop', surface: 'forge-shop', group: 'build', href: '/shops/forge', file: 'app/shops/forge/page.tsx', access: 'public', purpose: 'Reusable open components and gated proprietary capabilities.', state: 'planned' },
@@ -438,8 +453,8 @@ export const ECOSYSTEM_PAGES: readonly EcosystemPage[] = [
   { id: 'knowledge', name: 'Knowledge', surface: 'mirror', group: 'operate', href: '/knowledge', file: 'app/knowledge/page.tsx', access: 'authenticated', purpose: 'Trusted knowledge and its evidence links.', state: 'live' },
   { id: 'outcomes', name: 'Outcomes', surface: 'mirror', group: 'operate', href: '/outcomes', file: 'app/outcomes/page.tsx', access: 'authenticated', purpose: 'Verified business value and audit.', state: 'live' },
   { id: 'settings', name: 'Settings', surface: 'mirror', group: 'operate', href: '/settings', file: 'app/settings/page.tsx', access: 'authenticated', purpose: 'Company constitution, access and connections.', state: 'live' },
-  { id: 'studio', name: 'Studio', surface: 'studio', group: 'deliver', href: '/studio', file: 'app/studio/page.tsx', access: 'authenticated', purpose: 'Client project, evidence and collaboration workspace.', state: 'planned' },
-  { id: 'admin', name: 'Admin', surface: 'admin', group: 'deliver', href: '/admin', file: 'app/admin/page.tsx', access: 'internal', purpose: 'Innerflect delivery, integration, access and governance console.', state: 'planned' },
+  { id: 'studio', name: 'Studio', surface: 'studio', group: 'deliver', href: 'https://studio.innerflect.tech', file: 'https://studio.innerflect.tech', access: 'authenticated', purpose: 'Client project, evidence and collaboration workspace, hosted outside this repository.', state: 'external' },
+  { id: 'admin', name: 'Admin', surface: 'admin', group: 'deliver', href: 'https://innerflect.tech/auth/sign-in', file: 'https://innerflect.tech/auth/sign-in', access: 'internal', purpose: 'Innerflect delivery, integration, access and governance console, reached by signing in on the main website. Hosted outside this repository.', state: 'external' },
   { id: 'elements', name: 'Elements', surface: 'design-system', group: 'design', href: '/design/elements', file: 'app/design/elements/page.tsx', access: 'development', purpose: 'Every semantic element in paired 2D and 3D isolation.', state: 'live' },
   { id: 'floor', name: 'Floor', surface: 'design-system', group: 'design', href: '/design/floor', file: 'app/design/floor/page.tsx', access: 'development', purpose: 'The production CompanyWorld composition.', state: 'live' },
   { id: 'shell', name: 'Shell', surface: 'design-system', group: 'design', href: '/design/shell', file: 'app/design/shell/page.tsx', access: 'development', purpose: 'The HTML shell and token surface.', state: 'live' },

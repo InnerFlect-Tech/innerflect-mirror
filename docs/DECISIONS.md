@@ -526,3 +526,31 @@ element set colour-by-colour. That repeats the exact failure mode ("a prototype 
 declared itself 'the single source of truth' had already drifted within days") rather than
 fixing it. If the cockpit's `Mirror · Builder` mode toggle is wanted in the product, it
 should be proposed as a change to the real `Rail`/`AppShell`, not built a third time.
+
+### Studio, Admin and the main website are live, external products, not planned in-repo routes
+
+`PRODUCT_STRUCTURE.md`, `lib/design/ecosystem.ts`, `README.md` and `AGENTS.md` all
+described Studio (`/studio`) and Admin (`/admin`) as planned routes to be built inside
+this repository, and had no entry for the main website at all. The user corrected this
+directly: Studio is live at `studio.innerflect.tech`, Admin is live and reached by signing
+in at `https://innerflect.tech/auth/sign-in` (the user did not confirm a separate
+`admin.*` subdomain, so that is how it is represented — not as an invented subdomain), and
+the main website is live at `innerflect.tech`.
+
+**Resolved this way:**
+1. `lib/design/ecosystem.ts` — `studio` and `admin` nodes and their `ECOSYSTEM_PAGES`
+   entries now carry `state: 'external'` (a value `ImplementationState` already supported)
+   with `href`/`file` pointing at the real external URLs instead of in-repo paths. A new
+   `main-website` node, page, and `EcosystemEntryId`/entry-surface entry were added the
+   same way. `validateRegistry()` only checks `file` truthiness, and the repository's own
+   `check-ecosystem-registry.ts` only requires an on-disk route for `state: 'live'` pages
+   — both are satisfied without any validator change.
+2. `PRODUCT_STRUCTURE.md`'s entry-surface table, journey table and product-role table are
+   corrected to `live` for all three, with their real hosts named and marked `(external)`
+   to distinguish them from canonical in-repo paths.
+3. `README.md` and `AGENTS.md` had the same stale "planned, in-repo" framing and are
+   corrected the same way.
+
+**Rules out:** inventing a distinct `admin.innerflect.tech` subdomain. The user's answer
+described an auth flow through the main domain, not a confirmed separate subdomain, and
+this repository is public — infrastructure coordinates are not guessed.

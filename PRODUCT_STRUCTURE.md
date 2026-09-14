@@ -34,36 +34,46 @@ they are not separate products that happen to link to each other.
 ### Repository boundary
 
 This repository is the source and coordination environment for the **full Innerflect
-ecosystem**, not only the Mirror product. Mirror is the operational core, but the same
-repository will contain the shared model and the entry surfaces for:
+ecosystem**, not only the Mirror product. Mirror is the operational core, and this
+repository holds the shared model and the in-repo entry surfaces for it. Studio, Admin
+and the main website are **live products hosted outside this repository** — this
+repository does not build or deploy them, and only registers their existence and entry
+points so the ecosystem index stays honest about the whole environment:
 
-- Mirror and the free/open Open Mirror edition;
-- OS Shop and Forge Shop;
-- Studio and Admin;
+- Mirror and the free/open Open Mirror edition (in this repository);
+- OS Shop and Forge Shop (in this repository, planned);
+- Studio (live, external — studio.innerflect.tech) and Admin (live, external — reached by
+  signing in at innerflect.tech/auth/sign-in);
+- the main website (live, external — innerflect.tech), the public entry point to the whole
+  ecosystem;
 - the company graph, typed operation catalogue, governance, knowledge, agent runtime,
   integrations, identity/access, audit and outcomes;
 - the design system, ecosystem index, diagrams and conformance tooling that keep every
   surface aligned.
 
-One repository does not mean one undifferentiated application. Products may become
-separate deployments or hosts, and each keeps its own audience and access boundary. They
-still import the same records, tokens, operations and semantic registry, so a change to
-the system cannot drift between products.
+One repository does not mean one undifferentiated application. Studio, Admin and the main
+website are proof that products in this ecosystem can be separate deployments or hosts,
+each keeping its own audience and access boundary, while still needing to agree with the
+same records, tokens, operations and semantic registry this repository defines — so a
+change to the system does not silently drift from what those external products show.
 
-| Entry surface | Canonical repository path | Audience / access |
+| Entry surface | Canonical location | Audience / access |
 |---|---|---|
+| Main website | innerflect.tech (external) | Public; live |
 | Ecosystem index | /ecosystem | Public map of the full environment; planned |
 | Open Mirror | /open-mirror | Self-builder; public/open; planned |
 | OS Shop | /shops/os | Self-builder; public patterns; planned |
 | Forge Shop | /shops/forge | Public catalogue with gated proprietary capabilities; planned |
 | Mirror | / and /mirror | Authenticated company operator; live |
-| Studio | /studio | Managed client; authenticated; planned |
-| Admin | /admin | Innerflect team; internal; planned |
+| Studio | studio.innerflect.tech (external) | Managed client; authenticated; live |
+| Admin | innerflect.tech/auth/sign-in (external) | Innerflect team; internal; live |
 | Design and system surfaces | /design/* | Development and conformance; partially live |
 
-These paths are canonical inside the repository. Deployment hosts may map them differently
-later without changing product identity. ECOSYSTEM_PAGES records every entry point and its
-implementation state.
+Paths without "(external)" are canonical inside the repository; deployment hosts may map
+them differently later without changing product identity. Surfaces marked "(external)" are
+not repository paths at all — they are the real hosted locations, recorded here so this
+document and ECOSYSTEM_PAGES do not describe a product as planned once it already exists.
+ECOSYSTEM_PAGES records every entry point and its implementation state.
 
 | Audience | Journey | What they receive |
 |---|---|---|
@@ -75,11 +85,12 @@ implementation state.
 
 | Product | Role in the ecosystem |
 |---|---|
+| Main website | Innerflect's public marketing site and shared entry point (innerflect.tech). Live, hosted outside this repository. |
 | Mirror | The operational twin and constrained visual builder. It has a simpler free/open edition for self-builders. |
 | OS Shop | Patterns, playbooks and proven operating-system architectures. |
 | Forge Shop | Reusable design and implementation components: open components for self-builders and proprietary capabilities for managed clients. |
-| Studio | Client-facing project, evidence and collaboration workspace for a managed operating system. |
-| Admin | Innerflect's internal delivery, access, integration and governance console. |
+| Studio | Client-facing project, evidence and collaboration workspace for a managed operating system. Live, hosted outside this repository at studio.innerflect.tech. |
+| Admin | Innerflect's internal delivery, access, integration and governance console. Live, hosted outside this repository; reached by signing in at innerflect.tech/auth/sign-in. |
 
 ### One mechanism under every surface
 

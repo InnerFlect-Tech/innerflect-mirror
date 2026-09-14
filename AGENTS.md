@@ -7,16 +7,18 @@ agent all start here.
 ## What this is
 
 This repository is the source and coordination environment for the **full Innerflect
-ecosystem**: Mirror and Open Mirror, OS Shop and Forge Shop, Studio and Admin, the shared
-company graph, operations, governance, agents and infrastructure, and the unified UI,
-2D/3D design system, diagrams and ecosystem index that keep every surface aligned.
+ecosystem**: Mirror and Open Mirror, OS Shop and Forge Shop, the shared company graph,
+operations, governance, agents and infrastructure, and the unified UI, 2D/3D design
+system, diagrams and ecosystem index that keep every surface aligned. Studio, Admin and
+the main website are **live products hosted outside this repository** — this repository
+does not build or deploy them, and only registers their existence and entry points.
 
-Mirror is the operational core and the only product with a live surface today — the
-home surface is a spatial 3D world: domain islands around a company core, with a Mirror
-layer beneath it — but this is not a Mirror-only repository. `PRODUCT_STRUCTURE.md` is
-the authority on the product/deployment boundary between products; `lib/design/ecosystem.ts`
-is the executable index of every product, entry point, relation and page across the
-whole environment.
+Mirror is the operational core inside this repository — the home surface is a spatial 3D
+world: domain islands around a company core, with a Mirror layer beneath it — but this is
+not a Mirror-only repository. `PRODUCT_STRUCTURE.md` is the authority on the
+product/deployment boundary between products; `lib/design/ecosystem.ts` is the executable
+index of every product, entry point, relation and page across the whole environment,
+including the ones hosted elsewhere.
 
 > See how your company works. Make it run itself.
 

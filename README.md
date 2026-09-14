@@ -2,28 +2,32 @@
 
 This repository is the source and coordination environment for the **full Innerflect
 ecosystem** — not a Mirror-only repository. It covers Mirror and the free/open Open
-Mirror edition, OS Shop and Forge Shop, Studio and Admin, the shared company graph,
-typed operation catalogue, governance, knowledge, agent runtime, integrations,
-identity/access and audit, and the unified UI, 2D/3D design system, diagrams and
-ecosystem index that keep every surface aligned.
+Mirror edition, OS Shop and Forge Shop, the shared company graph, typed operation
+catalogue, governance, knowledge, agent runtime, integrations, identity/access and audit,
+and the unified UI, 2D/3D design system, diagrams and ecosystem index that keep every
+surface aligned. Studio, Admin and the main website are **live products hosted outside
+this repository**; it only registers their existence and entry points so the ecosystem
+index stays accurate.
 
 > See how your company works. Make it run itself.
 
-Mirror — the operational digital twin — is the operational core and the only product
-with a live surface today. The rest are planned entry points inside this same
-repository, registered in `lib/design/ecosystem.ts` and browsable at `/design/ecosystem`.
+Mirror — the operational digital twin — is the operational core inside this repository.
+Studio, Admin and the main website are already live, but hosted elsewhere. The remaining
+Innerflect-repository surfaces are planned entry points, registered in
+`lib/design/ecosystem.ts` and browsable at `/design/ecosystem`.
 
 ## Products and audiences
 
 | Product | Entry point | Audience / access | State |
 |---|---|---|---|
+| Main website | innerflect.tech (external) | Public | **live** |
 | Innerflect environment | `/ecosystem` | Public map of the full environment | planned |
 | Open Mirror | `/open-mirror` | Self-builder; public/open | planned |
 | OS Shop | `/shops/os` | Self-builder; public patterns | planned |
 | Forge Shop | `/shops/forge` | Public catalogue, gated proprietary capabilities | planned |
 | **Mirror** | `/` and `/mirror` | Authenticated company operator | **live** |
-| Studio | `/studio` | Managed client; authenticated | planned |
-| Admin | `/admin` | Innerflect team; internal | planned |
+| Studio | studio.innerflect.tech (external) | Managed client; authenticated | **live** |
+| Admin | innerflect.tech/auth/sign-in (external) | Innerflect team; internal | **live** |
 | Design and system surfaces | `/design/*` | Development and conformance | partially live |
 
 The journeys these surfaces serve:
