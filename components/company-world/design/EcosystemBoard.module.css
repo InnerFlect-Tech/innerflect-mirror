@@ -277,7 +277,8 @@
   box-shadow: var(--card-stack), var(--shadow-sm);
   text-align: left;
   pointer-events: auto;
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none;
   transition:
     border-color var(--dur-fast) var(--ease-out),
     transform var(--dur-fast) var(--ease-out),
@@ -287,6 +288,16 @@
 .card:hover {
   border-color: var(--border-strong);
   transform: translateY(-2px);
+}
+
+/* The card being dragged rides above every other one and stops animating. */
+.card[data-dragging='true'] {
+  z-index: 3;
+  border-color: var(--state-healthy-edge);
+  box-shadow: var(--card-stack), 0 0 0 2px var(--state-healthy-surface), var(--shadow-lg);
+  cursor: grabbing;
+  transform: none;
+  transition: none;
 }
 
 /*

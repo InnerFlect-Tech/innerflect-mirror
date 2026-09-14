@@ -186,7 +186,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Builds an operating system from open patterns and components.',
     detail: 'The free/open entry point: use Mirror to understand work, OS Shop for patterns and Forge Shop for reusable components.',
     state: 'building',
-    position: { x: 56, y: 64 },
+    position: { x: 56, y: 292 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
@@ -197,7 +197,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Asks Innerflect to manage an operating system.',
     detail: 'Receives managed OS delivery through proprietary Forge capabilities, Studio collaboration and Mirror operations.',
     state: 'building',
-    position: { x: 56, y: 292 },
+    position: { x: 56, y: 520 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
@@ -208,7 +208,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Operates Innerflect and delivers managed systems.',
     detail: 'The team uses its own Mirror and Admin to govern integrations, delivery, access and outcomes.',
     state: 'live',
-    position: { x: 56, y: 520 },
+    position: { x: 56, y: 748 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
@@ -219,7 +219,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Innerflect’s public marketing site and shared entry point.',
     detail: 'Hosted at innerflect.tech, outside this repository. It is where a visitor first lands and where the team signs in before reaching Admin.',
     state: 'external',
-    position: { x: 430, y: 64 },
+    position: { x: 430, y: 748 },
     source: source.external('innerflect.tech'),
   },
   {
@@ -252,7 +252,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Free/open operational twin for self-builders.',
     detail: 'The simpler edition exposes the visual language and the operating model without requiring Innerflect-managed delivery.',
     state: 'building',
-    position: { x: 804, y: 64 },
+    position: { x: 804, y: 178 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
@@ -263,7 +263,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'The self-builder’s operating system.',
     detail: 'An OS assembled from open patterns and components, owned and operated by the builder.',
     state: 'planned',
-    position: { x: 1178, y: 64 },
+    position: { x: 1178, y: 292 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
@@ -285,7 +285,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'The operational twin and constrained builder.',
     detail: 'Mirror mode shows reality; Builder mode lets a person redesign it without losing authority, evidence or auditability.',
     state: 'live',
-    position: { x: 804, y: 292 },
+    position: { x: 804, y: 406 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
@@ -296,7 +296,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Client-facing project and collaboration workspace.',
     detail: 'Studio follows evidence, decisions, delivery progress and the parts of a managed OS the client can see or change. Live at studio.innerflect.tech, outside this repository.',
     state: 'external',
-    position: { x: 804, y: 520 },
+    position: { x: 804, y: 634 },
     source: source.external('studio.innerflect.tech'),
   },
   {
@@ -307,7 +307,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Innerflect’s internal delivery and governance console.',
     detail: 'Admin is where the Innerflect team runs managed systems, access, integrations, releases and operational controls. Reached by signing in at innerflect.tech/auth/sign-in; it is a live product outside this repository.',
     state: 'external',
-    position: { x: 804, y: 748 },
+    position: { x: 804, y: 862 },
     source: source.external('innerflect.tech/auth/sign-in'),
   },
   {
@@ -318,7 +318,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Innerflect’s own operational twin.',
     detail: 'Innerflect proves the system on itself before using the managed journey for clients.',
     state: 'building',
-    position: { x: 1178, y: 292 },
+    position: { x: 1178, y: 748 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
@@ -329,7 +329,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'One record-backed model of the company.',
     detail: 'Workflows, actors, records, decisions, tools, knowledge, permissions, exceptions and outcomes share stable ids.',
     state: 'building',
-    position: { x: 1926, y: 292 },
+    position: { x: 1926, y: 178 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
@@ -340,7 +340,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Real tools that measure whether any of this is working.',
     detail: 'Grafana for operational dashboards and Umami for cookieless web analytics. Named because they are actual software the team runs, not an abstraction: a layer that claims an outcome has to be measured somewhere concrete.',
     state: 'building',
-    position: { x: 1926, y: 64 },
+    position: { x: 1926, y: 406 },
     source: source.external('grafana.com, umami.is'),
   },
   {
@@ -351,7 +351,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'The actions humans and agents are allowed to request.',
     detail: 'The same typed operation contract serves the UI and integrations; policy decides whether an effect may happen.',
     state: 'planned',
-    position: { x: 1926, y: 520 },
+    position: { x: 1926, y: 634 },
     source: source.coordination('WORLD_ELEMENTS.md'),
   },
   /*
@@ -424,7 +424,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Authority, policy and human control.',
     detail: 'Governance is a layer over every domain. It makes work human-led, assisted, supervised, autonomous or blocked.',
     state: 'building',
-    position: { x: 1926, y: 748 },
+    position: { x: 1926, y: 862 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
@@ -435,7 +435,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Connections that observe and report work.',
     detail: 'Connected tools produce evidence and events; they do not become a second model of the company.',
     state: 'planned',
-    position: { x: 2300, y: 292 },
+    position: { x: 2300, y: 178 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
@@ -446,7 +446,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Where eligible operations are performed.',
     detail: 'Agents are workers inside the model. Runtime activity must retain authority, evidence, observable outcome and audit.',
     state: 'planned',
-    position: { x: 2300, y: 520 },
+    position: { x: 2300, y: 634 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
@@ -457,7 +457,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'The boundaries around every read and write.',
     detail: 'Identity, tenant scope, permissions and revision checks protect the canonical graph and its sensitive records.',
     state: 'planned',
-    position: { x: 2300, y: 748 },
+    position: { x: 2300, y: 406 },
     source: source.coordination('WORLD_ELEMENTS.md'),
   },
   {
@@ -468,7 +468,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     summary: 'Proof that an operation happened and mattered.',
     detail: 'Every effect produces an event, verification and observable result that can be inspected in Outcomes.',
     state: 'planned',
-    position: { x: 2300, y: 976 },
+    position: { x: 2300, y: 862 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
 ];

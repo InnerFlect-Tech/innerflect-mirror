@@ -35,10 +35,21 @@ type ViewMode = 'map' | 'pages' | 'sync';
 type CategoryFilter = EcosystemCategoryId | 'all';
 type Point = { x: number; y: number };
 type DragState = { x: number; y: number; pan: Point };
+type NodeDragState = { id: EcosystemNodeId; x: number; y: number; origin: Point; moved: boolean };
 
 const CANVAS = { width: 2720, height: 1280 };
 const CARD_WIDTH = 292;
 const CARD_HEIGHT = 164;
+
+/**
+ * The column/row pitch the registry's own positions are laid out on. `Tidy`
+ * snaps dragged cards back onto it; the half-row step is what lets a short
+ * column sit centred against a tall one.
+ */
+const GRID = { x0: 56, dx: 374, y0: 64, dy: 114 };
+
+/** A drag that never left the pointer's starting pixel was a click. */
+const DRAG_THRESHOLD = 3;
 const INITIAL_POSITIONS = Object.fromEntries(
   ECOSYSTEM_NODES.map((node) => [node.id, node.position]),
 ) as Record<EcosystemNodeId, Point>;
@@ -140,6 +151,10 @@ export function EcosystemBoard() {
   const [copyStatus, setCopyStatus] = useState('Nothing changed');
 
   const drag = useRef<DragState | null>(null);
+  const nodeDrag = useRef<NodeDragState | null>(null);
+  /** A pointer drag ends in a click event the card must not treat as a select. */
+  const consumedClick = useRef(false);
+  const [draggingId, setDraggingId] = useState<EcosystemNodeId | null>(null);
   const selected = ECOSYSTEM_NODES_BY_ID[selectedId];
   const selectedPages = useMemo(
     () => ECOSYSTEM_PAGES.filter((page) => page.surface === selectedId),
@@ -202,18 +217,29 @@ export function EcosystemBoard() {
     fitBoard();
   }, [fitBoard]);
 
-  const arrangeBoard = useCallback(() => {
-    const next = { ...positions };
-    ECOSYSTEM_NODES.forEach((node, index) => {
-      next[node.id] = {
-        x: 42 + (index % 4) * 548,
-        y: 38 + Math.floor(index / 4) * 216,
-      };
-    });
-    setPositions(next);
+  /**
+   * Snap every card onto the grid the registry's own layout uses. The old
+   * version reflowed the whole board into a four-wide block by array index,
+   * which threw away the meaning of the columns; this keeps each node where
+   * it was put and only squares it up.
+   */
+  const tidyBoard = useCallback(() => {
+    const snap = (value: number, origin: number, pitch: number) =>
+      origin + Math.round((value - origin) / pitch) * pitch;
+    setPositions((value) =>
+      Object.fromEntries(
+        ECOSYSTEM_NODES.map((node) => [
+          node.id,
+          {
+            x: clamp(snap(value[node.id].x, GRID.x0, GRID.dx), 0, CANVAS.width - CARD_WIDTH),
+            y: clamp(snap(value[node.id].y, GRID.y0, GRID.dy), 0, CANVAS.height - CARD_HEIGHT),
+          },
+        ]),
+      ) as Record<EcosystemNodeId, Point>,
+    );
     setArranged(true);
-    setCopyStatus('Draft layout changed');
-  }, [positions]);
+    setCopyStatus('Snapped to the grid');
+  }, []);
 
   const proposal = useMemo(
     () =>
@@ -242,6 +268,76 @@ export function EcosystemBoard() {
       .then(() => setCopyStatus('Proposal copied'))
       .catch(() => setCopyStatus('Copy blocked; use the browser menu'));
   }, [proposal]);
+
+  /*
+   * Dragging a card. Deltas are divided by `zoom` because the board is a
+   * scaled element: at 50% a 10px pointer move is a 20px move in board space.
+   * The card captures the pointer, so the pan surface underneath never sees it
+   * and the board does not slide while a node is being placed.
+   */
+  const startNodeDrag = (event: PointerEvent<HTMLButtonElement>, id: EcosystemNodeId) => {
+    if (event.button !== 0) return;
+    nodeDrag.current = {
+      id,
+      x: event.clientX,
+      y: event.clientY,
+      origin: positions[id],
+      moved: false,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const moveNodeDrag = (event: PointerEvent<HTMLButtonElement>) => {
+    const dragging = nodeDrag.current;
+    if (!dragging) return;
+    const dx = (event.clientX - dragging.x) / zoom;
+    const dy = (event.clientY - dragging.y) / zoom;
+    if (!dragging.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+    if (!dragging.moved) {
+      dragging.moved = true;
+      setDraggingId(dragging.id);
+    }
+    setPositions((value) => ({
+      ...value,
+      [dragging.id]: {
+        x: Math.round(clamp(dragging.origin.x + dx, 0, CANVAS.width - CARD_WIDTH)),
+        y: Math.round(clamp(dragging.origin.y + dy, 0, CANVAS.height - CARD_HEIGHT)),
+      },
+    }));
+  };
+
+  const endNodeDrag = () => {
+    const dragging = nodeDrag.current;
+    nodeDrag.current = null;
+    if (!dragging?.moved) return;
+    consumedClick.current = true;
+    setDraggingId(null);
+    setArranged(false);
+    setCopyStatus('Draft layout changed');
+  };
+
+  /** Keyboard equivalent of the drag, so the board is not pointer-only. */
+  const nudgeNode = (event: KeyboardEvent<HTMLButtonElement>, id: EcosystemNodeId) => {
+    const step = event.shiftKey ? GRID.dy : 8;
+    const delta: Record<string, Point> = {
+      ArrowLeft: { x: -step, y: 0 },
+      ArrowRight: { x: step, y: 0 },
+      ArrowUp: { x: 0, y: -step },
+      ArrowDown: { x: 0, y: step },
+    };
+    const move = delta[event.key];
+    if (!move) return;
+    event.preventDefault();
+    setPositions((value) => ({
+      ...value,
+      [id]: {
+        x: clamp(value[id].x + move.x, 0, CANVAS.width - CARD_WIDTH),
+        y: clamp(value[id].y + move.y, 0, CANVAS.height - CARD_HEIGHT),
+      },
+    }));
+    setArranged(false);
+    setCopyStatus('Draft layout changed');
+  };
 
   const startPan = (event: PointerEvent<HTMLButtonElement>) => {
     if (event.button !== 0) return;
@@ -340,7 +436,7 @@ export function EcosystemBoard() {
                 <span>{Math.round(zoom * 100)}%</span>
                 <button type="button" onClick={() => setZoom((value) => clamp(value + 0.08, 0.42, 1.15))} aria-label="Zoom in">+</button>
                 <button type="button" onClick={fitBoard}>Fit</button>
-                <button type="button" onClick={arrangeBoard} aria-pressed={arranged}>Arrange</button>
+                <button type="button" onClick={tidyBoard} aria-pressed={arranged}>Tidy</button>
                 <button type="button" onClick={copyProposal}>Copy proposal</button>
                 <button type="button" onClick={resetBoard}>Reset</button>
               </div>
@@ -416,8 +512,21 @@ export function EcosystemBoard() {
                       data-selected={selectedId === node.id}
                       data-state={node.state}
                       data-shape={shape}
+                      data-dragging={draggingId === node.id}
                       style={{ left: position.x, top: position.y }}
-                      onClick={() => setSelectedId(node.id)}
+                      onPointerDown={(event) => startNodeDrag(event, node.id)}
+                      onPointerMove={moveNodeDrag}
+                      onPointerUp={endNodeDrag}
+                      onPointerCancel={endNodeDrag}
+                      onKeyDown={(event) => nudgeNode(event, node.id)}
+                      onClick={() => {
+                        // The click that ends a drag must not also re-select.
+                        if (consumedClick.current) {
+                          consumedClick.current = false;
+                          return;
+                        }
+                        setSelectedId(node.id);
+                      }}
                     >
                       {shape === 'surface' && entry && <Chrome href={entry.href} />}
                       <span className={styles.cardTopline}>
@@ -432,7 +541,9 @@ export function EcosystemBoard() {
                   );
                 })}
               </div>
-              <div className={styles.mapHint}>drag to pan · wheel or +/- to zoom · click a card to inspect</div>
+              <div className={styles.mapHint}>
+                drag a card to move it · drag the background to pan · wheel to zoom · Tidy snaps to the grid
+              </div>
 
               <div className={styles.legend}>
                 <div>
