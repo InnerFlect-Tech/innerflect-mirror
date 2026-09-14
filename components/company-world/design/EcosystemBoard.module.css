@@ -192,16 +192,71 @@
   pointer-events: none;
 }
 
+/*
+ * Relation families, from `relationFamily()`. Seventeen kinds drawn as one
+ * grey line said nothing; five families each drawn differently let you read
+ * what a thing is made of apart from where its data goes.
+ */
 .relation {
   fill: none;
-  stroke: var(--border-default);
+  stroke: var(--relation-colour, var(--border-default));
   stroke-width: 2;
-  opacity: 0.6;
-  marker-end: url(#ecosystem-arrow);
+  opacity: 0.55;
 }
 
-.relations marker path {
+/* composition — solid and strongest: this is structure, not traffic. */
+.relation[data-family='composition'] {
+  --relation-colour: #43cec1;
+
+  stroke-width: 2.5;
+  opacity: 0.85;
+}
+
+/* journey — the path a person walks. Quiet and continuous. */
+.relation[data-family='journey'] {
+  --relation-colour: var(--border-default);
+}
+
+/* projection — data in motion, so it moves visually too. */
+.relation[data-family='projection'] {
+  --relation-colour: #6d8fe0;
+
+  stroke-dasharray: 7 5;
+}
+
+/* authority — permission and proof, held at arm's length. */
+.relation[data-family='authority'] {
+  --relation-colour: #d8a34d;
+
+  stroke-dasharray: 2 5;
+  stroke-linecap: round;
+}
+
+/* action — one part asking another to actually do something. */
+.relation[data-family='action'] {
+  --relation-colour: #e16d5d;
+
+  stroke-dasharray: 12 4 3 4;
+}
+
+.arrow path {
   fill: var(--border-default);
+}
+
+.arrow[data-family='composition'] path {
+  fill: #43cec1;
+}
+
+.arrow[data-family='projection'] path {
+  fill: #6d8fe0;
+}
+
+.arrow[data-family='authority'] path {
+  fill: #d8a34d;
+}
+
+.arrow[data-family='action'] path {
+  fill: #e16d5d;
 }
 
 .card {
@@ -299,6 +354,15 @@
   bottom: -1px;
   border-right-width: 2px;
   border-bottom-width: 2px;
+}
+
+/*
+ * layer — a stratum: rounded on top, resting on a coloured base. One of the
+ * five capabilities an operating system is made of.
+ */
+.card[data-shape='layer'] {
+  border-bottom: 3px solid var(--card-edge);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-xs) var(--radius-xs);
 }
 
 /* infrastructure — a boundary drawn around what it contains. */
@@ -503,6 +567,16 @@
   backdrop-filter: blur(6px);
 }
 
+.legend > div {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.legend > div + div {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+}
+
 .legend ul {
   display: grid;
   gap: var(--space-2);
@@ -577,9 +651,41 @@
   border-bottom-width: 2px;
 }
 
+.legendMark[data-shape='layer'] {
+  border-bottom: 3px solid var(--border-strong);
+  border-radius: 0.4rem 0.4rem var(--radius-xs) var(--radius-xs);
+}
+
 .legendMark[data-shape='infrastructure'] {
   border-style: dashed;
   border-radius: 0;
+}
+
+/* Line legend: the same stroke treatments the SVG uses. */
+.legendLine {
+  flex: 0 0 auto;
+  width: 1.5rem;
+  border-top: 2px solid var(--border-default);
+}
+
+.legendLine[data-family='composition'] {
+  border-top-width: 2.5px;
+  border-top-color: #43cec1;
+}
+
+.legendLine[data-family='projection'] {
+  border-top-style: dashed;
+  border-top-color: #6d8fe0;
+}
+
+.legendLine[data-family='authority'] {
+  border-top-style: dotted;
+  border-top-color: #d8a34d;
+}
+
+.legendLine[data-family='action'] {
+  border-top-style: dashed;
+  border-top-color: #e16d5d;
 }
 
 .factShape {
@@ -692,6 +798,104 @@
   color: var(--text-accent);
   font-size: var(--fs-xs);
   overflow-wrap: anywhere;
+}
+
+/*
+ * "What this is made of" — the composition tree. One level of parts, each with
+ * what it stands on, so an operating system reads as five named layers on
+ * named infrastructure instead of an opaque box.
+ */
+.composition {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+.composition ol {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: layer;
+}
+
+.composition > ol > li {
+  display: grid;
+  gap: 2px;
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--border-subtle);
+  counter-increment: layer;
+}
+
+.composition > ol > li > button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.composition > ol > li > button::before {
+  content: counter(layer, decimal-leading-zero);
+  color: var(--text-faint);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+}
+
+.composition > ol > li > button:hover b {
+  text-decoration: underline;
+}
+
+.composition > ol > li > button b {
+  font-weight: 500;
+}
+
+.compositionSummary {
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+  line-height: var(--leading-tight);
+}
+
+.standsOn {
+  display: grid;
+  gap: 2px;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.standsOn li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--fs-xs);
+}
+
+.standsOn i {
+  flex: 0 0 auto;
+  color: var(--text-faint);
+  font-style: normal;
+}
+
+.standsOn button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+  text-align: left;
+  cursor: pointer;
+}
+
+.standsOn button:hover {
+  color: var(--text-accent);
+  text-decoration: underline;
 }
 
 .relationsList {

@@ -18,9 +18,11 @@ import {
   ECOSYSTEM_RELATIONS,
   ECOSYSTEM_PAGE_GROUPS,
   ECOSYSTEM_PAGES,
+  ECOSYSTEM_RELATION_FAMILIES,
   ECOSYSTEM_SHAPES,
   REPOSITORY_SCOPE,
   nodeShape,
+  relationFamily,
   type EcosystemCategoryId,
   type EcosystemNode,
   type EcosystemNodeId,
@@ -34,7 +36,7 @@ type CategoryFilter = EcosystemCategoryId | 'all';
 type Point = { x: number; y: number };
 type DragState = { x: number; y: number; pan: Point };
 
-const CANVAS = { width: 2280, height: 1180 };
+const CANVAS = { width: 2720, height: 1280 };
 const CARD_WIDTH = 292;
 const CARD_HEIGHT = 164;
 const INITIAL_POSITIONS = Object.fromEntries(
@@ -144,6 +146,28 @@ export function EcosystemBoard() {
     [selectedId],
   );
   const selectedShape: EcosystemNodeShape = nodeShape(selected);
+
+  /**
+   * What the selected thing is made of, one level down, and what each of those
+   * parts stands on. This is the whole point of the `composed-of` / `runs-on`
+   * distinction: an operating system is five layers, and each layer rests on
+   * named infrastructure. Derived from relations — nothing is listed here that
+   * the map does not also draw.
+   */
+  const composition = useMemo(() => {
+    const partsOf = (id: EcosystemNodeId) =>
+      ECOSYSTEM_RELATIONS.filter(
+        (relation) => relation.from === id && relationFamily(relation) === 'composition',
+      );
+    return partsOf(selectedId).map((relation) => ({
+      relation,
+      node: ECOSYSTEM_NODES_BY_ID[relation.to],
+      standsOn: partsOf(relation.to).map((inner) => ({
+        relation: inner,
+        node: ECOSYSTEM_NODES_BY_ID[inner.to],
+      })),
+    }));
+  }, [selectedId]);
 
   const visibleNodes = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -348,9 +372,21 @@ export function EcosystemBoard() {
                   aria-hidden="true"
                 >
                   <defs>
-                    <marker id="ecosystem-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                      <path d="M0,0 L8,4 L0,8 Z" />
-                    </marker>
+                    {ECOSYSTEM_RELATION_FAMILIES.map((family) => (
+                      <marker
+                        key={family.id}
+                        id={`ecosystem-arrow-${family.id}`}
+                        className={styles.arrow}
+                        data-family={family.id}
+                        markerWidth="8"
+                        markerHeight="8"
+                        refX="7"
+                        refY="4"
+                        orient="auto"
+                      >
+                        <path d="M0,0 L8,4 L0,8 Z" />
+                      </marker>
+                    ))}
                   </defs>
                   {visibleRelations.map((relation) => {
                     const from = positions[relation.from];
@@ -358,8 +394,9 @@ export function EcosystemBoard() {
                     return (
                       <path
                         key={relation.id}
+                        data-family={relationFamily(relation)}
+                        markerEnd={`url(#ecosystem-arrow-${relationFamily(relation)})`}
                         d={'M ' + (from.x + CARD_WIDTH / 2) + ' ' + (from.y + CARD_HEIGHT / 2) + ' L ' + (to.x + CARD_WIDTH / 2) + ' ' + (to.y + CARD_HEIGHT / 2)}
-                        markerEnd="url(#ecosystem-arrow)"
                         className={styles.relation}
                       />
                     );
@@ -398,15 +435,28 @@ export function EcosystemBoard() {
               <div className={styles.mapHint}>drag to pan · wheel or +/- to zoom · click a card to inspect</div>
 
               <div className={styles.legend}>
-                <span className={styles.eyebrow}>Shape = what it is</span>
-                <ul>
-                  {ECOSYSTEM_SHAPES.map((entry) => (
-                    <li key={entry.id} title={entry.description}>
-                      <span className={styles.legendMark} data-shape={entry.id} aria-hidden="true" />
-                      {entry.name}
-                    </li>
-                  ))}
-                </ul>
+                <div>
+                  <span className={styles.eyebrow}>Shape = what it is</span>
+                  <ul>
+                    {ECOSYSTEM_SHAPES.map((entry) => (
+                      <li key={entry.id} title={entry.description}>
+                        <span className={styles.legendMark} data-shape={entry.id} aria-hidden="true" />
+                        {entry.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <span className={styles.eyebrow}>Line = how they relate</span>
+                  <ul>
+                    {ECOSYSTEM_RELATION_FAMILIES.map((entry) => (
+                      <li key={entry.id} title={entry.description}>
+                        <span className={styles.legendLine} data-family={entry.id} aria-hidden="true" />
+                        {entry.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
@@ -450,6 +500,42 @@ export function EcosystemBoard() {
             <a className={styles.source} href={sourceHref(selected.source.path)} target="_blank" rel="noreferrer">
               Open source: {selected.source.path}
             </a>
+            {composition.length > 0 && (
+              <div className={styles.composition}>
+                <span className={styles.eyebrow}>
+                  What {selected.name} is made of
+                </span>
+                <ol>
+                  {composition.map(({ relation, node, standsOn }) => (
+                    <li key={relation.id}>
+                      <button type="button" onClick={() => setSelectedId(node.id)}>
+                        <span
+                          className={styles.legendMark}
+                          data-shape={nodeShape(node)}
+                          aria-hidden="true"
+                        />
+                        <b>{node.name}</b>
+                        <StateBadge state={node.state} />
+                      </button>
+                      <span className={styles.compositionSummary}>{node.summary}</span>
+                      {standsOn.length > 0 && (
+                        <ul className={styles.standsOn}>
+                          {standsOn.map((inner) => (
+                            <li key={inner.relation.id}>
+                              <i>{inner.relation.label}</i>
+                              <button type="button" onClick={() => setSelectedId(inner.node.id)}>
+                                {inner.node.name}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
             <div className={styles.relationsList}>
               <span className={styles.eyebrow}>Relations</span>
               {ECOSYSTEM_RELATIONS.filter((relation) => relation.from === selected.id || relation.to === selected.id).map((relation) => {
