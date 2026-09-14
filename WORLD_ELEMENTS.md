@@ -717,6 +717,88 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     remember. Filed rather than applied because two are in `components/company/**`
     (UI-shell) and one is in `components/company-world/design/**` (Codex's active claim).
 
+
+25. **Whole-environment architecture SSOT and continuous audit — all sessions.** The
+    repository must expose the whole Innerflect production system, not only its routes or
+    Mirror visuals. The architecture view must say what exists, what is an honest placeholder,
+    and what is still missing; a route or attractive screen is not evidence of production
+    readiness.
+
+    **Current audited baseline (2026-09-14).** Mirror surfaces, fixture records, the shared
+    2D/3D language, the ecosystem registry/board and Cloudflare-compatible frontend build
+    exist. At filing time the committed tree has no production identity/tenant boundary,
+    persistence schema or migrations, repository/API layer, connector ingestion/webhooks,
+    durable jobs/queues/retries, end-to-end operation effects, observability pipeline, CI, or
+    proven backup/restore path. Operational figures are fixture-backed. Keep this baseline
+    updated from source evidence; do not preserve a stale assessment after a capability lands.
+
+    **One architecture, shown in six layers**
+
+    | Layer | Must cover |
+    |---|---|
+    | People and journeys | self-builder, managed client, Innerflect operator, human and agent actors |
+    | Products and entry points | Open Mirror, OS Shop, Forge Shop, Mirror, Studio, Admin, Innerflect's own Mirror |
+    | Experience | shared shell and Command Centre, accessible 2D, semantic 3D, inspectors, design Elements/Floor/Lab |
+    | Operating core | company graph, workflow definition/execution, knowledge/evidence, policy/authority/approval, typed operations, agents, verification/outcomes/audit |
+    | Data and integrations | identity/tenancy, connectors, ingestion/deduplication, event and relational stores, object/search storage, jobs/queues, notifications |
+    | Production platform | environments/deployment, secrets/config, security/privacy, observability/SLOs, billing/entitlements, testing, migrations/rollback/restore |
+
+    One machine-readable registry is the source for the ecosystem board, architecture
+    documentation and conformance checks. Each architecture node needs a stable id, kind,
+    product/scope, audience and access boundary, owner/source path, dependencies, and evidence.
+    Track three independent axes so placeholders cannot masquerade as finished work:
+
+    - implementation: missing · placeholder · functional · retired;
+    - data: fixture · sandbox · production;
+    - readiness: prototype · internal alpha · private beta · production.
+
+    Names, paths, layouts and visual forms are working placeholders and should become simpler,
+    clearer and more coherent as they are tested. The stable contract is the audience, intent,
+    access boundary, record identity, typed operation, authority, evidence and outcome. A board
+    edit is only a draft until an authenticated typed operation changes canonical source and
+    produces an event; the board never becomes a second database.
+
+    **Golden production slice (PROD-01).** Prove the architecture vertically before building
+    every surface horizontally:
+
+    `invite/authenticate → authorised company scope → connect one low-risk source →
+    ingest/deduplicate event → persistent RecordRef → reconstruct/correct workflow →
+    typed action → policy/approval → idempotent effect → event → verification → outcome/audit`.
+
+    The same ids must resolve in Mirror HTML, 2D and 3D and in permitted Studio/Admin views.
+    The slice must survive refresh, a second device, retry, concurrent edit, session expiry,
+    provider timeout and attempted cross-tenant access.
+
+    **Continuous audit routine**
+
+    - Per coherent commit, fast gate: type/lint and existing conformance checks; architecture
+      registry ↔ real route/source parity; no unregistered exposed route; no production claim
+      without evidence; no direct fixture import in a production adapter; every mutation and
+      selectable visual resolves to a registered operation or `RecordRef`.
+    - Nightly once CI exists: PROD-01, tenant/role isolation, dependency and secret scanning,
+      accessibility, mobile/no-WebGL parity, failure/retry behavior, and visual/performance
+      budgets.
+    - Before a release: full browser/device journeys, migration and rollback, backup/restore,
+      forced-failure observability, security/privacy review and SLO/runbook proof.
+    - Architecture review: remove retired paths and duplicate truths; update status from code,
+      tests and telemetry. Generate the board/report rather than manually redrawing it.
+
+    **Linear delivery and ownership.** First restore a green branch, then land the registry and
+    gates, then the minimum identity/tenant/data/operation spine, then PROD-01, then project
+    that spine into the remaining products, then harden for release. Codex/foundation owns
+    contracts and production plumbing; UI owns accessible product projections; 3D/design owns
+    semantic spatial projection. Each agent takes one bounded slice at a time and leaves a
+    five-bullet maximum handoff. Visual refinement can continue over honest placeholders, but
+    “looks complete” never advances either the data or readiness axis.
+
+    **Acceptance.** A new contributor can open one index, distinguish present/placeholder/
+    missing at a glance, follow any node to its source, tests and owner, and trace PROD-01
+    across every layer. Adding or removing a registered product, page, operation, store or
+    integration updates the board and generated architecture automatically or fails the
+    audit with an actionable diff. The fast audit belongs in the root check and CI; the full
+    audit belongs at release gates. The in-flight `docs/PRODUCT_READINESS.md` work should
+    reference this architecture instead of creating a competing catalogue.
+
 ## Semantic review for the next element pass
 
 The ten V1 GLBs are present and their geometry is unchanged from the imported kit. The
