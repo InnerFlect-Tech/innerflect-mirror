@@ -34,3 +34,11 @@ architecture can be tested while the Company composition establishes the shared 
 3. Glyphs identify the kind of active capability on a platform; colour communicates state only.
 4. Connection paths communicate operational relationships, not decoration.
 5. The function dock changes the company constitution live; downstream pages inherit the same enabled set.
+
+## Decisions surface
+
+`Decisions` preserves the strongest interaction model from the earlier Approvals concept,
+but places it inside the current product architecture. It is the human-authority layer:
+summary signals first, a deliberately short pending queue with recommendation/evidence,
+and the operator's explicit authority limits alongside it. Red is reserved for overdue or
+unsafe conditions, amber for attention, and teal for a safe recommendation.
