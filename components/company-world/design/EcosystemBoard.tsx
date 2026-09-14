@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import {
   useCallback,
   useMemo,
@@ -46,7 +47,11 @@ function NodeMark({ kind }: { kind: EcosystemNode['kind'] }) {
 }
 
 function StateBadge({ state }: { state: EcosystemNode['state'] }) {
-  return <span className={styles.stateBadge}>{state}</span>;
+  return (
+    <span className={styles.stateBadge} data-state={state}>
+      {state}
+    </span>
+  );
 }
 
 function groupPages(group: EcosystemPageGroupId) {
@@ -55,6 +60,36 @@ function groupPages(group: EcosystemPageGroupId) {
 
 function sourceHref(path: string) {
   return 'https://github.com/InnerFlect-Tech/innerflect-mirror/blob/mirror/core-four-world/' + path;
+}
+
+/** Thumbnails are captured ahead of time by scripts/capture-ecosystem-thumbnails.ts
+ * to public/ecosystem-thumbnails/<page id>.png — looked up by naming convention,
+ * no registry field needed. Hidden on load failure rather than showing a broken image. */
+function thumbnailSrc(pageId: string) {
+  return `/ecosystem-thumbnails/${pageId}.png`;
+}
+
+function Thumbnail({ pageId, label }: { pageId: string; label: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div className={styles.thumbnailMissing}>
+        Screenshot not yet captured for {label}
+      </div>
+    );
+  }
+  return (
+    <div className={styles.thumbnailFrame}>
+      <Image
+        src={thumbnailSrc(pageId)}
+        alt={`Screenshot of ${label}`}
+        fill
+        unoptimized
+        sizes="320px"
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
 }
 
 export function EcosystemBoard() {
@@ -70,6 +105,10 @@ export function EcosystemBoard() {
 
   const drag = useRef<DragState | null>(null);
   const selected = ECOSYSTEM_NODES_BY_ID[selectedId];
+  const selectedPages = useMemo(
+    () => ECOSYSTEM_PAGES.filter((page) => page.surface === selectedId),
+    [selectedId],
+  );
 
   const visibleNodes = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -299,6 +338,7 @@ export function EcosystemBoard() {
                       type="button"
                       className={styles.card}
                       data-selected={selectedId === node.id}
+                      data-state={node.state}
                       style={{ left: position.x, top: position.y }}
                       onClick={() => setSelectedId(node.id)}
                     >
@@ -334,6 +374,19 @@ export function EcosystemBoard() {
               <div><dt>Authority</dt><dd>{selected.source.authority}</dd></div>
             </dl>
             <p className={styles.detail}>{selected.detail}</p>
+            {selectedPages.length > 0 && (
+              <div className={styles.thumbnails}>
+                {selectedPages.map((page) => (
+                  <div key={page.id} className={styles.thumbnail}>
+                    <Thumbnail pageId={page.id} label={page.name} />
+                    <span className={styles.thumbnailCaption}>
+                      <span>{page.name}</span>
+                      <StateBadge state={page.state} />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
             <a className={styles.source} href={sourceHref(selected.source.path)} target="_blank" rel="noreferrer">
               Open source: {selected.source.path}
             </a>

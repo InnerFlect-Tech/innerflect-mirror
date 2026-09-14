@@ -229,6 +229,48 @@
   box-shadow: 0 0 0 2px var(--state-healthy-surface), var(--shadow-md);
 }
 
+/*
+ * Implementation-state colour: a left rail on the card and a matching badge
+ * fill. Deliberately its own small palette, not lib/tokens' SceneState set —
+ * that one models company-world health (neutral/active/attention/critical)
+ * for the 3D scene; this models registry truth (live/building/planned/
+ * external) for this one dev-facing board.
+ */
+.card {
+  border-left-width: 3px;
+}
+
+.card[data-state='live'] {
+  border-left-color: #43cec1;
+}
+
+.card[data-state='external'] {
+  border-left-color: #6d8fe0;
+}
+
+.card[data-state='building'] {
+  border-left-color: #d8a34d;
+}
+
+.card[data-state='planned'] {
+  border-left-color: var(--border-subtle);
+}
+
+.stateBadge[data-state='live'] {
+  border-color: #43cec1;
+  color: #55cbbb;
+}
+
+.stateBadge[data-state='external'] {
+  border-color: #6d8fe0;
+  color: #9db1ee;
+}
+
+.stateBadge[data-state='building'] {
+  border-color: #d8a34d;
+  color: #d8a34d;
+}
+
 .card strong {
   font-size: var(--fs-md);
   letter-spacing: var(--tracking-tight);
@@ -366,6 +408,52 @@
   color: var(--text-secondary);
   font-size: var(--fs-sm);
   line-height: var(--leading-body);
+}
+
+.thumbnails {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.thumbnail {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.thumbnailFrame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-page);
+}
+
+.thumbnailFrame img {
+  object-fit: cover;
+  object-position: top;
+}
+
+.thumbnailCaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+}
+
+.thumbnailMissing {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 10;
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+  text-align: center;
+  padding: var(--space-3);
 }
 
 .source {
