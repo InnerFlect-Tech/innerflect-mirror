@@ -55,6 +55,24 @@ numbered request in `WORLD_ELEMENTS.md`.
   written down as the rule, not left implicit. Until one is chosen, do not assume the
   Ownership section is current for anything Codex has an active claim on today.
 
+## Note on this session's own commit
+
+The board-consolidation edit above (released the stale `Scene.tsx` claim, merged the two
+"In flight / blocked" sections, closed out the resolved `EcosystemBoard` lint bullet) was
+written and staged, then landed inside the UI-shell session's `aad078b` rather than its own
+commit — that session's `git add -A` picked up this file's working-tree state alongside
+its own `AGENTS.md`/`README.md`/`WORLD_ELEMENTS.md` changes before this session committed
+separately. Content is correct and on `origin`; attribution is not. Same collision shape as
+the `ded0c2c` incident already on record here, smaller blast radius (docs only, no code
+overwritten). Not re-committing it — that would duplicate the content. Left as a transparent
+note per this file's own rule against silently losing or misattributing work.
+
+Request 22 (`lib/design/ecosystem.ts`, `'planned'` → `'live'` for `ecosystem-design`) is
+addressed to this session and is a genuine one-line change, but `lib/design/**` is
+Codex's active claim today per the row above — acting on it now would repeat the exact
+ownership-vs-active-claim collision this file just escalated. Left open for Codex, or for
+whoever resolves the ownership question, to close.
+
 ## Hand-off — read this first if you are picking the work up
 
 Everything decided is in `docs/DECISIONS.md`, newest first. Read it before
