@@ -41,6 +41,22 @@ numbered request in `WORLD_ELEMENTS.md`.
   likely to break the build as to fix anything. Whoever owns the toolchain should take
   this; it became visible when the repo went public and GitHub enabled Dependabot.
 
+## In flight / blocked (new)
+
+- **`npm run check` is red on the pulled tip (`4b943d5`).** `oxlint` fails on
+  `components/company-world/design/EcosystemBoard.tsx:170` — `onPanKeyDown` is declared,
+  never attached, and the pan surface's own `aria-label` already promises the keyboard
+  behaviour it provides. Exact one-line fix filed as request 20 in `WORLD_ELEMENTS.md`
+  rather than applied directly, because the file sits inside Codex's active claim below.
+  Until Codex (or whoever next owns that path) lands it, `npm run check` fails for
+  everyone who pulls this tip — flagging here so nobody re-diagnoses it.
+
+- **A second declared-ownership-vs-active-claim conflict, same pattern as `Scene.tsx`.**
+  Codex's claim row below lists `lib/design/**` and `WORLD_ELEMENTS.md` itself; the
+  Ownership section in `WORLD_ELEMENTS.md` assigns both to the 3D/design session. Not
+  resolved here — noting it so the next session that touches either path checks both
+  documents before assuming which one is current.
+
 ## Hand-off — read this first if you are picking the work up
 
 Everything decided is in `docs/DECISIONS.md`, newest first. Read it before
