@@ -15,8 +15,8 @@ Standalone shell prototype, intentionally isolated from the shared application.
 - The 3D vocabulary uses the canonical Innerflect V2 GLBs: company core, domain platform, human/agent/tool glyphs, knowledge, decision and risk objects.
 - Semantic labels and controls remain accessible DOM overlays; WebGL is reserved for the spatial model.
 - Motion is restrained to inspection parallax and a subtle living-core pulse, with reduced-motion support.
-- Desktop rail toggles between 280px and 78px; tablet rail toggles between 76px and 238px; phone rail is permanently 64px and therefore exposes no dead collapse control.
-- The prototype must be opened through its local HTTP server. A direct `file://` open redirects to `http://127.0.0.1:4178/` so ES modules and GLB assets have a valid origin.
+- Global commands are data-driven and share the same page activation and scope state as visible navigation; no parallel navigation model is allowed.
+- `⌘/Ctrl + K` opens an accessible modal command surface with search, grouped results, arrow navigation, Enter execution, Escape dismissal and focus restoration.
 
 ## Navigation proposal
 
@@ -37,23 +37,9 @@ architecture can be tested while the Company composition establishes the shared 
 4. Connection paths communicate operational relationships, not decoration.
 5. The function dock changes the company constitution live; downstream pages inherit the same enabled set.
 
-## Decisions surface
+## Interaction architecture
 
-`Decisions` preserves the strongest interaction model from the earlier Approvals concept,
-but places it inside the current product architecture. It is the human-authority layer:
-summary signals first, a deliberately short pending queue with recommendation/evidence,
-and the operator's explicit authority limits alongside it. Red is reserved for overdue or
-unsafe conditions, amber for attention, and teal for a safe recommendation.
-
-Domains use stable geometric symbols and names rather than permanent category colours:
-`◒ Marketing · ◇ Sales · ▱ Delivery · ▥ Finance · ♙ People · ⌬ Operations`.
-This lets a decision communicate its domain and its operational state simultaneously;
-selection uses neutral contrast so it cannot be mistaken for autonomy.
-
-## View configuration
-
-Area scope and page composition live in the right-side `View` drawer rather than the
-primary canvas. Each stable page owns its own module set, and modules can be shown or
-hidden independently. Company exposes the world, area labels, function controls and
-state legend; Decisions exposes its summary, queue and authority panel. The compact
-Company header states only the page and its purpose.
+- One `activatePage` function owns navigation from the rail, settings and command centre.
+- Command items are declarative data (`group`, `label`, `detail`, `keywords`, `run`) rendered with event delegation.
+- Domain scope is shared state, so selecting a scope through Command K updates the same View controls and page composition.
+- The command centre becomes a bottom sheet on phone-sized screens while retaining the same keyboard and semantic model.
