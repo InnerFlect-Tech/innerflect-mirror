@@ -42,7 +42,9 @@ import { ELEMENTS_BY_ID, type ElementDef } from '@/lib/design/elements';
 import { paletteByFamily, validatePlacement, type PlacementTarget } from '@/lib/design/composition';
 import { stateColors } from '@/lib/tokens/state';
 import type { SceneState } from '@/lib/model/state';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { ElementSymbol2D } from './ElementSymbol2D';
+import { LabScene3D, type Projected } from './LabScene3D';
 import styles from './Lab.module.css';
 
 const STATES: readonly SceneState[] = ['neutral', 'active', 'attention', 'critical'];
@@ -180,6 +182,12 @@ export function Lab() {
   const [nodes, setNodes, onNodesChange] = useNodesState<LabNode>(seed.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(seed.edges);
   const [rejection, setRejection] = useState('');
+  // Selection lives here, not in React Flow's per-node `selected` flag: the 3D
+  // projection has no React Flow to read that from, and criterion 1 requires a
+  // toggle to preserve the selection. One owner, both projections.
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [projection, setProjection] = useState<'2d' | '3d'>('2d');
+  const isMobile = useIsMobile();
   const [flow, setFlow] = useState<ReactFlowInstance<LabNode, Edge> | null>(null);
   const wrapper = useRef<HTMLDivElement>(null);
 
@@ -218,7 +226,31 @@ export function Lab() {
     [past, future, nodes, edges, setNodes, setEdges],
   );
 
-  const selected = nodes.find((n) => n.selected) ?? null;
+  const selected = nodes.find((n) => n.id === selectedId) ?? null;
+
+  /**
+   * Absolute canvas positions, with docked children resolved against their
+   * parent. React Flow stores a child's position relative to its parent; 3D
+   * has no parent transform, so the resolution happens once, here, and both
+   * projections read the same numbers.
+   */
+  const projected: Projected[] = useMemo(
+    () =>
+      nodes.map((n) => {
+        const parent = n.parentId ? nodes.find((p) => p.id === n.parentId) : undefined;
+        return {
+          id: n.id,
+          elementId: n.data.elementId,
+          state: n.data.state,
+          x: n.position.x + (parent?.position.x ?? 0),
+          y: n.position.y + (parent?.position.y ?? 0),
+        };
+      }),
+    [nodes],
+  );
+
+  // Mobile receives the 2D projection and never creates WebGL (criterion 9).
+  const showing: '2d' | '3d' = isMobile ? '2d' : projection;
   const selectedElement = selected
     ? ELEMENTS_BY_ID[selected.data.elementId as keyof typeof ELEMENTS_BY_ID]
     : null;
@@ -363,14 +395,24 @@ export function Lab() {
       </aside>
 
       <div className={styles.canvas} ref={wrapper}>
+        {showing === '3d' ? (
+          <LabScene3D
+            nodes={projected}
+            edges={edges}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+          />
+        ) : (
         <ReactFlow<LabNode, Edge>
-          nodes={nodes}
+          nodes={nodes.map((n) => ({ ...n, selected: n.id === selectedId }))}
           edges={edges}
           nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onInit={setFlow}
+          onNodeClick={(_, n) => setSelectedId(n.id)}
+          onPaneClick={() => setSelectedId(null)}
           onDrop={onDrop}
           onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
           onNodeDragStart={snapshot}
@@ -381,8 +423,26 @@ export function Lab() {
           <Background gap={22} color="#16211f" />
           <Controls />
         </ReactFlow>
+        )}
 
         <div className={styles.toolbar}>
+          {/* Hidden on mobile rather than disabled: there is no 3D to switch to
+              there, and a dead control invites the question of why. */}
+          {!isMobile && (
+            <fieldset className={styles.projection}>
+              <legend className="sr-only">Projection</legend>
+              {(['2d', '3d'] as const).map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  aria-pressed={projection === p}
+                  onClick={() => setProjection(p)}
+                >
+                  {p.toUpperCase()}
+                </button>
+              ))}
+            </fieldset>
+          )}
           <button type="button" onClick={() => step(true)} disabled={past.length === 0}>
             Undo
           </button>

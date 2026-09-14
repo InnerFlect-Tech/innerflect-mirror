@@ -539,13 +539,24 @@ Numbers are never reused, so a reference to "request 5" always means the same th
       second outgoing edge on an ordinary step. **Not yet exercised in a test** — simulating a
       port-to-port drag needs the e2e harness, not a synthetic event.
 
-    **Not met, and not claimed:**
-    - **1** — there is no 3D projection yet. This is the 2D half only, so "toggling preserves
-      every id/position/connection" is untested by construction.
-    - **9** — no mobile WebGL guard and no draw-call/triangle measurement, because there is no
-      3D projection to measure.
-    - Attachments validate correctly but are not visually parented to their step — a dropped
-      Human Glyph sits where the cursor left it rather than docking to the node it attached to.
+    **✅ 1 and 9 NOW MET (2026-09-14, same session).** `LabScene3D.tsx` renders the same graph
+    in 3D from the same `nodes`/`edges` state — it owns no graph of its own.
+    - **1** — selection was lifted out of React Flow's per-node `selected` flag into one owner,
+      because the 3D projection has no React Flow to read that from. Verified across a toggle:
+      `draft:decision-gate:2` / Decision Gate / `attention` / incoming 1 / outgoing 1 is
+      identical in the inspector before and after. Docked children's positions are resolved
+      against their parent once, so both projections read the same absolute numbers.
+    - **9** — measured with this file's own method (`info.autoReset = false; info.reset()`,
+      then leave it alone): **0 draw calls and 0 triangles after 2.5s idle**, from
+      `frameloop="demand"`. Populated graph at rest: **17 draw calls, 820 triangles** against
+      the 120 / 200k budget. Mobile (375px) renders **0 `<canvas>` elements** and hides the
+      projection toggle entirely — the 2D route is the only one that exists there.
+    - Attachments now dock: `parentId`, positioned below the step, stacking when several
+      attach, moving with it. Not `extent:'parent'` — that would cage a 176×56 child inside a
+      176×56 parent; the relationship wanted is "moves with", not "contained by".
+
+    **Still open:** criterion 4's branch guard is implemented but still not exercised by a
+    test; reduced-motion has nothing to stop yet because the lab animates nothing.
 
     **Also found:** the repo's Playwright browsers were never installed on this machine, so
     `npm run test:e2e` could not run at all. Installed chromium.

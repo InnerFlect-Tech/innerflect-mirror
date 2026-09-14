@@ -63,3 +63,9 @@
 /* A node whose element id is not in the registry. Loud on purpose. */
 .node[data-unknown] { border-color: #6d2f22; background: #250f0b; }
 .node[data-unknown] b { color: #f0b7a8; }
+
+.projection { display: flex; gap: 0; margin: 0; padding: 0; border: 0; min-inline-size: 0; }
+.projection button { border-radius: 0; }
+.projection button:first-of-type { border-start-start-radius: 4px; border-end-start-radius: 4px; }
+.projection button:last-of-type { border-start-end-radius: 4px; border-end-end-radius: 4px; margin-inline-start: -1px; }
+.projection button[aria-pressed='true'] { border-color: #4d7a6f; color: #d6e0dc; background: rgba(77,122,111,.18); }
