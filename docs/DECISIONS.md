@@ -7,6 +7,22 @@ Keep entries short: what was decided, why, and what it rules out. Link the commi
 
 ---
 
+## 2026-09-14 — V2.1 composition decision
+
+**Decided:** the fifteen element semantics remain fixed. All geometry was rebuilt as
+composable pieces rather than self-contained sculptures — a Record Token, Risk Hotspot and
+Tool previously each carried its own visual environment, so none could read as a subordinate
+part of one workflow. `ElementSymbol2D` is the one lightweight 2D projection; there is no
+second icon catalogue. Permission Boundary's style unit (posts, rails, materials) is fixed
+in the GLB; its extent is procedural, derived at runtime from the `AuthorityLimit` /
+`RoleGrant` record. `/design/elements`, `/design/floor` and `/design/lab` prove vocabulary,
+reality and grammar respectively — three distinct jobs, not three redundant previews.
+
+**Rules out:** independent 2D icon catalogues, free-standing attachment sculptures with
+their own environment, and a generic unconstrained node canvas for `/design/lab`.
+
+Closes WORLD_ELEMENTS.md request 14.
+
 ## 2026-09-14 — Three open status decisions, resolved by the user
 
 **1. Ownership-vs-active-claim conflict (recurred on `Scene.tsx`, `EcosystemBoard.tsx`,

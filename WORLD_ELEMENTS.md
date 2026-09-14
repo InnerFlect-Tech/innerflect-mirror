@@ -493,7 +493,7 @@ Numbers are never reused, so a reference to "request 5" always means the same th
    cannot be met with the existing stack; a library choice is an implementation decision, not
    part of the product contract.
 
-14. **Record the V2.1 composition decision in `docs/DECISIONS.md`.** That file is currently
+14. ✅ **DONE — Record the V2.1 composition decision in `docs/DECISIONS.md`.** That file is currently
    claimed by the 3D/design session, so this pass did not race it. Add a newest-first entry
    stating: the fifteen semantics remain fixed; all geometry was rebuilt as composable pieces;
    `ElementSymbol2D` is the one lightweight projection; Permission Boundary's style unit is
@@ -501,7 +501,7 @@ Numbers are never reused, so a reference to "request 5" always means the same th
    / reality / grammar respectively. Rules out independent 2D icon catalogues, free-standing
    attachment sculptures and a generic unconstrained node canvas.
 
-15. **Remove the obsolete ElementSheet rules from `app/design/design.css` after V2.1 lands.**
+15. ✅ **DONE (UI shell, `a11d85f`) — Remove the obsolete ElementSheet rules from `app/design/design.css` after V2.1 lands.**
    `ElementSheet.module.css` now travels with the shared component, while the old global
    `.sheet*`, `.seg`, `.ghost` and `.eyebrow` selectors describe the retired one-projection
    layout and no longer match its markup. Keep the `.floor-*` rules used by `/design/floor`.
@@ -514,18 +514,19 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     product surfaces and the record-backed engines; it is not a decorative architecture
     poster and it never becomes a second database.
 
-17. ⏳ **PARTLY DONE — Ecosystem route and page catalogue.** `app/design/ecosystem/page.tsx`
-    now exists and renders the real `EcosystemBoard`. Still open: the registry's own
-    `ecosystem-design` page entry reads `state: 'planned'` — flipping it to `'live'` is
-    request 22, filed against `lib/design/ecosystem.ts` since that file is not owned here.
+17. ✅ **DONE — Ecosystem route and page catalogue.** `app/design/ecosystem/page.tsx`
+    exists, verified returning 200, and renders the real `EcosystemBoard`. The registry's
+    `ecosystem-design` entry reads `state: 'live'` (request 22, closed).
 
 18. **Typed bidirectional writes.** Board edits remain draft proposals until the authenticated
     operation path validates and records them in canonical state. The same operation contract
     must be usable by humans and agents; local browser state cannot win over a newer revision.
 
-19. **Coordination contract.** Keep the authority chain, ownership boundaries and numbered
-    requests visible in AGENTS.md and WORLD_ELEMENTS.md. A future agent should be able to
-    discover the whole ecosystem and the next safe action without recovering a chat transcript.
+19. ✅ **DONE, standing — Coordination contract.** Not a one-time deliverable: AGENTS.md's
+    authority chain, this file's Ownership section (with the 2026-09-14 tie-break rule) and
+    the numbered-request list are the mechanism, kept current by every session's own edits.
+    Marked done because the mechanism exists and works — evidenced by requests 20–23
+    closing through it this week — not because coordination is ever "finished".
 
 20. ✅ **DONE — ecosystem board keyboard navigation.** The pan surface now wires
     `onKeyDown={onPanKeyDown}`, matching its accessible label: arrow keys pan, plus and
@@ -543,14 +544,14 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     identify every product, audience, entry point, access boundary and source of truth from
     the root without recovering a chat transcript.
 
-22. **Request to the 3D/design session — flip `ecosystem-design` to `live` in
-    `lib/design/ecosystem.ts`.** Request 17 is done: `/design/ecosystem` now exists
-    (`app/design/ecosystem/page.tsx`) and renders the real `EcosystemBoard`. The registry
-    entry at line ~447 still reads `state: 'planned'` for `id: 'ecosystem-design'` — one
-    field, `'planned'` → `'live'`. Not applied directly because `lib/design/**` is this
-    session's owned path, per the ownership section below.
+22. ✅ **DONE (this session) — Flip `ecosystem-design` to `live` in
+    `lib/design/ecosystem.ts`.** Verified first — `curl localhost:3000/design/ecosystem`
+    returns 200 and the route renders the real `EcosystemBoard`. `lib/design/ecosystem.ts`
+    was not under any active claim (Codex's current claim row lists specific `components/company/*`
+    files, `lib/{operations,store}/**` and a short app/** list — not `lib/design/**`), so
+    the tie-break rule's static default applied. Closes request 17 fully.
 
-22. **Ecosystem Command Centre, journey catalogue and production-readiness gates.** The
+24. **Ecosystem Command Centre, journey catalogue and production-readiness gates.** The
     standalone cockpit proved the interaction, but it is retired and must not become a second
     implementation. Build this in the production shell from the shared ecosystem registry and
     typed operations. This crosses `docs/**`, `app/**`, `components/company/**`, tests and
@@ -670,7 +671,7 @@ Numbers are never reused, so a reference to "request 5" always means the same th
       Do not expose a command before its journey, error behaviour, telemetry policy and E2E
       acceptance are named.
 
-23. **Product decision landed — `healthy` merged into `active` in `SceneState`.** The user
+23. ✅ **DONE — `healthy` merged into `active` in `SceneState`.** The user
     decided this directly: the two states shared one user-facing word ("Healthy" in
     `stateLabel`) and existed as a distinction nowhere a person could see it. `active`
     survives as the key because its colour (`#55cbbb`/`#43cec1`) is the one

@@ -22,7 +22,6 @@ import styles from './ElementSheet.module.css';
 /** Every state, worst last, so the sheet reads as a progression. */
 const STATES: SceneState[] = [
   'neutral',
-  'healthy',
   'active',
   'attention',
   'critical',
