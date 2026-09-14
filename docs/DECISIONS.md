@@ -7,6 +7,57 @@ Keep entries short: what was decided, why, and what it rules out. Link the commi
 
 ---
 
+## 2026-09-14 — `vinext@1.0.0-beta.9` + `@vitejs/plugin-rsc@0.5.34` verified safe to apply
+
+**Closes the "still needs" item this repo's own dependency-advisory note left open:** "someone
+to actually try `vinext@1.0.0-beta.9`, confirm the dev server boots, `npm run check` stays
+green, and a real page loads, before touching `package.json`." Done, in an isolated `rsync`
+copy of the tree (`/tmp/vinext-probe`), never touching the shared `package.json`/lockfile
+`package*.json` owns — that path is Codex's active claim.
+
+**New finding the earlier semver check missed:** `vinext@1.0.0-beta.9` peer-requires
+`@vitejs/plugin-rsc@^0.5.34`; this repo is pinned to `0.5.26`. The earlier note ("every
+advisory's fix path resolves to `beta.9`, `isSemVerMajor: false`") checked `vinext`'s own
+semver only, not its peer requirement — bumping `vinext` alone fails to install at all.
+Both packages move together. Checked `@vitejs/plugin-rsc`'s own changelog (`vitejs/vite-plugin-react`,
+0.5.28→0.5.34): no breaking changes documented, mostly RSC transform refinements.
+
+**A false alarm worth recording so nobody re-derives it:** the first attempt (delete
+`package-lock.json`, fresh `npm install`) hit a real build failure — `@rolldown/binding-darwin-arm64`
+failed to `dlopen` (`__TEXT` load command content extends beyond end of file). This looked
+like an incompatibility from the bump. It wasn't: a control build on the **unmodified**
+repo (exact committed lockfile, `npm ci`) uses the identical `vite@8.0.13` → `rolldown@1.0.1`
+→ `@rolldown/binding-darwin-arm64` chain and built clean. Deleting the lockfile let npm
+re-resolve the entire dependency graph fresh rather than reuse the verified tree, and
+something in that fresh resolution (not identified further — not this investigation's
+question) produced a bad native binary on this machine. Repeating the bump the way a real
+PR would do it — keep the lockfile, `npm install vinext@1.0.0-beta.9 @vitejs/plugin-rsc@0.5.34`
+(2 packages changed, not 71) — built clean on the first try.
+
+**Verified, in the isolated probe:**
+- `tsc --noEmit`, `oxlint`, `check:tokens` — clean.
+- `npm run build` — succeeds, same five stages, same timing profile as the unmodified
+  control build.
+- `vinext start` (the actual production server, not dev mode) serving the build: all nine
+  routes — `/`, `/mirror`, `/processes`, `/approvals`, `/knowledge`, `/outcomes`, `/settings`,
+  `/design/elements`, `/design/floor`, `/design/ecosystem` — return `200` with real rendered
+  content (`Mirror · Innerflect` title, hydrated company-state text).
+- `npm audit`: 11 advisories → 9 (1 low, 8 high). The `esbuild`/Windows-only advisory and one
+  `vite` moderate both cleared; `sharp`, `undici`, `ws`, `react-server-dom-webpack`,
+  `miniflare`/`wrangler` remain — unrelated to this pair, tracked separately.
+- **Not fully clean:** `npm run check`'s `check:glyphs` step failed in the probe — but only
+  because `/tmp/vinext-probe` is an `rsync` copy with no `.git`, and that step's own
+  `git diff --exit-code` has nothing to diff against outside a git repo. Artifact of the
+  test method, not of the bump; `tsc`/`oxlint`/`check:tokens` already passed by that point,
+  and `check:glyphs`/`check:records`/`check:picks` do not touch either bumped package.
+
+**Rules out:** bumping `vinext` without `@vitejs/plugin-rsc` (install fails outright);
+re-diagnosing a `rolldown` native-binary load failure as a version-bump incompatibility —
+it reproduces on the unmodified repo too when the lockfile is discarded, and is unrelated
+to either package. Whoever applies this to the real `package.json`: use `npm install
+vinext@1.0.0-beta.9 @vitejs/plugin-rsc@0.5.34` against the existing lockfile, not a fresh
+`npm install` after deleting it.
+
 ## 2026-09-14 — `/design/lab` canvas: `@xyflow/react`, not a custom SVG canvas
 
 **Researched before writing any component code**, per request 13's own directive. Question:
