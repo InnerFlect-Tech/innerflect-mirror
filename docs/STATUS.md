@@ -18,7 +18,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
 | Claude · 3D/design | housekeeping this board — released the stale `Scene.tsx` claim (requests 2/3/4 closed, landed `2734696`), consolidated the repeated ownership-conflict note | `docs/STATUS.md` | 2026-09-14 |
-| Claude · UI shell | wiring `/design/ecosystem` route (request 17) against the existing `EcosystemBoard`; request 21 — updating `AGENTS.md` scope language and adding root `README.md` | `app/design/ecosystem/**`, `AGENTS.md`, `README.md` | 2026-09-14 |
+| Claude · UI shell | — idle — landed `aad078b`: `/design/ecosystem` route (request 17, UI-shell half), root `README.md` + `AGENTS.md` scope (request 21, closed), repo-scope decision in `docs/DECISIONS.md`. Filed request 22 (registry `state: 'planned'` -> `'live'` for `ecosystem-design`) against `lib/design/ecosystem.ts`, not owned here | `app/**`, `components/company/**`, `lib/model/{work,decision,knowledge,impact,mirror,activity,constitution}.ts`, `data/{work,decisions-queue,knowledge,impact,mirror,activity,constitution}.ts` | 2026-09-14 |
 | Codex · ChatGPT | specifying the ecosystem-wide user-journey, E2E and production-readiness contract as a numbered cross-boundary request | `WORLD_ELEMENTS.md`, `docs/STATUS.md` (coordination entries only) | 2026-09-14 |
 
 ## In flight / blocked
