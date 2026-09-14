@@ -62,16 +62,23 @@ function buildMaterialSet(state: SceneState): MaterialSet {
     }),
     // Transmission replaced by clearcoat over a dark base.
     glass: new MeshPhysicalMaterial({
-      color: new Color(shell.platform), roughness: 0.18, metalness: 0.2,
-      clearcoat: 0.9, clearcoatRoughness: 0.2, envMapIntensity: 1.5,
+      color: new Color(shell.platform), roughness: 0.24, metalness: 0.2,
+      clearcoat: 0.9, clearcoatRoughness: 0.24, envMapIntensity: 0.9,
       transparent: true, opacity: 0.45,
     }),
+    // `envMapIntensity` was 1.5 on both glass roles, which is a reasonable
+    // highlight on a part the size of a screen bezel and a flood on a part the
+    // size of a domain platform: the top face turns into a mirror of the studio
+    // key card and the whole platform reads as pastel paint. The palette's rule
+    // for this material is "dark glass that catches teal light, never teal
+    // plastic", and at 1.5 it was plastic. Lower reflection, slightly rougher,
+    // so the surface catches the light instead of becoming it.
     stateGlass: new MeshPhysicalMaterial({
       color: new Color(token.surface),
       emissive: hot.clone().multiplyScalar(GLASS_OF_SIGNAL),
-      roughness: 0.16, metalness: 0.18,
-      clearcoat: 0.9, clearcoatRoughness: 0.18, envMapIntensity: 1.5,
-      transparent: true, opacity: 0.5,
+      roughness: 0.26, metalness: 0.18,
+      clearcoat: 0.85, clearcoatRoughness: 0.26, envMapIntensity: 0.75,
+      transparent: true, opacity: 0.46,
     }),
     stateMid: new MeshStandardMaterial({
       color: accent.clone().multiplyScalar(0.5),
