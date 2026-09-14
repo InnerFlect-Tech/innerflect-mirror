@@ -41,7 +41,9 @@ repository does not build or deploy them, and only registers their existence and
 points so the ecosystem index stays honest about the whole environment:
 
 - Mirror and the free/open Open Mirror edition (in this repository);
-- OS Shop and Forge Shop (in this repository, planned);
+- OS Shop and Forge Shop (building, in this repository — a static HTML prototype for
+  both lives at `prototypes/innerflect-platforms/`; the real `app/shops/os` and
+  `app/shops/forge` routes do not exist yet);
 - Studio (live, external — studio.innerflect.tech) and Admin (live, external — reached by
   signing in at innerflect.tech/auth/sign-in);
 - the main website (live, external — innerflect.tech), the public entry point to the whole
@@ -62,8 +64,8 @@ change to the system does not silently drift from what those external products s
 | Main website | innerflect.tech (external) | Public; live |
 | Ecosystem index | /ecosystem | Public map of the full environment; planned |
 | Open Mirror | /open-mirror | Self-builder; public/open; planned |
-| OS Shop | /shops/os | Self-builder; public patterns; planned |
-| Forge Shop | /shops/forge | Public catalogue with gated proprietary capabilities; planned |
+| OS Shop | /shops/os | Self-builder; public patterns; building (prototype only, see below) |
+| Forge Shop | /shops/forge | Public catalogue with gated proprietary capabilities; building (prototype only, see below) |
 | Mirror | / and /mirror | Authenticated company operator; live |
 | Studio | studio.innerflect.tech (external) | Managed client; authenticated; live |
 | Admin | innerflect.tech/auth/sign-in (external) | Innerflect team; internal; live |
@@ -87,8 +89,8 @@ ECOSYSTEM_PAGES records every entry point and its implementation state.
 |---|---|
 | Main website | Innerflect's public marketing site and shared entry point (innerflect.tech). Live, hosted outside this repository. |
 | Mirror | The operational twin and constrained visual builder. It has a simpler free/open edition for self-builders. |
-| OS Shop | Patterns, playbooks and proven operating-system architectures. |
-| Forge Shop | Reusable design and implementation components: open components for self-builders and proprietary capabilities for managed clients. |
+| OS Shop | Patterns, playbooks and proven operating-system architectures. Building — see the static prototype at `prototypes/innerflect-platforms/os.html`. |
+| Forge Shop | Reusable design and implementation components: open components for self-builders and proprietary capabilities for managed clients. Building — see the static prototype at `prototypes/innerflect-platforms/forge.html`. |
 | Studio | Client-facing project, evidence and collaboration workspace for a managed operating system. Live, hosted outside this repository at studio.innerflect.tech. |
 | Admin | Innerflect's internal delivery, access, integration and governance console. Live, hosted outside this repository; reached by signing in at innerflect.tech/auth/sign-in. |
 

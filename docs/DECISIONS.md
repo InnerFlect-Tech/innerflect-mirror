@@ -554,3 +554,36 @@ the main website is live at `innerflect.tech`.
 **Rules out:** inventing a distinct `admin.innerflect.tech` subdomain. The user's answer
 described an auth flow through the main domain, not a confirmed separate subdomain, and
 this repository is public — infrastructure coordinates are not guessed.
+
+### OS Shop and Forge Shop: a real prototype existed outside the repo, moved in
+
+The user recalled that OS Shop and Forge Shop already existed somewhere and asked to
+find them. They were not in this repository, on the live main website, in the vault, or
+in any ChatGPT/Codex export — they were static HTML prototypes in a separate, non-git
+"tryout" workspace (`~/Documents/Working Projects/tryout/innerflect-platforms/`),
+running locally on the user's machine, unreachable from this session's sandbox.
+
+**Resolved this way:**
+1. The user's direction: move the files into this repository rather than leave them
+   scattered outside it. Copied into `prototypes/innerflect-platforms/` (same precedent
+   as `prototypes/cockpit-html/` — an isolated static prototype, not wired into `app/`),
+   with a README explaining what it is and why it isn't a real route yet.
+2. `lib/design/ecosystem.ts` — `os-shop` and `forge-shop` moved from `state: 'planned'`
+   to `state: 'building'` (both the node and the `ECOSYSTEM_PAGES` entry), `source`
+   changed from `product('PRODUCT_STRUCTURE.md')` to
+   `implementation('prototypes/innerflect-platforms/{os,forge}.html')`. `href`/`file`
+   are left pointing at the future `app/shops/os` / `app/shops/forge` routes — those
+   still do not exist, and `building` state means my own `check-ecosystem-registry.ts`
+   correctly does not require the file to be on disk yet.
+3. `PRODUCT_STRUCTURE.md` updated to match, pointing at the prototype location.
+4. Real screenshots of `os.html` and `forge.html` captured directly (not through
+   `scripts/capture-ecosystem-thumbnails.ts`, which assumes a reachable app route or a
+   public URL — this prototype is neither) into
+   `public/ecosystem-thumbnails/{os,forge}-shop.png`, matching the naming convention the
+   ecosystem board's inspector already reads by page id.
+
+**Rules out:** treating the prototype as `live` or `external` — it is not deployed
+anywhere and has no URL. Porting its actual markup into real `app/shops/os` /
+`app/shops/forge` routes (React, shared design tokens, real navigation) is separate,
+not-yet-started follow-up work; moving the files only stops the design work itself from
+living outside version control.
