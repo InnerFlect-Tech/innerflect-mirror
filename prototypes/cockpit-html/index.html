@@ -1,203 +1,3325 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="color-scheme" content="dark">
-  <title>Innerflect Mirror — Cockpit</title>
-  <script>if(location.protocol==='file:')location.replace('http://127.0.0.1:4178/')</script>
-  <style>
-    :root {
-      --ink:#eef3f1; --muted:#788581; --quiet:#4f5e5a;
-      --canvas:#050a0a; --rail:#060c0c; --surface:#09100f;
-      --line:#172725; --line-strong:#263a36; --teal:#55cbbb;
-      --teal-soft:#8abbb3; --critical:#e16d5d;
-      --rail-w:280px; --top-h:82px; --pad:clamp(18px,2vw,34px);
-    }
-    *{box-sizing:border-box}
-    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--canvas);color:var(--ink);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    button,a{font:inherit} button{color:inherit}
-    :focus-visible{outline:2px solid var(--teal);outline-offset:3px}
-    .cockpit{width:100vw;height:100dvh;display:grid;grid-template-columns:var(--rail-w) minmax(0,1fr);grid-template-rows:var(--top-h) minmax(0,1fr);overflow:hidden;background:var(--canvas)}
-    .rail{grid-row:1/-1;min-height:0;position:relative;border-right:1px solid var(--line);background:linear-gradient(180deg,#07100f 0%,#050a0a 72%);display:grid;grid-template-rows:var(--top-h) minmax(0,1fr) auto;padding:0 20px;transition:padding 220ms ease}
-    .brand{height:var(--top-h);display:flex;align-items:center;gap:13px;border-bottom:1px solid transparent;white-space:nowrap}
-    .brand-mark{width:24px;height:32px;display:block;flex:0 0 auto}
-    .brand-name{font-size:21px;letter-spacing:-.025em;font-weight:650}.brand-divider{height:20px;width:1px;background:#33423f}.brand-product{font-size:14px;letter-spacing:.12em;color:var(--teal-soft);text-transform:uppercase}
-    .nav{align-self:start;display:grid;gap:7px;padding-top:62px}
-    .nav button{height:48px;width:100%;position:relative;border:1px solid transparent;border-radius:7px;background:transparent;color:#687672;display:grid;grid-template-columns:24px minmax(0,1fr) auto;align-items:center;gap:12px;padding:0 14px;text-align:left;cursor:pointer;transition:color 160ms,border-color 160ms,background 160ms}
-    .nav svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}.nav button:hover{color:#aab6b2;background:#0a1312}.nav button.active{color:#dce9e5;border-color:#31766e;background:linear-gradient(90deg,rgba(85,203,187,.1),rgba(85,203,187,.025));box-shadow:none}.nav button.active:focus-visible{outline:none}
-    .nav .count{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#6e312c;color:#ffd4cd;font-size:12px;font-weight:650}
-    .rail-collapse{position:absolute;z-index:4;right:-12px;top:calc(var(--top-h) + 22px);width:24px;height:24px;padding:0;border-radius:50%;border:1px solid #29403c;background:#091211;color:#63736e;display:grid;place-items:center;cursor:pointer;transition:color 160ms,border-color 160ms,transform 220ms}.rail-collapse:hover{color:var(--teal);border-color:#3a6b64}.rail-collapse svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.8}
-    .rail-bottom{padding:22px 0 max(18px,env(safe-area-inset-bottom));border-top:1px solid var(--line);display:grid;gap:30px}
-    .tagline{margin:0 12px;color:#52615d;font-size:12px;line-height:1.55;max-width:160px}
-    .operator{display:grid;grid-template-columns:38px minmax(0,1fr) 30px;align-items:center;gap:10px}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1px solid #31554f;background:#11201e;color:#a9d7cf;font-size:13px}.operator b,.operator small{display:block}.operator b{font-size:13px}.operator small{margin-top:2px;color:#65736f;font-size:11px}.tune{width:30px;height:30px;padding:0;border:0;border-radius:5px;background:none;color:#64726f;display:grid;place-items:center;cursor:pointer}.tune:hover{color:#a9b6b2;background:#0d1715}.tune svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6}
-    .topbar{grid-column:2;min-width:0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(210px,1fr) minmax(320px,460px) minmax(210px,1fr);align-items:center;gap:20px;padding:0 var(--pad);background:rgba(5,11,10,.92)}
-    .health{justify-self:start;display:flex;align-items:center;gap:10px;color:#8aa09a;font-size:13px}.health i{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px rgba(85,203,187,.55)}
-    .command{height:42px;border:1px solid var(--line-strong);border-radius:7px;background:#08100f;color:#667470;display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:10px;padding:0 12px;cursor:pointer;text-align:left}.command:hover{border-color:#37504b;color:#99a6a2}.command svg{width:17px;height:17px;stroke:currentColor;fill:none}.command kbd{border:1px solid #2e3e3a;border-radius:4px;padding:3px 6px;color:#71807b;background:#0b1413;font:11px ui-monospace,SFMono-Regular,Menlo,monospace}
-    .meta{justify-self:end;display:flex;align-items:center;gap:14px;color:#66736f;font-size:12px}.mode-switch{display:flex;padding:3px;border:1px solid #22332f;border-radius:6px;background:#07100f}.mode-switch button{height:27px;padding:0 9px;border:0;border-radius:3px;background:transparent;color:#5e6d69;font-size:9px;cursor:pointer}.mode-switch button.active{background:#142420;color:#bde0da}.bell{position:relative;border:0;background:none;color:#71807b;padding:6px;cursor:pointer}.bell svg{width:18px;height:18px;stroke:currentColor;fill:none}.bell i{position:absolute;right:3px;top:3px;width:6px;height:6px;border-radius:50%;background:#d8a34d}
-    .stage{grid-column:2;min-width:0;min-height:0;position:relative;overflow:hidden;background:radial-gradient(ellipse 55% 45% at 52% 48%,rgba(30,87,79,.06),transparent 72%),linear-gradient(180deg,#07100f,#050a0a)}
-    .stage::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(85,203,187,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(85,203,187,.025) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(circle at center,#000 0%,transparent 68%);pointer-events:none}
-    .stage-frame{position:absolute;inset:var(--pad);border:1px solid rgba(79,111,104,.18);border-radius:10px;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;background:rgba(6,13,12,.38)}
-    .stage-frame::before,.stage-frame::after{content:"";position:absolute;width:34px;height:34px;border-color:#29423d;opacity:.55}.stage-frame::before{left:-1px;top:-1px;border-left:1px solid;border-top:1px solid}.stage-frame::after{right:-1px;bottom:-1px;border-right:1px solid;border-bottom:1px solid}
-    .workspace-head{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:20px;padding:clamp(18px,2.2vw,30px);border-bottom:1px solid var(--line)}.workspace-title{min-width:0}.workspace-title small{display:block;margin-bottom:7px;color:#5f706b;font-size:10px;letter-spacing:.12em;text-transform:uppercase}.workspace-title h1{margin:0;font-size:clamp(24px,2.6vw,38px);font-weight:520;letter-spacing:-.035em}.workspace-title p{margin:7px 0 0;color:#64736f;font-size:12px;line-height:1.4}.semantic-path{display:flex;align-items:center;gap:7px;margin-bottom:8px;color:#44534f;font-size:9px}.semantic-path b{color:#75968f;font-weight:500}.semantic-path i{width:12px;height:1px;background:#2b403b}.domains{display:flex;align-items:center;gap:3px;padding:4px;border:1px solid #22332f;border-radius:7px;background:#07100f}.domains button{height:30px;padding:0 10px;border:1px solid transparent;border-radius:4px;background:transparent;color:#60706b;font-size:10px;cursor:pointer;display:flex;align-items:center;gap:6px}.domains button:hover{color:#abb8b4}.domains button.active{background:#111817;color:#e0e7e5;border-color:#394743;box-shadow:none}.domain-symbol{width:13px;height:13px;display:inline-grid;place-items:center;color:#82918d;font-size:11px;line-height:1}.domains button.active .domain-symbol{color:#e0e7e5}.domain-identity{display:inline-flex;align-items:center;gap:4px;color:#8b9a96}.domain-identity .domain-symbol{width:10px;height:10px;font-size:8px;color:#8b9a96}
-    .board{min-width:0;min-height:0;padding:clamp(12px,1.6vw,22px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:clamp(8px,1vw,14px)}
-    .board.is-world{display:block;padding:clamp(10px,1.25vw,18px)}.company-world{width:100%;height:100%;position:relative;overflow:hidden;border:1px solid #1d312d;border-radius:8px;background:radial-gradient(circle at 50% 48%,rgba(33,118,105,.13),transparent 34%),linear-gradient(180deg,#071211,#050b0a)}.company-world canvas{display:block;width:100%;height:100%;touch-action:none}.world-loading{position:absolute;inset:0;display:grid;place-items:center;color:#52635e;font-size:10px;letter-spacing:.1em;text-transform:uppercase}.world-caption{position:absolute;left:16px;top:14px;display:grid;gap:3px;pointer-events:none}.world-caption b{font-size:11px;font-weight:540;color:#a6bab5}.world-caption span{font-size:9px;color:#4f625d}.world-legend{position:absolute;right:14px;bottom:12px;display:flex;gap:13px;padding:7px 9px;border:1px solid #1d312d;border-radius:5px;background:rgba(5,12,11,.78);color:#596a65;font-size:8px;pointer-events:none}.world-legend i{display:inline-block;width:5px;height:5px;margin-right:5px;border-radius:50%;background:#66736f}.world-legend span:last-child i{background:var(--teal);box-shadow:0 0 6px var(--teal)}.world-domain{position:absolute;z-index:3;transform:translate(-50%,-50%);padding:5px 7px;border:1px solid #24433e;border-radius:4px;background:rgba(5,13,12,.76);backdrop-filter:blur(6px);color:#a6b6b2;font-size:9px;pointer-events:none}.world-domain small{display:block;margin-top:2px;color:#4f6862;font-size:7px}.world-domain[data-slot="0"]{left:25%;top:24%}.world-domain[data-slot="1"]{left:75%;top:24%}.world-domain[data-slot="2"]{left:22%;top:70%}.world-domain[data-slot="3"]{left:78%;top:70%}.world-domain[data-slot="4"]{left:50%;top:83%}.world-domain[data-slot="5"]{left:50%;top:15%}
-    .module{min-width:0;min-height:0;position:relative;border:1px solid #21332f;border-radius:8px;background:linear-gradient(145deg,rgba(13,24,22,.92),rgba(7,14,13,.92));padding:clamp(14px,1.5vw,22px);display:grid;grid-template-rows:auto minmax(0,1fr) auto;cursor:grab;overflow:hidden;transition:border-color 160ms,background 160ms,transform 160ms}.module:hover{border-color:#36544e;background:linear-gradient(145deg,rgba(16,30,27,.96),rgba(8,16,15,.96))}.module:active{cursor:grabbing}.module::after{content:"⠿";position:absolute;right:13px;top:10px;color:#3d4e49;font-size:15px;letter-spacing:-2px}.module-index{font-size:9px;color:#4c5b57;letter-spacing:.12em}.module h2{align-self:center;margin:8px 0;font-size:clamp(15px,1.25vw,19px);font-weight:540;letter-spacing:-.018em}.module p{margin:0;padding-right:12px;color:#667570;font-size:clamp(9px,.78vw,11px);line-height:1.5}.module-meta{align-self:end;display:flex;justify-content:space-between;gap:8px;padding-top:10px;color:#42504c;font-size:9px}.module-meta b{font-weight:500;color:#63847e}.domain-toggle{position:absolute;right:12px;bottom:12px;height:26px;padding:0 9px;border:1px solid #2a3c38;border-radius:4px;background:#0a1312;color:#687873;font-size:9px;cursor:pointer}.module.is-enabled{border-color:#32655d;background:linear-gradient(145deg,rgba(18,40,35,.96),rgba(7,16,14,.96))}.module.is-enabled .domain-toggle{border-color:#3c756c;background:#16342e;color:#a8d8cf}.module.is-disabled{opacity:.62}.sortable-ghost{opacity:.22}.sortable-chosen{border-color:#49857b;transform:scale(.985)}
-    .viewport-note{position:absolute;left:calc(var(--pad) + 14px);bottom:calc(var(--pad) + 12px);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:#34413e}
-    .cockpit.is-compact{--rail-w:78px}.cockpit.is-compact .rail{padding-inline:12px}.cockpit.is-compact .brand{justify-content:center}.cockpit.is-compact .brand-name,.cockpit.is-compact .brand-divider,.cockpit.is-compact .brand-product,.cockpit.is-compact .nav button>span,.cockpit.is-compact .nav .count,.cockpit.is-compact .tagline,.cockpit.is-compact .operator>div,.cockpit.is-compact .tune{display:none}.cockpit.is-compact .nav button{grid-template-columns:1fr;padding:0;place-items:center}.cockpit.is-compact .operator{display:flex;justify-content:center}.cockpit.is-compact .rail-collapse{transform:rotate(180deg)}
-    .cockpit.is-compact .nav button::after{content:attr(data-label);position:absolute;left:56px;top:50%;transform:translateY(-50%) translateX(-4px);padding:7px 9px;border:1px solid #2a3b37;border-radius:5px;background:#0a1211;color:#c3cfcb;font-size:11px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 140ms,transform 140ms;box-shadow:0 8px 24px rgba(0,0,0,.35)}.cockpit.is-compact .nav button:hover::after,.cockpit.is-compact .nav button:focus-visible::after{opacity:1;transform:translateY(-50%) translateX(0)}
-    @media(max-height:720px){:root{--top-h:66px;--rail-w:248px}.nav{padding-top:24px;gap:3px}.nav button{height:42px}.tagline{display:none}.rail-bottom{padding-top:14px;gap:0}.workspace-head{padding:13px 18px}.workspace-title small{margin-bottom:3px}.workspace-title p{margin-top:3px}.board{padding:10px}.module{padding:12px}.module p{line-height:1.35}}
-    @media(max-width:920px){:root{--rail-w:76px}.rail{padding:0 12px}.brand{justify-content:center}.brand-name,.brand-divider,.brand-product,.nav span,.nav .count,.tagline,.operator>div,.tune{display:none}.nav button{grid-template-columns:1fr;padding:0;place-items:center}.operator{display:flex;justify-content:center}.topbar{grid-template-columns:1fr auto}.command{display:none}.workspace-head{grid-template-columns:1fr;align-items:start;gap:12px}.domains{justify-self:start}.board{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr))}}
-    @media(max-width:560px){:root{--rail-w:64px;--top-h:62px}.rail{display:grid;padding-inline:8px}.brand{justify-content:center}.brand-mark{width:21px}.brand-name,.brand-divider,.brand-product,.nav button>span,.nav .count,.tagline,.operator>div,.tune,.rail-collapse{display:none}.nav{padding-top:18px;gap:4px}.nav button{height:44px;grid-template-columns:1fr;padding:0;place-items:center;border-radius:6px}.nav button::after{content:attr(data-label);position:absolute;left:51px;top:50%;z-index:8;transform:translateY(-50%) translateX(-4px);padding:7px 9px;border:1px solid #2a3b37;border-radius:5px;background:#0a1211;color:#c3cfcb;font-size:11px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 140ms,transform 140ms;box-shadow:0 8px 24px rgba(0,0,0,.35)}.nav button:hover::after,.nav button:focus-visible::after{opacity:1;transform:translateY(-50%)}.operator{display:flex;justify-content:center}.avatar{width:36px;height:36px}.topbar{grid-column:2;padding:0 12px;grid-template-columns:minmax(0,1fr) auto;gap:8px}.health{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stage{grid-column:2}.meta{gap:0}.meta>span,.mode-switch{display:none}.stage-frame{inset:7px}.workspace-head{padding:11px 10px;gap:8px}.workspace-title small,.workspace-title p,.semantic-path{display:none}.workspace-title h1{font-size:20px}.domains{width:100%;overflow:hidden}.domains button{min-width:0;flex:1;padding:0 4px;font-size:8px}.board{padding:7px;gap:6px}.module{padding:9px;border-radius:6px}.module::after{right:8px;top:5px}.module-index{font-size:7px}.module h2{font-size:12px;margin:4px 0}.module p{font-size:8px;line-height:1.25}.module-meta{font-size:7px;padding-top:4px}.world-caption,.world-legend{display:none}.world-domain{font-size:7px;padding:3px 4px}.world-domain small{display:none}.viewport-note{display:none}}
-    @media(prefers-reduced-motion:reduce){*{transition:none!important}}
-    .function-dock{position:absolute;z-index:5;left:14px;bottom:12px;display:flex;flex-wrap:wrap;gap:5px;max-width:min(62%,560px)}.function-dock button{height:27px;padding:0 9px;border:1px solid #20332f;border-radius:5px;background:rgba(6,14,13,.86);color:#53635f;font-size:8px;cursor:pointer;backdrop-filter:blur(7px)}.function-dock button:hover{border-color:#3a5e57;color:#91aaa4}.function-dock button.active{border-color:#327168;background:rgba(17,49,43,.88);color:#b5ddd5}.function-dock button.active::before{content:"";display:inline-block;width:5px;height:5px;margin-right:5px;border-radius:50%;background:var(--teal);box-shadow:0 0 6px var(--teal)}
-    @media(max-width:560px){.function-dock{left:7px;right:7px;bottom:7px;max-width:none}.function-dock button{height:24px;padding:0 6px;font-size:7px}}
-    .board:not(.is-world){grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr))}.module[data-size="hero"]{grid-column:span 8;grid-row:span 5}.module[data-size="side"]{grid-column:span 4;grid-row:span 5}.module[data-size="wide"]{grid-column:span 6;grid-row:span 3}.module[data-size="third"]{grid-column:span 4;grid-row:span 3}.module[data-size="tall"]{grid-column:span 4;grid-row:span 8}.module[data-size="main"]{grid-column:span 8;grid-row:span 8}.module[data-size="half"]{grid-column:span 6;grid-row:span 4}.module[data-size="full"]{grid-column:span 12;grid-row:span 3}.module-feature{align-self:center;display:grid;gap:10px}.module-feature strong{font-size:clamp(25px,3vw,50px);font-weight:430;letter-spacing:-.05em;color:#d9e5e1}.module-feature .track{height:2px;background:#1b302c;overflow:hidden}.module-feature .track i{display:block;width:68%;height:100%;background:var(--teal);box-shadow:0 0 10px rgba(85,203,187,.45)}.module[data-size="hero"]{background:radial-gradient(circle at 68% 48%,rgba(42,133,119,.13),transparent 34%),linear-gradient(145deg,rgba(13,24,22,.92),rgba(7,14,13,.92))}.module[data-size="hero"] h2,.module[data-size="main"] h2{font-size:clamp(20px,2vw,30px)}
-    @media(max-width:920px){.board:not(.is-world){grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr))}.module[data-size="hero"],.module[data-size="main"]{grid-column:span 5}.module[data-size="side"],.module[data-size="tall"]{grid-column:span 3}.module[data-size="wide"],.module[data-size="half"],.module[data-size="third"]{grid-column:span 4}}
-    @media(max-width:560px){.board:not(.is-world){grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr))}.module[data-size]{grid-column:span 1;grid-row:span 2}.module[data-size="hero"],.module[data-size="main"],.module[data-size="full"]{grid-column:span 2;grid-row:span 4}.module[data-size="tall"],.module[data-size="side"]{grid-row:span 4}.module-feature strong{font-size:22px}}
-    .board.is-decisions{display:block;padding:clamp(10px,1.25vw,18px)}.decision-shell{height:100%;min-height:0;display:grid;grid-template-rows:56px 34px minmax(0,1fr);gap:9px}.decision-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}.decision-stat{border:1px solid #20322e;border-radius:6px;background:#08100f;padding:8px 11px;display:flex;align-items:center;justify-content:space-between;gap:8px}.decision-stat strong{font-size:17px;font-weight:520;letter-spacing:-.03em}.decision-stat span{font-size:8px;line-height:1.2;color:#65736f}.decision-stat.attention{border-color:#604c28}.decision-stat.attention strong{color:#d2a44e}.decision-stat.critical{border-color:#63362f}.decision-stat.critical strong{color:#dd7565}.decision-tabs{display:flex;align-items:center;justify-content:space-between}.decision-tabs nav{height:34px;display:flex;padding:3px;border:1px solid #20322e;border-radius:6px;background:#07100f}.decision-tabs button{border:0;border-radius:3px;background:none;color:#60706b;padding:0 13px;font-size:9px;cursor:pointer}.decision-tabs button.active{background:#142520;color:#c0d8d3}.decision-tabs select{height:32px;border:1px solid #20322e;border-radius:5px;background:#08100f;color:#81908c;padding:0 24px 0 10px;font-size:9px}.decision-body{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(210px,26%);gap:9px}.decision-queue{min-height:0;display:grid;grid-template-rows:repeat(3,minmax(0,1fr));gap:7px}.decision-row{min-height:0;position:relative;display:grid;grid-template-columns:minmax(160px,1.05fr) minmax(190px,1fr) 92px;align-items:center;gap:14px;border:1px solid #233630;border-radius:7px;background:#08110f;padding:10px 11px 10px 15px;overflow:hidden}.decision-row::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:#7d6a3d}.decision-row.high::before{background:#b66050}.decision-row .priority{color:#9a8870;font-size:8px}.decision-row.high .priority{color:#d87666}.decision-row h2{margin:4px 0 2px;font-size:13px;font-weight:540}.decision-row .amount{font-size:18px;color:#dce6e3;letter-spacing:-.025em}.decision-row p{margin:3px 0 0;color:#667570;font-size:8px;line-height:1.35}.recommendation{height:100%;border-left:1px solid #1d2d2a;padding-left:14px;display:flex;flex-direction:column;justify-content:center}.recommendation small{color:#61726e;font-size:7px;letter-spacing:.1em}.recommendation b{margin:5px 0;color:var(--teal);font-size:13px;font-weight:540}.recommendation b.review{color:#d1a147}.decision-actions{display:grid;gap:5px}.decision-actions button{height:27px;border:1px solid #2c3c38;border-radius:4px;background:#0b1513;color:#8c9a96;font-size:9px;cursor:pointer}.decision-actions button.primary{border-color:#3b8e82;background:#1e786d;color:#ecfffb}.decision-actions a{color:#6eaea3;font-size:8px;text-align:center;cursor:pointer}.authority-panel{min-height:0;border:1px solid #20332f;border-radius:7px;background:#08100f;padding:13px;overflow:hidden}.authority-panel h2{margin:0;font-size:13px}.authority-panel>p{margin:4px 0 10px;color:#5e6d69;font-size:8px}.authority-list{display:grid;gap:6px}.authority-rule{border:1px solid #1b2b28;border-radius:5px;padding:8px}.authority-rule b{display:block;font-size:9px;font-weight:520}.authority-rule span{display:block;margin-top:3px;color:#5c6c68;font-size:7px}.authority-rule.gap{border-color:#61362f;background:#170d0c}.authority-rule.gap span{color:#cd6c5e}
-    @media(max-width:920px){.decision-stat:nth-child(4){display:none}.decision-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.decision-body{grid-template-columns:minmax(0,1fr) 180px}.decision-row{grid-template-columns:minmax(130px,1fr) minmax(140px,.9fr) 76px;gap:8px;padding-left:11px}.decision-row p{font-size:7px}.recommendation{padding-left:8px}}
-    @media(max-width:560px){.decision-shell{grid-template-rows:45px 30px minmax(0,1fr);gap:6px}.decision-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}.decision-stat{padding:5px 6px}.decision-stat:nth-child(4),.decision-stat:nth-child(5){display:none}.decision-stat strong{font-size:13px}.decision-stat span{font-size:6px}.decision-body{grid-template-columns:1fr}.authority-panel{display:none}.decision-row{grid-template-columns:minmax(0,1fr) 64px;padding:7px 7px 7px 10px}.recommendation{display:none}.decision-row h2{font-size:10px}.decision-row .amount{font-size:13px}.decision-actions button{height:24px;font-size:8px}.decision-tabs button{padding:0 8px;font-size:7px}.decision-tabs select{height:29px;font-size:7px}}
-    @media(min-width:561px) and (max-width:920px){.cockpit.is-rail-open{--rail-w:238px}.cockpit.is-rail-open .rail{padding:0 18px}.cockpit.is-rail-open .brand{justify-content:flex-start}.cockpit.is-rail-open .brand-name,.cockpit.is-rail-open .brand-divider,.cockpit.is-rail-open .brand-product,.cockpit.is-rail-open .nav button>span,.cockpit.is-rail-open .tagline,.cockpit.is-rail-open .operator>div,.cockpit.is-rail-open .tune{display:initial}.cockpit.is-rail-open .nav .count{display:grid;place-items:center}.cockpit.is-rail-open .nav button{grid-template-columns:24px minmax(0,1fr) auto;padding:0 14px;align-items:center}.cockpit.is-rail-open .operator{display:grid}.cockpit.is-rail-open .rail-collapse{transform:none}.cockpit:not(.is-rail-open) .rail-collapse{transform:rotate(180deg)}}
-    .notice-popover{position:fixed;z-index:20;right:18px;top:68px;width:250px;padding:12px;border:1px solid #2a403b;border-radius:8px;background:#091210;box-shadow:0 24px 80px rgba(0,0,0,.55);display:none}.notice-popover.open{display:block}.notice-popover b{font-size:11px}.notice-popover p{margin:6px 0 0;color:#687873;font-size:9px;line-height:1.4}.toast{position:fixed;z-index:30;right:18px;bottom:18px;padding:10px 13px;border:1px solid #32645c;border-radius:6px;background:#0d201c;color:#bfe1da;font-size:10px;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity 160ms,transform 160ms}.toast.show{opacity:1;transform:none}
-    .view-options{height:36px;min-width:112px;border:1px solid #293b37;border-radius:6px;background:#091210;color:#a4b1ad;padding:0 10px;display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer}.view-options span{font-size:10px}.view-options i{font-style:normal;font-size:8px;color:#61716c}.view-drawer{position:absolute;z-index:15;right:0;top:0;bottom:0;width:min(330px,88%);padding:16px;border-left:1px solid #2a403b;background:#08100f;box-shadow:-24px 0 60px rgba(0,0,0,.45);transform:translateX(102%);transition:transform 200ms ease;display:grid;grid-template-rows:auto auto 1fr;gap:20px}.view-drawer.open{transform:none}.view-drawer header{display:flex;align-items:start;justify-content:space-between}.view-drawer header b,.view-drawer header span{display:block}.view-drawer header b{font-size:14px}.view-drawer header span{margin-top:4px;color:#667570;font-size:9px}.view-drawer header button{border:0;background:none;color:#76847f;font-size:20px;cursor:pointer}.view-drawer section h2{margin:0 0 8px;color:#687873;font-size:9px;font-weight:500}.view-drawer .domains{display:grid;grid-template-columns:1fr 1fr}.view-drawer .domains button{justify-content:flex-start}.module-options{display:grid;gap:6px}.module-option{height:38px;border:1px solid #20312e;border-radius:5px;background:#0a1412;color:#7f8e89;padding:0 10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left}.module-option span{font-size:9px}.module-option i{width:22px;height:12px;border-radius:8px;background:#26332f;position:relative}.module-option i::after{content:"";position:absolute;width:8px;height:8px;left:2px;top:2px;border-radius:50%;background:#77827f;transition:left 150ms}.module-option.active{color:#c7d4d0;border-color:#35504a}.module-option.active i{background:#225f56}.module-option.active i::after{left:12px;background:#87d8cb}.drawer-scrim{position:absolute;z-index:14;inset:0;border:0;background:rgba(2,6,5,.42);opacity:0;pointer-events:none;transition:opacity 180ms}.drawer-scrim.open{opacity:1;pointer-events:auto}.stage-frame.is-company .workspace-head{padding:12px 18px;align-items:center}.stage-frame.is-company .semantic-path,.stage-frame.is-company .workspace-title small{display:none}.stage-frame.is-company .workspace-title{display:flex;align-items:baseline;gap:12px}.stage-frame.is-company .workspace-title h1{font-size:22px}.stage-frame.is-company .workspace-title p{margin:0;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stage-frame.hide-domain-labels .world-domain,.stage-frame.hide-function-dock .function-dock,.stage-frame.hide-legend .world-legend{display:none!important}.stage-frame.hide-decision-summary .decision-stats,.stage-frame.hide-decision-queue .decision-queue,.stage-frame.hide-authority .authority-panel{display:none}.stage-frame.hide-decision-summary .decision-shell{grid-template-rows:34px minmax(0,1fr)}.stage-frame.hide-authority .decision-body{grid-template-columns:1fr}
-    @media(max-width:560px){.stage-frame.is-company .workspace-title p{display:none}.view-options{height:30px;min-width:72px;padding:0 7px}.view-options i{display:none}.view-drawer{width:calc(100% - 8px);padding:12px}}
-    .stage-frame.hide-company-world .company-world{visibility:hidden}
-  </style>
-  <style>
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    .command-layer{position:fixed;inset:0;z-index:60;display:grid;place-items:start center;padding:clamp(72px,11vh,124px) 16px 16px}
-    .command-layer[hidden]{display:none}.command-scrim{position:absolute;inset:0;border:0;background:rgba(1,6,5,.73);backdrop-filter:blur(9px);cursor:default}
-    .command-dialog{position:relative;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;width:min(660px,100%);max-height:min(650px,calc(100dvh - 100px));overflow:hidden;border:1px solid #31504a;border-radius:12px;background:linear-gradient(145deg,#0b1513 0%,#07100e 72%);box-shadow:0 32px 100px rgba(0,0,0,.7),0 0 0 1px rgba(91,209,192,.05);animation:command-in 150ms cubic-bezier(.2,.8,.2,1)}
-    @keyframes command-in{from{opacity:0;transform:translateY(-8px) scale(.985)}to{opacity:1;transform:none}}
-    .command-search{display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid #1b2d29}.command-search svg{width:20px;fill:none;stroke:#7f938e;stroke-width:1.7}.command-search input{min-width:0;border:0;background:transparent;color:#e5efec;font:500 15px/1.2 inherit;outline:0}.command-search input::placeholder{color:#667873}.command-search kbd,.command-footer kbd{border:1px solid #2a3b37;border-radius:4px;background:#0e1917;color:#7e908b;font:600 8px/1 inherit;padding:5px 6px}
-    .command-scope{display:flex;justify-content:space-between;gap:16px;padding:10px 16px 8px}.command-scope span{color:#65c9bb;font-size:8px;letter-spacing:.18em}.command-scope i{overflow:hidden;color:#72827e;font-size:9px;font-style:normal;text-overflow:ellipsis;white-space:nowrap}
-    .command-results{min-height:180px;overflow:auto;padding:4px 8px 12px;scroll-padding:44px 0}.command-group+ .command-group{margin-top:8px}.command-group>span{display:block;padding:7px 9px;color:#62736f;font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}.command-item{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;width:100%;min-height:48px;padding:6px 9px;border:1px solid transparent;border-radius:7px;background:transparent;color:#b8c7c3;text-align:left}.command-item:hover,.command-item[aria-selected="true"]{border-color:#2d514a;background:#11221e;color:#e7f0ed}.command-item .command-icon{display:grid;place-items:center;width:31px;height:31px;border:1px solid #263c37;border-radius:6px;background:#0b1714;color:#62cbbc;font-size:13px}.command-copy{display:grid;gap:3px}.command-copy b{font-size:11px;font-weight:600}.command-copy small{color:#70817c;font-size:9px}.command-item>kbd{color:#667873;font:500 8px/1 inherit}.command-empty{display:grid;place-items:center;min-height:150px;color:#6d7e79;font-size:11px}.command-footer{display:flex;justify-content:flex-end;gap:16px;padding:10px 15px;border-top:1px solid #1b2d29;color:#667873;font-size:8px}.command-footer span{display:flex;align-items:center;gap:4px}
-    @media(max-width:560px){.command-layer{align-items:end;padding:10px}.command-dialog{max-height:min(78dvh,620px);border-radius:12px}.command-scope{display:none}.command-footer{justify-content:flex-start}.command-footer span:first-child{display:none}}
-    @media(prefers-reduced-motion:reduce){.command-dialog{animation:none}}
-  </style>
-</head>
-<body>
-  <main class="cockpit">
-    <aside class="rail" aria-label="Innerflect navigation">
-      <div class="brand" aria-label="Innerflect Mirror">
-        <svg class="brand-mark" viewBox="0 0 24 32" aria-hidden="true"><g fill="none" stroke="#55cbbb" stroke-width="2.25" stroke-linecap="round"><path d="M3 12v8"/><path d="M8 6v20"/><path d="M13 2v28"/><path d="M18 8v16"/><path d="M23 11v10"/></g></svg>
-        <span class="brand-name">Innerflect</span><i class="brand-divider"></i><span class="brand-product">Mirror</span>
-      </div>
-      <nav class="nav">
-        <button class="active" aria-current="page" aria-label="Company" data-label="Company" data-status="One domain is at risk"><svg viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg><span>Company</span></button>
-        <button aria-label="Work" data-label="Work" data-status="Work is flowing normally"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M6.5 10v4a3 3 0 0 0 3 3H14"/></svg><span>Work</span></button>
-        <button aria-label="Decisions, 3 waiting" data-label="Decisions" data-status="3 decisions need you"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h5M9 14l2 2 4-5"/></svg><span>Decisions</span><i class="count">3</i></button>
-        <button aria-label="Knowledge" data-label="Knowledge" data-status="Knowledge is current"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v17H6.5A2.5 2.5 0 0 0 4 22zM20 5.5A2.5 2.5 0 0 0 17.5 3H13v17h4.5A2.5 2.5 0 0 1 20 22z"/></svg><span>Knowledge</span></button>
-        <button aria-label="Impact" data-label="Impact" data-status="Impact is verified"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg><span>Impact</span></button>
-      </nav>
-      <button class="rail-collapse" aria-label="Collapse sidebar" aria-expanded="true"><svg viewBox="0 0 16 16"><path d="m10 3-5 5 5 5"/></svg></button>
-      <div class="rail-bottom"><p class="tagline">A more capable company, by design.</p><div class="operator"><span class="avatar">IF</span><div><b>Indias</b><small>Company owner</small></div><button class="tune" id="settings-button" aria-label="Settings"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button></div></div>
-    </aside>
-    <header class="topbar">
-      <output class="health" aria-live="polite"><i></i>System live · 4 domains connected</output>
-      <button class="command"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span>Ask anything about the company</span><kbd>⌘ K</kbd></button>
-      <div class="meta"><div class="mode-switch" aria-label="Company mode"><button class="active">Mirror</button><button>Builder</button></div><button class="bell" aria-label="Notifications, one unread"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><i></i></button><span>Sunday · 09:41</span></div>
-    </header>
-    <section class="stage" aria-label="Product architecture workspace">
-      <div class="stage-frame">
-        <header class="workspace-head"><div class="workspace-title"><div class="semantic-path" id="semantic-path"><b>Company</b><i></i><span>All active functions</span></div><small id="surface-type">Stable product surface</small><h1 id="section-name">Company</h1><p id="section-note">The current state of the organisation, across every active function.</p></div><button class="view-options" id="view-options" aria-expanded="false"><span>View</span><i>All company</i></button></header>
-        <div class="board" id="board" aria-label="Reorderable page sections"></div>
-        <button class="drawer-scrim" id="drawer-scrim" aria-label="Close view settings"></button><aside class="view-drawer" id="view-drawer"><header><div><b id="drawer-title">Company view</b><span>Choose what appears on this page.</span></div><button id="drawer-close" aria-label="Close view settings">×</button></header><section><h2>Area</h2><div class="domains" id="domains" aria-label="Filter by company function"></div></section><section><h2>Modules</h2><div class="module-options" id="module-options"></div></section></aside>
-      </div>
-    </section>
-  </main>
-  <div class="command-layer" id="command-layer" hidden>
-    <button class="command-scrim" data-command-close aria-label="Close company command"></button>
-    <section class="command-dialog" role="dialog" aria-modal="true" aria-labelledby="command-title">
-      <header class="command-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><label id="command-title" class="sr-only" for="command-input">Ask or navigate Innerflect Mirror</label><input id="command-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="command-results" autocomplete="off" placeholder="Ask the company or run a command…"><kbd>ESC</kbd></header>
-      <div class="command-scope"><span>INNERFLECT MIRROR</span><i id="command-context">Company · All company</i></div>
-      <div class="command-results" id="command-results" role="listbox" aria-label="Company commands"></div>
-      <footer class="command-footer"><span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span><span><kbd>↵</kbd> Open</span><span><kbd>esc</kbd> Close</span></footer>
-    </section>
-  </div>
-  <div class="notice-popover" id="notice-popover"><b>One decision needs attention</b><p>Invoice reconciliation has no accountable owner and is past its deadline.</p></div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
-  <script>
-    const cockpit=document.querySelector('.cockpit');
-    const collapse=document.querySelector('.rail-collapse');
-    const syncRail=()=>{const tablet=matchMedia('(max-width:920px)').matches,phone=matchMedia('(max-width:560px)').matches;if(phone){cockpit.classList.remove('is-compact','is-rail-open');collapse.hidden=true;return}collapse.hidden=false;if(tablet){cockpit.classList.remove('is-compact');collapse.setAttribute('aria-expanded',String(cockpit.classList.contains('is-rail-open')))}else{cockpit.classList.remove('is-rail-open');collapse.setAttribute('aria-expanded',String(!cockpit.classList.contains('is-compact')))}};
-    collapse.addEventListener('click',()=>{if(matchMedia('(max-width:920px)').matches){const open=cockpit.classList.toggle('is-rail-open');collapse.setAttribute('aria-expanded',String(open));collapse.setAttribute('aria-label',open?'Collapse sidebar':'Expand sidebar')}else{const compact=cockpit.classList.toggle('is-compact');collapse.setAttribute('aria-expanded',String(!compact));collapse.setAttribute('aria-label',compact?'Expand sidebar':'Collapse sidebar')}});addEventListener('resize',syncRail);syncRail();
-    const sectionName=document.querySelector('#section-name');
-    const sectionNote=document.querySelector('#section-note');
-    const board=document.querySelector('#board');
-    const domainBar=document.querySelector('#domains');
-    const semanticPath=document.querySelector('#semantic-path span');
-    const surfaceType=document.querySelector('#surface-type');
-    const stageFrame=document.querySelector('.stage-frame'),viewButton=document.querySelector('#view-options'),viewDrawer=document.querySelector('#view-drawer'),drawerScrim=document.querySelector('#drawer-scrim'),moduleOptions=document.querySelector('#module-options');
-    const companyFunctions=[
-      {name:'Marketing',symbol:'◒',description:'Demand, audience, content and campaigns.',enabled:true},
-      {name:'Sales',symbol:'◇',description:'Leads, qualification, proposals and revenue.',enabled:true},
-      {name:'Delivery',symbol:'▱',description:'Projects, fulfilment, quality and customers.',enabled:true},
-      {name:'Finance',symbol:'▥',description:'Invoices, payments, reconciliation and reporting.',enabled:true},
-      {name:'People',symbol:'♙',description:'Hiring, onboarding, development and capacity.',enabled:false},
-      {name:'Operations',symbol:'⌬',description:'Suppliers, assets, internal service and controls.',enabled:false}
-    ];
-    const pages={
-      Company:{note:'The company, live. Configure its operating model in View.',modules:[]},
-      Work:{note:'See work as a system: its shape, live movement and points of intervention.',modules:[['Operating flow','Trigger → context → work → decision → action → verification → outcome.','hero'],['Live now','47 executions moving; 3 require attention.','side'],['Workflow builder','Dismantle the selected workflow and change each semantic part.','wide'],['Actors and exceptions','Humans, agents, systems and blocked work in one operational view.','wide']]},
-      Decisions:{note:'Decisions that matter, with full context. A long queue here would be a system failure, not a busy day.',modules:[['Needs you','Three decisions are outside autonomous authority.','main'],['Your authority','Limits, ownership and escalation destinations.','tall'],['Patterns becoming policy','Repeated judgement ready to become an explicit rule.','third'],['Decision history','Comparable evidence, choices and verified outcomes.','third']]},
-      Knowledge:{note:'The company’s usable memory: connected, trusted and visible where it changes work.',modules:[['Knowledge graph','Policies, customer context, observed behaviour and outcomes connected to the work that uses them.','hero'],['Ask the company','Grounded answers with sources, confidence and contradictions.','side'],['Trust and freshness','Ownership, age, conflicts and verification state.','third'],['Learning queue','New observations waiting to become trusted memory.','third'],['Documented vs observed','Where real operating behaviour differs from written procedure.','third']]},
-      Impact:{note:'Verified value, traced from company outcome back to operational cause.',modules:[['Autonomy over time','Earned autonomy increased from 47% to 68%, with every change linked to evidence.','hero'],['Verified outcomes','99.7% verified · zero unsafe autonomous actions.','side'],['Human capacity','32 hours returned to the team this week.','third'],['Financial effect','€12,480 protected or created by verified actions.','third'],['Trace explorer','Outcome → action → decision → policy → evidence → event.','third']]},
-      Settings:{note:'The machine-readable constitution defining what the system may know and do.',modules:[['Company constitution','Active functions, owners and the operating boundaries inherited across Mirror.','main'],['Authority boundaries','Scope, financial and risk limits, reversibility and escalation.','tall'],['Systems and access','Observed and operated systems with explicit permissions.','half'],['Knowledge scope','Included sources, deliberate exclusions, retention and audit.','half']]}
-    };
-    const pendingDecisions=[
-      {priority:'High priority',title:'Approve Essência Gate 1',value:'€1,334',context:'Outside autonomous authority · irreversible billing',domain:'▱ Delivery · 12 min ago',recommendation:'Approve',confidence:'96%',reason:'All gate criteria passed; client confirmed receipt and prior gates are unchanged.',high:true},
-      {priority:'High priority',title:'Assign invoice reconciliation ownership',value:'€6,910',context:'No accountable owner for 56 days',domain:'▥ Finance · 56 days ago',recommendation:'Review',confidence:'71%',reason:'Four payments remain unmatched; the workflow is blocked at action and verification.',high:true},
-      {priority:'Medium',title:'Lower demand-signal trust threshold',value:'8 signals / week',context:'Changes what Market may accept without review',domain:'◒ Marketing · 2 hours ago',recommendation:'Approve',confidence:'82%',reason:'Observed outcomes remain inside the approved quality boundary.',high:false}
-    ];
-    const specialModules={Company:['Company world','Area labels','Function controls','State legend'],Decisions:['Decision summary','Decision queue','Your authority']};const moduleVisibility={};const modulesFor=page=>specialModules[page]||pages[page].modules.map(item=>item[0]);const ensureModules=page=>moduleVisibility[page]||(moduleVisibility[page]=new Set(modulesFor(page)));
-    let activePage='Company',activeDomain='All company',sortable;
-    const domainSymbol=name=>companyFunctions.find(item=>item.name===name)?.symbol||'◎';const domainIdentity=name=>`<span class="domain-identity"><i class="domain-symbol">${domainSymbol(name)}</i>${name}</span>`;
-    function renderDomains(){const active=companyFunctions.filter(item=>item.enabled);if(activeDomain!=='All company'&&!active.some(item=>item.name===activeDomain))activeDomain='All company';domainBar.innerHTML=[`<button class="${activeDomain==='All company'?'active':''}" data-domain="All company"><i class="domain-symbol">◎</i>All</button>`,...active.map(item=>`<button class="${activeDomain===item.name?'active':''}" data-domain="${item.name}"><i class="domain-symbol">${item.symbol}</i>${item.name}</button>`)].join('');domainBar.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{activeDomain=button.dataset.domain;render()}));renderViewOptions()}
-    function renderViewOptions(){const visible=ensureModules(activePage);stageFrame.className='stage-frame';if(activePage==='Company'){stageFrame.classList.add('is-company');if(!visible.has('Company world'))stageFrame.classList.add('hide-company-world');if(!visible.has('Area labels'))stageFrame.classList.add('hide-domain-labels');if(!visible.has('Function controls'))stageFrame.classList.add('hide-function-dock');if(!visible.has('State legend'))stageFrame.classList.add('hide-legend')}if(activePage==='Decisions'){if(!visible.has('Decision summary'))stageFrame.classList.add('hide-decision-summary');if(!visible.has('Decision queue'))stageFrame.classList.add('hide-decision-queue');if(!visible.has('Your authority'))stageFrame.classList.add('hide-authority')}document.querySelector('#drawer-title').textContent=`${activePage} view`;viewButton.querySelector('i').textContent=activeDomain==='All company'?'All company':activeDomain;moduleOptions.innerHTML=modulesFor(activePage).map(name=>`<button class="module-option ${visible.has(name)?'active':''}" data-module="${name}" aria-pressed="${visible.has(name)}"><span>${name}</span><i></i></button>`).join('');moduleOptions.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{visible.has(button.dataset.module)?visible.delete(button.dataset.module):visible.add(button.dataset.module);render()}))}
-    function renderDecisions(){board.className='board is-decisions';board.innerHTML=`<section class="decision-shell"><div class="decision-stats"><div class="decision-stat"><strong>3</strong><span>Waiting<br>for you</span></div><div class="decision-stat critical"><strong>2</strong><span>High<br>priority</span></div><div class="decision-stat critical"><strong>1</strong><span>Past its<br>deadline</span></div><div class="decision-stat attention"><strong>1</strong><span>Cannot be<br>undone</span></div><div class="decision-stat"><strong>€8,244</strong><span>Total<br>exposure</span></div></div><div class="decision-tabs"><nav><button class="active">Pending&nbsp; 3</button><button>Reviewed&nbsp; 0</button><button>All</button></nav><select aria-label="Decision priority"><option>Priority</option><option>High priority</option><option>Medium</option></select></div><div class="decision-body"><div class="decision-queue">${pendingDecisions.map((d,i)=>`<article class="decision-row ${d.high?'high':''}"><div><span class="priority">● &nbsp;${d.priority}</span><h2>${d.title}</h2><div class="amount">${d.value}</div><p>${d.context}<br>${d.domain}</p></div><div class="recommendation"><small>RECOMMENDATION</small><b class="${d.recommendation==='Review'?'review':''}">${d.recommendation} &nbsp;<span>${d.confidence}</span></b><small>REASON</small><p>${d.reason}</p></div><div class="decision-actions"><button class="primary" data-action="approve" data-index="${i}">Approve</button><button data-action="decline" data-index="${i}">Decline</button><a data-details="${i}">View details</a></div></article>`).join('')}</div><aside class="authority-panel"><h2>Your authority</h2><p>What you can approve without anyone else.</p><div class="authority-list"><div class="authority-rule"><b>Issue an invoice</b><span>Autonomous up to €2,000 · Company owner</span></div><div class="authority-rule gap"><b>Approve a supplier payment</b><span>Unassigned · requires an owner</span></div><div class="authority-rule"><b>Assign a lead owner</b><span>Autonomous · unlimited</span></div><div class="authority-rule"><b>Change a policy</b><span>Human decision · company owner</span></div></div></aside></div></section>`;board.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>{const row=button.closest('.decision-row');row.style.opacity='.38';button.textContent=button.dataset.action==='approve'?'Approved':'Declined';button.disabled=true;showToast(`Decision ${button.dataset.action==='approve'?'approved':'declined'} and logged`)}));board.querySelectorAll('[data-details]').forEach(link=>link.addEventListener('click',()=>showToast(`${pendingDecisions[Number(link.dataset.details)].title} · full evidence selected`)));board.querySelectorAll('.decision-tabs button').forEach(button=>button.addEventListener('click',()=>{board.querySelectorAll('.decision-tabs button').forEach(x=>x.classList.remove('active'));button.classList.add('active');showToast(`${button.textContent.trim()} decisions selected`)}));board.querySelector('.decision-tabs select').addEventListener('change',event=>{board.querySelectorAll('.decision-row').forEach((row,i)=>row.hidden=event.target.value!=='Priority'&&pendingDecisions[i].priority!==event.target.value);showToast(`${event.target.value} filter applied`)})}
-    function render(){renderDomains();const page=pages[activePage];sectionName.textContent=activePage;sectionNote.textContent=page.note;surfaceType.textContent=activePage==='Company'?'Living company model':activePage==='Decisions'?'Human authority layer':'Stable product surface';semanticPath.textContent=activePage==='Company'?'Active operating system':`${activeDomain} / ${activePage}`;if(sortable){sortable.destroy();sortable=null}if(activePage==='Company'){board.className='board is-world';const enabled=companyFunctions.filter(item=>item.enabled);board.innerHTML=`<section class="company-world" id="company-world" aria-label="Interactive 3D model of the company"><div class="world-loading">Assembling company model</div><div class="world-caption"><b>Your company, as a living system</b><span>Move to inspect · active functions define every surface</span></div>${enabled.map((item,i)=>`<div class="world-domain" data-slot="${i}">${item.name}<small>active function</small></div>`).join('')}<div class="function-dock" aria-label="Company functions">${companyFunctions.map((item,i)=>`<button class="${item.enabled?'active':''}" data-index="${i}" aria-pressed="${item.enabled}">${item.name}</button>`).join('')}</div><div class="world-legend"><span><i></i>Human authority</span><span><i></i>Autonomous system</span></div></section>`;board.querySelectorAll('.function-dock button').forEach(button=>button.addEventListener('click',()=>{const item=companyFunctions[Number(button.dataset.index)];item.enabled=!item.enabled;render()}));window.mountCompanyWorld?.(document.querySelector('#company-world'),enabled);return}window.destroyCompanyWorld?.();if(activePage==='Decisions'){renderDecisions();return}board.className='board';board.dataset.layout=activePage.toLowerCase();board.innerHTML=page.modules.map((m,i)=>`<article class="module" data-size="${m[2]}" data-id="${activePage}-${i}"><span class="module-index">${activePage==='Work'&&i===0?'CANONICAL FLOW':activePage==='Impact'&&i===0?'VERIFIED CHANGE':String(i+1).padStart(2,'0')}</span><div class="module-feature"><h2>${m[0]}</h2><p>${m[1]}</p>${i===0&&activePage==='Impact'?'<strong>47% → 68%</strong><span class="track"><i></i></span>':''}</div><span class="module-meta"><b>${activeDomain}</b><span>Drag to reposition</span></span></article>`).join('');if(window.Sortable)sortable=new Sortable(board,{animation:180,ghostClass:'sortable-ghost',chosenClass:'sortable-chosen',delay:80,delayOnTouchOnly:true,touchStartThreshold:4})}
-    const applyModuleChoices=()=>{if(specialModules[activePage])return;const visible=ensureModules(activePage);board.querySelectorAll('.module').forEach((module,index)=>module.hidden=!visible.has(pages[activePage].modules[index][0]))};new MutationObserver(applyModuleChoices).observe(board,{childList:true});
-    const closeViewDrawer=()=>{viewDrawer.classList.remove('open');drawerScrim.classList.remove('open');viewButton.setAttribute('aria-expanded','false')};viewButton.addEventListener('click',()=>{const open=!viewDrawer.classList.contains('open');viewDrawer.classList.toggle('open',open);drawerScrim.classList.toggle('open',open);viewButton.setAttribute('aria-expanded',String(open))});document.querySelector('#drawer-close').addEventListener('click',closeViewDrawer);drawerScrim.addEventListener('click',closeViewDrawer);
-    const health=document.querySelector('.health'),toast=document.querySelector('#toast');let toastTimer;const showToast=message=>{toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)};
-    const activatePage=page=>{const target=document.querySelector(`.nav button[data-label="${page}"]`);document.querySelectorAll('.nav button').forEach(item=>{item.classList.toggle('active',item===target);item===target?item.setAttribute('aria-current','page'):item.removeAttribute('aria-current')});activePage=page;if(target)health.lastChild.textContent=target.dataset.status;render()};
-    document.querySelector('.nav').addEventListener('click',event=>{const button=event.target.closest('button[data-label]');if(button)activatePage(button.dataset.label)});
-    document.querySelector('#settings-button').addEventListener('click',()=>activatePage('Settings'));
-    document.querySelectorAll('.mode-switch button').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('.mode-switch button').forEach(item=>item.classList.remove('active'));button.classList.add('active');showToast(`${button.textContent} mode active`)}));
-    const commandLayer=document.querySelector('#command-layer'),commandInput=document.querySelector('#command-input'),commandResults=document.querySelector('#command-results'),commandContext=document.querySelector('#command-context'),commandTrigger=document.querySelector('.command'),noticePopover=document.querySelector('#notice-popover');let commandSelection=0,lastFocus;
-    const openView=()=>{viewDrawer.classList.add('open');drawerScrim.classList.add('open');viewButton.setAttribute('aria-expanded','true')};
-    const commandItems=[
-      ...['Company','Work','Decisions','Knowledge','Impact'].map((page,index)=>({group:'Navigate',label:`Open ${page}`,detail:pages[page].note,icon:['◉','⌘','◇','▤','◎'][index],keywords:`go page ${page}`,run:()=>activatePage(page)})),
-      ...['All company','Marketing','Sales','Delivery','Finance'].map(name=>({group:'Company scope',label:name==='All company'?'View the whole company':`Focus ${name}`,detail:name==='All company'?'Every active company function':companyFunctions.find(item=>item.name===name)?.description,icon:domainSymbol(name),keywords:`filter area department domain ${name}`,run:()=>{activeDomain=name;render()}})),
-      {group:'Actions',label:'Configure this view',detail:'Choose the visible areas and modules',icon:'⊞',keywords:'settings modules filter view',run:openView},
-      {group:'Ask the company',label:'What needs me?',detail:'3 decisions are outside autonomous authority',icon:'!',keywords:'approval attention urgent waiting',run:()=>activatePage('Decisions')},
-      {group:'Ask the company',label:'Where is autonomy blocked?',detail:'Invoice reconciliation · no accountable owner',icon:'↗',keywords:'blocked risk autonomy owner finance',run:()=>{activeDomain='Finance';activatePage('Decisions')}}
-    ];
-    const visibleCommands=()=>{const query=commandInput.value.trim().toLowerCase();return commandItems.filter(item=>!query||`${item.label} ${item.detail} ${item.keywords}`.toLowerCase().includes(query))};
-    const renderCommands=()=>{const items=visibleCommands();commandSelection=Math.min(commandSelection,Math.max(0,items.length-1));const groups=[...new Set(items.map(item=>item.group))];commandResults.innerHTML=items.length?groups.map(group=>`<section class="command-group"><span>${group}</span>${items.map((item,index)=>item.group===group?`<button class="command-item" id="command-option-${index}" role="option" aria-selected="${index===commandSelection}" data-command-index="${index}"><i class="command-icon">${item.icon}</i><span class="command-copy"><b>${item.label}</b><small>${item.detail}</small></span><kbd>↵</kbd></button>`:'').join('')}</section>`).join(''):`<div class="command-empty">No matching company action</div>`;const selected=commandResults.querySelector('[aria-selected="true"]');commandInput.setAttribute('aria-activedescendant',selected?.id||'');selected?.scrollIntoView({block:'nearest'})};
-    const closeCommand=()=>{if(commandLayer.hidden)return;commandLayer.hidden=true;commandTrigger.setAttribute('aria-expanded','false');lastFocus?.focus()};
-    const openCommand=()=>{lastFocus=document.activeElement;noticePopover.classList.remove('open');commandLayer.hidden=false;commandTrigger.setAttribute('aria-expanded','true');commandContext.textContent=`${activePage} · ${activeDomain}`;commandInput.value='';commandSelection=0;renderCommands();requestAnimationFrame(()=>commandInput.focus())};
-    const runCommand=index=>{const item=visibleCommands()[index];if(!item)return;closeCommand();item.run();showToast(item.label)};
-    commandTrigger.addEventListener('click',()=>commandLayer.hidden?openCommand():closeCommand());document.querySelectorAll('[data-command-close]').forEach(button=>button.addEventListener('click',closeCommand));commandInput.addEventListener('input',()=>{commandSelection=0;renderCommands()});commandInput.addEventListener('keydown',event=>{const count=visibleCommands().length;if(count&&['ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();commandSelection=(commandSelection+(event.key==='ArrowDown'?1:-1)+count)%count;renderCommands()}else if(event.key==='Enter'){event.preventDefault();runCommand(commandSelection)}else if(event.key==='Escape'){event.preventDefault();closeCommand()}});commandResults.addEventListener('pointerover',event=>{const item=event.target.closest('[data-command-index]');if(!item)return;commandSelection=Number(item.dataset.commandIndex);commandResults.querySelectorAll('[role="option"]').forEach(option=>option.setAttribute('aria-selected',String(option===item)));commandInput.setAttribute('aria-activedescendant',item.id)});commandResults.addEventListener('click',event=>{const item=event.target.closest('[data-command-index]');if(item)runCommand(Number(item.dataset.commandIndex))});
-    document.querySelector('.bell').addEventListener('click',()=>{noticePopover.classList.toggle('open');closeCommand()});addEventListener('keydown',event=>{if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='k'){event.preventDefault();commandLayer.hidden?openCommand():closeCommand()}else if(event.key==='Escape'){closeCommand();noticePopover.classList.remove('open')}});
-    render();
-  </script>
-  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"}}</script>
-  <script type="module">
-    import * as THREE from 'three';
-    import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-    const ASSETS=location.port==='4178'?'http://127.0.0.1:4180/public/models/innerflect-v2/':'/models/innerflect-v2/';
-    const loader=new GLTFLoader();let teardown=()=>{};
-    const load=id=>new Promise((ok,no)=>loader.load(`${ASSETS}${id}.glb`,g=>ok(g.scene),undefined,no));
-    const skin=name=>{const n=(name||'').toLowerCase();if(n.includes('teal'))return new THREE.MeshStandardMaterial({color:0x299d90,metalness:.38,roughness:.24,emissive:0x0a4941,emissiveIntensity:.55});if(n.includes('amber'))return new THREE.MeshStandardMaterial({color:0xc28a39,metalness:.4,roughness:.3,emissive:0x512a08,emissiveIntensity:.45});if(n.includes('risk'))return new THREE.MeshStandardMaterial({color:0xa65d47,emissive:0x37120b,emissiveIntensity:.4,transparent:true,opacity:.78});if(n.includes('human'))return new THREE.MeshStandardMaterial({color:0x929b99,metalness:.18,roughness:.42});if(n.includes('glass'))return new THREE.MeshPhysicalMaterial({color:0x74b7ad,roughness:.12,clearcoat:1,transparent:true,opacity:.34,depthWrite:false});if(n.includes('warm'))return new THREE.MeshStandardMaterial({color:0xd6ddda,metalness:.15,roughness:.3});return new THREE.MeshStandardMaterial({color:n.includes('light')?0x34423f:0x17211f,metalness:.52,roughness:.32})};
-    const prep=(root,scale)=>{root.scale.setScalar(scale);root.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.material=skin(o.material?.name)}});return root};
-    window.destroyCompanyWorld=()=>{teardown();teardown=()=>{}};
-    window.mountCompanyWorld=async(container,functions)=>{window.destroyCompanyWorld();if(!container)return;const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x050a09,.045);const camera=new THREE.OrthographicCamera(-7,7,4.2,-4.2,.1,100);camera.position.set(8,8,10);camera.lookAt(0,0,0);const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.9;renderer.shadowMap.enabled=true;container.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xb9d8d2,0x06100e,2.1));const key=new THREE.DirectionalLight(0xb8fff4,3.1);key.position.set(5,9,7);key.castShadow=true;scene.add(key);const rim=new THREE.PointLight(0x27c9b5,24,14);rim.position.set(-3,2,-2);scene.add(rim);const floor=new THREE.Mesh(new THREE.CircleGeometry(7.2,64),new THREE.MeshStandardMaterial({color:0x07100f,roughness:.72,transparent:true,opacity:.68}));floor.rotation.x=-Math.PI/2;floor.position.y=-1.35;floor.receiveShadow=true;scene.add(floor);const grid=new THREE.GridHelper(15,30,0x17433d,0x0d2420);grid.position.y=-1.32;grid.material.transparent=true;grid.material.opacity=.35;scene.add(grid);const world=new THREE.Group();world.rotation.x=-.04;scene.add(world);let dead=false,frame=0,core;
-      try{const ids=['company-core','domain-platform','human-glyph','agent-glyph','tool-glyph','knowledge-object','decision-gate','risk-hotspot'];const [coreSrc,platform,...glyphs]=await Promise.all(ids.map(load));if(dead)return;core=prep(coreSrc,1.05);core.position.y=-.25;world.add(core);const slots=[[-3.2,.1,-1.7],[3.2,.1,-1.7],[-3.35,.05,2],[3.35,.05,2],[0,.05,3.3],[0,.05,-3.1]];functions.forEach((fn,i)=>{const p=prep(platform.clone(true),.78);p.position.set(...slots[i]);world.add(p);const glyph=prep(glyphs[i%glyphs.length].clone(true),.52);glyph.position.set(slots[i][0],slots[i][1]+.72,slots[i][2]);world.add(glyph);const curve=new THREE.CatmullRomCurve3([new THREE.Vector3(0,-.3,0),new THREE.Vector3(slots[i][0]*.48,-.55,slots[i][2]*.48),new THREE.Vector3(slots[i][0],-.72,slots[i][2])]);world.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(28)),new THREE.LineBasicMaterial({color:0x43c8b6,transparent:true,opacity:.58})))});container.querySelector('.world-loading')?.remove()}catch(e){const l=container.querySelector('.world-loading');if(l)l.textContent='3D assets unavailable';console.error(e)}
-      const resize=()=>{const w=container.clientWidth,h=container.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);const a=w/h;camera.left=-4.4*a;camera.right=4.4*a;camera.top=4.4;camera.bottom=-4.4;camera.updateProjectionMatrix()};const observer=new ResizeObserver(resize);observer.observe(container);resize();let tx=0,ty=0;const pointer=e=>{const r=container.getBoundingClientRect();tx=((e.clientX-r.left)/r.width-.5)*.13;ty=((e.clientY-r.top)/r.height-.5)*.08};container.addEventListener('pointermove',pointer);const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;const animate=t=>{if(dead)return;world.rotation.y+=(tx-world.rotation.y)*.035;world.rotation.x+=(-.04-ty-world.rotation.x)*.035;if(core&&!reduced)core.position.y=-.25+Math.sin(t*.0012)*.045;renderer.render(scene,camera);frame=requestAnimationFrame(animate)};frame=requestAnimationFrame(animate);teardown=()=>{dead=true;cancelAnimationFrame(frame);observer.disconnect();container.removeEventListener('pointermove',pointer);renderer.dispose();renderer.domElement.remove();scene.traverse(o=>{o.geometry?.dispose?.();if(Array.isArray(o.material))o.material.forEach(m=>m.dispose?.());else o.material?.dispose?.()})}};
-    if(document.querySelector('#company-world'))window.mountCompanyWorld(document.querySelector('#company-world'),companyFunctions.filter(item=>item.enabled));
-  </script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="color-scheme" content="dark" />
+    <title>Innerflect Mirror — Cockpit</title>
+    <script>
+      if (location.protocol === "file:")
+        location.replace("http://127.0.0.1:4178/");
+    </script>
+    <style>
+      :root {
+        --ink: #eef3f1;
+        --muted: #788581;
+        --quiet: #4f5e5a;
+        --canvas: #050a0a;
+        --rail: #060c0c;
+        --surface: #09100f;
+        --line: #172725;
+        --line-strong: #263a36;
+        --teal: #55cbbb;
+        --teal-soft: #8abbb3;
+        --critical: #e16d5d;
+        --rail-w: 280px;
+        --top-h: 82px;
+        --pad: clamp(18px, 2vw, 34px);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: var(--canvas);
+        color: var(--ink);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+      button,
+      a {
+        font: inherit;
+      }
+      button {
+        color: inherit;
+      }
+      :focus-visible {
+        outline: 2px solid var(--teal);
+        outline-offset: 3px;
+      }
+      .cockpit {
+        width: 100vw;
+        height: 100dvh;
+        display: grid;
+        grid-template-columns: var(--rail-w) minmax(0, 1fr);
+        grid-template-rows: var(--top-h) minmax(0, 1fr);
+        overflow: hidden;
+        background: var(--canvas);
+      }
+      .rail {
+        grid-row: 1/-1;
+        min-height: 0;
+        position: relative;
+        border-right: 1px solid var(--line);
+        background: linear-gradient(180deg, #07100f 0%, #050a0a 72%);
+        display: grid;
+        grid-template-rows: var(--top-h) minmax(0, 1fr) auto;
+        padding: 0 20px;
+        transition: padding 220ms ease;
+      }
+      .brand {
+        height: var(--top-h);
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        border-bottom: 1px solid transparent;
+        white-space: nowrap;
+      }
+      .brand-mark {
+        width: 24px;
+        height: 32px;
+        display: block;
+        flex: 0 0 auto;
+      }
+      .brand-name {
+        font-size: 21px;
+        letter-spacing: -0.025em;
+        font-weight: 650;
+      }
+      .brand-divider {
+        height: 20px;
+        width: 1px;
+        background: #33423f;
+      }
+      .brand-product {
+        font-size: 14px;
+        letter-spacing: 0.12em;
+        color: var(--teal-soft);
+        text-transform: uppercase;
+      }
+      .nav {
+        align-self: start;
+        display: grid;
+        gap: 7px;
+        padding-top: 62px;
+      }
+      .nav button {
+        height: 48px;
+        width: 100%;
+        position: relative;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        background: transparent;
+        color: #687672;
+        display: grid;
+        grid-template-columns: 24px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+        padding: 0 14px;
+        text-align: left;
+        cursor: pointer;
+        transition:
+          color 160ms,
+          border-color 160ms,
+          background 160ms;
+      }
+      .nav svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 1.6;
+      }
+      .nav button:hover {
+        color: #aab6b2;
+        background: #0a1312;
+      }
+      .nav button.active {
+        color: #dce9e5;
+        border-color: #31766e;
+        background: linear-gradient(
+          90deg,
+          rgba(85, 203, 187, 0.1),
+          rgba(85, 203, 187, 0.025)
+        );
+        box-shadow: none;
+      }
+      .nav button.active:focus-visible {
+        outline: none;
+      }
+      .nav .count {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #6e312c;
+        color: #ffd4cd;
+        font-size: 12px;
+        font-weight: 650;
+      }
+      .rail-collapse {
+        position: absolute;
+        z-index: 4;
+        right: -12px;
+        top: calc(var(--top-h) + 22px);
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border-radius: 50%;
+        border: 1px solid #29403c;
+        background: #091211;
+        color: #63736e;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        transition:
+          color 160ms,
+          border-color 160ms,
+          transform 220ms;
+      }
+      .rail-collapse:hover {
+        color: var(--teal);
+        border-color: #3a6b64;
+      }
+      .rail-collapse svg {
+        width: 12px;
+        height: 12px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 1.8;
+      }
+      .rail-bottom {
+        padding: 22px 0 max(18px, env(safe-area-inset-bottom));
+        border-top: 1px solid var(--line);
+        display: grid;
+        gap: 30px;
+      }
+      .tagline {
+        margin: 0 12px;
+        color: #52615d;
+        font-size: 12px;
+        line-height: 1.55;
+        max-width: 160px;
+      }
+      .operator {
+        display: grid;
+        grid-template-columns: 38px minmax(0, 1fr) 30px;
+        align-items: center;
+        gap: 10px;
+      }
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        border: 1px solid #31554f;
+        background: #11201e;
+        color: #a9d7cf;
+        font-size: 13px;
+      }
+      .operator b,
+      .operator small {
+        display: block;
+      }
+      .operator b {
+        font-size: 13px;
+      }
+      .operator small {
+        margin-top: 2px;
+        color: #65736f;
+        font-size: 11px;
+      }
+      .tune {
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        border: 0;
+        border-radius: 5px;
+        background: none;
+        color: #64726f;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+      }
+      .tune:hover {
+        color: #a9b6b2;
+        background: #0d1715;
+      }
+      .tune svg {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 1.6;
+      }
+      .topbar {
+        grid-column: 2;
+        min-width: 0;
+        border-bottom: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: minmax(210px, 1fr) minmax(320px, 460px) minmax(
+            210px,
+            1fr
+          );
+        align-items: center;
+        gap: 20px;
+        padding: 0 var(--pad);
+        background: rgba(5, 11, 10, 0.92);
+      }
+      .health {
+        justify-self: start;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #8aa09a;
+        font-size: 13px;
+      }
+      .health i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--teal);
+        box-shadow: 0 0 10px rgba(85, 203, 187, 0.55);
+      }
+      .command {
+        height: 42px;
+        border: 1px solid var(--line-strong);
+        border-radius: 7px;
+        background: #08100f;
+        color: #667470;
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 10px;
+        padding: 0 12px;
+        cursor: pointer;
+        text-align: left;
+      }
+      .command:hover {
+        border-color: #37504b;
+        color: #99a6a2;
+      }
+      .command svg {
+        width: 17px;
+        height: 17px;
+        stroke: currentColor;
+        fill: none;
+      }
+      .command kbd {
+        border: 1px solid #2e3e3a;
+        border-radius: 4px;
+        padding: 3px 6px;
+        color: #71807b;
+        background: #0b1413;
+        font:
+          11px ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+      }
+      .meta {
+        justify-self: end;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: #66736f;
+        font-size: 12px;
+      }
+      .mode-switch {
+        display: flex;
+        padding: 3px;
+        border: 1px solid #22332f;
+        border-radius: 6px;
+        background: #07100f;
+      }
+      .mode-switch button {
+        height: 27px;
+        padding: 0 9px;
+        border: 0;
+        border-radius: 3px;
+        background: transparent;
+        color: #5e6d69;
+        font-size: 9px;
+        cursor: pointer;
+      }
+      .mode-switch button.active {
+        background: #142420;
+        color: #bde0da;
+      }
+      .bell {
+        position: relative;
+        border: 0;
+        background: none;
+        color: #71807b;
+        padding: 6px;
+        cursor: pointer;
+      }
+      .bell svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        fill: none;
+      }
+      .bell i {
+        position: absolute;
+        right: 3px;
+        top: 3px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #d8a34d;
+      }
+      .stage {
+        grid-column: 2;
+        min-width: 0;
+        min-height: 0;
+        position: relative;
+        overflow: hidden;
+        background:
+          radial-gradient(
+            ellipse 55% 45% at 52% 48%,
+            rgba(30, 87, 79, 0.06),
+            transparent 72%
+          ),
+          linear-gradient(180deg, #07100f, #050a0a);
+      }
+      .stage::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(85, 203, 187, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(85, 203, 187, 0.025) 1px, transparent 1px);
+        background-size: 44px 44px;
+        mask-image: radial-gradient(circle at center, #000 0%, transparent 68%);
+        pointer-events: none;
+      }
+      .stage-frame {
+        position: absolute;
+        inset: var(--pad);
+        border: 1px solid rgba(79, 111, 104, 0.18);
+        border-radius: 10px;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        overflow: hidden;
+        background: rgba(6, 13, 12, 0.38);
+      }
+      .stage-frame::before,
+      .stage-frame::after {
+        content: "";
+        position: absolute;
+        width: 34px;
+        height: 34px;
+        border-color: #29423d;
+        opacity: 0.55;
+      }
+      .stage-frame::before {
+        left: -1px;
+        top: -1px;
+        border-left: 1px solid;
+        border-top: 1px solid;
+      }
+      .stage-frame::after {
+        right: -1px;
+        bottom: -1px;
+        border-right: 1px solid;
+        border-bottom: 1px solid;
+      }
+      .workspace-head {
+        min-width: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        gap: 20px;
+        padding: clamp(18px, 2.2vw, 30px);
+        border-bottom: 1px solid var(--line);
+      }
+      .workspace-title {
+        min-width: 0;
+      }
+      .workspace-title small {
+        display: block;
+        margin-bottom: 7px;
+        color: #5f706b;
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .workspace-title h1 {
+        margin: 0;
+        font-size: clamp(24px, 2.6vw, 38px);
+        font-weight: 520;
+        letter-spacing: -0.035em;
+      }
+      .workspace-title p {
+        margin: 7px 0 0;
+        color: #64736f;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .semantic-path {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 8px;
+        color: #44534f;
+        font-size: 9px;
+      }
+      .semantic-path b {
+        color: #75968f;
+        font-weight: 500;
+      }
+      .semantic-path i {
+        width: 12px;
+        height: 1px;
+        background: #2b403b;
+      }
+      .domains {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        padding: 4px;
+        border: 1px solid #22332f;
+        border-radius: 7px;
+        background: #07100f;
+      }
+      .domains button {
+        height: 30px;
+        padding: 0 10px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        background: transparent;
+        color: #60706b;
+        font-size: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .domains button:hover {
+        color: #abb8b4;
+      }
+      .domains button.active {
+        background: #111817;
+        color: #e0e7e5;
+        border-color: #394743;
+        box-shadow: none;
+      }
+      .domain-symbol {
+        width: 13px;
+        height: 13px;
+        display: inline-grid;
+        place-items: center;
+        color: #82918d;
+        font-size: 11px;
+        line-height: 1;
+      }
+      .domains button.active .domain-symbol {
+        color: #e0e7e5;
+      }
+      .domain-identity {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: #8b9a96;
+      }
+      .domain-identity .domain-symbol {
+        width: 10px;
+        height: 10px;
+        font-size: 8px;
+        color: #8b9a96;
+      }
+      .board {
+        min-width: 0;
+        min-height: 0;
+        padding: clamp(12px, 1.6vw, 22px);
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        gap: clamp(8px, 1vw, 14px);
+      }
+      .board.is-world {
+        display: block;
+        padding: clamp(10px, 1.25vw, 18px);
+      }
+      .company-world {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #1d312d;
+        border-radius: 8px;
+        background:
+          radial-gradient(
+            circle at 50% 48%,
+            rgba(33, 118, 105, 0.13),
+            transparent 34%
+          ),
+          linear-gradient(180deg, #071211, #050b0a);
+      }
+      .company-world canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+      .world-loading {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        color: #52635e;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .world-caption {
+        position: absolute;
+        left: 16px;
+        top: 14px;
+        display: grid;
+        gap: 3px;
+        pointer-events: none;
+      }
+      .world-caption b {
+        font-size: 11px;
+        font-weight: 540;
+        color: #a6bab5;
+      }
+      .world-caption span {
+        font-size: 9px;
+        color: #4f625d;
+      }
+      .world-legend {
+        position: absolute;
+        right: 14px;
+        bottom: 12px;
+        display: flex;
+        gap: 13px;
+        padding: 7px 9px;
+        border: 1px solid #1d312d;
+        border-radius: 5px;
+        background: rgba(5, 12, 11, 0.78);
+        color: #596a65;
+        font-size: 8px;
+        pointer-events: none;
+      }
+      .world-legend i {
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        margin-right: 5px;
+        border-radius: 50%;
+        background: #66736f;
+      }
+      .world-legend span:last-child i {
+        background: var(--teal);
+        box-shadow: 0 0 6px var(--teal);
+      }
+      .world-domain {
+        position: absolute;
+        z-index: 3;
+        transform: translate(-50%, -50%);
+        padding: 5px 7px;
+        border: 1px solid #24433e;
+        border-radius: 4px;
+        background: rgba(5, 13, 12, 0.76);
+        backdrop-filter: blur(6px);
+        color: #a6b6b2;
+        font-size: 9px;
+        pointer-events: none;
+      }
+      .world-domain small {
+        display: block;
+        margin-top: 2px;
+        color: #4f6862;
+        font-size: 7px;
+      }
+      .world-domain[data-slot="0"] {
+        left: 25%;
+        top: 24%;
+      }
+      .world-domain[data-slot="1"] {
+        left: 75%;
+        top: 24%;
+      }
+      .world-domain[data-slot="2"] {
+        left: 22%;
+        top: 70%;
+      }
+      .world-domain[data-slot="3"] {
+        left: 78%;
+        top: 70%;
+      }
+      .world-domain[data-slot="4"] {
+        left: 50%;
+        top: 83%;
+      }
+      .world-domain[data-slot="5"] {
+        left: 50%;
+        top: 15%;
+      }
+      .module {
+        min-width: 0;
+        min-height: 0;
+        position: relative;
+        border: 1px solid #21332f;
+        border-radius: 8px;
+        background: linear-gradient(
+          145deg,
+          rgba(13, 24, 22, 0.92),
+          rgba(7, 14, 13, 0.92)
+        );
+        padding: clamp(14px, 1.5vw, 22px);
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        cursor: grab;
+        overflow: hidden;
+        transition:
+          border-color 160ms,
+          background 160ms,
+          transform 160ms;
+      }
+      .module:hover {
+        border-color: #36544e;
+        background: linear-gradient(
+          145deg,
+          rgba(16, 30, 27, 0.96),
+          rgba(8, 16, 15, 0.96)
+        );
+      }
+      .module:active {
+        cursor: grabbing;
+      }
+      .module::after {
+        content: "⠿";
+        position: absolute;
+        right: 13px;
+        top: 10px;
+        color: #3d4e49;
+        font-size: 15px;
+        letter-spacing: -2px;
+      }
+      .module-index {
+        font-size: 9px;
+        color: #4c5b57;
+        letter-spacing: 0.12em;
+      }
+      .module h2 {
+        align-self: center;
+        margin: 8px 0;
+        font-size: clamp(15px, 1.25vw, 19px);
+        font-weight: 540;
+        letter-spacing: -0.018em;
+      }
+      .module p {
+        margin: 0;
+        padding-right: 12px;
+        color: #667570;
+        font-size: clamp(9px, 0.78vw, 11px);
+        line-height: 1.5;
+      }
+      .module-meta {
+        align-self: end;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding-top: 10px;
+        color: #42504c;
+        font-size: 9px;
+      }
+      .module-meta b {
+        font-weight: 500;
+        color: #63847e;
+      }
+      .domain-toggle {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        height: 26px;
+        padding: 0 9px;
+        border: 1px solid #2a3c38;
+        border-radius: 4px;
+        background: #0a1312;
+        color: #687873;
+        font-size: 9px;
+        cursor: pointer;
+      }
+      .module.is-enabled {
+        border-color: #32655d;
+        background: linear-gradient(
+          145deg,
+          rgba(18, 40, 35, 0.96),
+          rgba(7, 16, 14, 0.96)
+        );
+      }
+      .module.is-enabled .domain-toggle {
+        border-color: #3c756c;
+        background: #16342e;
+        color: #a8d8cf;
+      }
+      .module.is-disabled {
+        opacity: 0.62;
+      }
+      .sortable-ghost {
+        opacity: 0.22;
+      }
+      .sortable-chosen {
+        border-color: #49857b;
+        transform: scale(0.985);
+      }
+      .viewport-note {
+        position: absolute;
+        left: calc(var(--pad) + 14px);
+        bottom: calc(var(--pad) + 12px);
+        font-size: 9px;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: #34413e;
+      }
+      .cockpit.is-compact {
+        --rail-w: 78px;
+      }
+      .cockpit.is-compact .rail {
+        padding-inline: 12px;
+      }
+      .cockpit.is-compact .brand {
+        justify-content: center;
+      }
+      .cockpit.is-compact .brand-name,
+      .cockpit.is-compact .brand-divider,
+      .cockpit.is-compact .brand-product,
+      .cockpit.is-compact .nav button > span,
+      .cockpit.is-compact .nav .count,
+      .cockpit.is-compact .tagline,
+      .cockpit.is-compact .operator > div,
+      .cockpit.is-compact .tune {
+        display: none;
+      }
+      .cockpit.is-compact .nav button {
+        grid-template-columns: 1fr;
+        padding: 0;
+        place-items: center;
+      }
+      .cockpit.is-compact .operator {
+        display: flex;
+        justify-content: center;
+      }
+      .cockpit.is-compact .rail-collapse {
+        transform: rotate(180deg);
+      }
+      .cockpit.is-compact .nav button::after {
+        content: attr(data-label);
+        position: absolute;
+        left: 56px;
+        top: 50%;
+        transform: translateY(-50%) translateX(-4px);
+        padding: 7px 9px;
+        border: 1px solid #2a3b37;
+        border-radius: 5px;
+        background: #0a1211;
+        color: #c3cfcb;
+        font-size: 11px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 140ms,
+          transform 140ms;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      }
+      .cockpit.is-compact .nav button:hover::after,
+      .cockpit.is-compact .nav button:focus-visible::after {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+      }
+      @media (max-height: 720px) {
+        :root {
+          --top-h: 66px;
+          --rail-w: 248px;
+        }
+        .nav {
+          padding-top: 24px;
+          gap: 3px;
+        }
+        .nav button {
+          height: 42px;
+        }
+        .tagline {
+          display: none;
+        }
+        .rail-bottom {
+          padding-top: 14px;
+          gap: 0;
+        }
+        .workspace-head {
+          padding: 13px 18px;
+        }
+        .workspace-title small {
+          margin-bottom: 3px;
+        }
+        .workspace-title p {
+          margin-top: 3px;
+        }
+        .board {
+          padding: 10px;
+        }
+        .module {
+          padding: 12px;
+        }
+        .module p {
+          line-height: 1.35;
+        }
+      }
+      @media (max-width: 920px) {
+        :root {
+          --rail-w: 76px;
+        }
+        .rail {
+          padding: 0 12px;
+        }
+        .brand {
+          justify-content: center;
+        }
+        .brand-name,
+        .brand-divider,
+        .brand-product,
+        .nav span,
+        .nav .count,
+        .tagline,
+        .operator > div,
+        .tune {
+          display: none;
+        }
+        .nav button {
+          grid-template-columns: 1fr;
+          padding: 0;
+          place-items: center;
+        }
+        .operator {
+          display: flex;
+          justify-content: center;
+        }
+        .topbar {
+          grid-template-columns: 1fr auto;
+        }
+        .command {
+          display: none;
+        }
+        .workspace-head {
+          grid-template-columns: 1fr;
+          align-items: start;
+          gap: 12px;
+        }
+        .domains {
+          justify-self: start;
+        }
+        .board {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          grid-template-rows: repeat(3, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 560px) {
+        :root {
+          --rail-w: 64px;
+          --top-h: 62px;
+        }
+        .rail {
+          display: grid;
+          padding-inline: 8px;
+        }
+        .brand {
+          justify-content: center;
+        }
+        .brand-mark {
+          width: 21px;
+        }
+        .brand-name,
+        .brand-divider,
+        .brand-product,
+        .nav button > span,
+        .nav .count,
+        .tagline,
+        .operator > div,
+        .tune,
+        .rail-collapse {
+          display: none;
+        }
+        .nav {
+          padding-top: 18px;
+          gap: 4px;
+        }
+        .nav button {
+          height: 44px;
+          grid-template-columns: 1fr;
+          padding: 0;
+          place-items: center;
+          border-radius: 6px;
+        }
+        .nav button::after {
+          content: attr(data-label);
+          position: absolute;
+          left: 51px;
+          top: 50%;
+          z-index: 8;
+          transform: translateY(-50%) translateX(-4px);
+          padding: 7px 9px;
+          border: 1px solid #2a3b37;
+          border-radius: 5px;
+          background: #0a1211;
+          color: #c3cfcb;
+          font-size: 11px;
+          white-space: nowrap;
+          opacity: 0;
+          pointer-events: none;
+          transition:
+            opacity 140ms,
+            transform 140ms;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        }
+        .nav button:hover::after,
+        .nav button:focus-visible::after {
+          opacity: 1;
+          transform: translateY(-50%);
+        }
+        .operator {
+          display: flex;
+          justify-content: center;
+        }
+        .avatar {
+          width: 36px;
+          height: 36px;
+        }
+        .topbar {
+          grid-column: 2;
+          padding: 0 12px;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 8px;
+        }
+        .health {
+          font-size: 10px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .stage {
+          grid-column: 2;
+        }
+        .meta {
+          gap: 0;
+        }
+        .meta > span,
+        .mode-switch {
+          display: none;
+        }
+        .stage-frame {
+          inset: 7px;
+        }
+        .workspace-head {
+          padding: 11px 10px;
+          gap: 8px;
+        }
+        .workspace-title small,
+        .workspace-title p,
+        .semantic-path {
+          display: none;
+        }
+        .workspace-title h1 {
+          font-size: 20px;
+        }
+        .domains {
+          width: 100%;
+          overflow: hidden;
+        }
+        .domains button {
+          min-width: 0;
+          flex: 1;
+          padding: 0 4px;
+          font-size: 8px;
+        }
+        .board {
+          padding: 7px;
+          gap: 6px;
+        }
+        .module {
+          padding: 9px;
+          border-radius: 6px;
+        }
+        .module::after {
+          right: 8px;
+          top: 5px;
+        }
+        .module-index {
+          font-size: 7px;
+        }
+        .module h2 {
+          font-size: 12px;
+          margin: 4px 0;
+        }
+        .module p {
+          font-size: 8px;
+          line-height: 1.25;
+        }
+        .module-meta {
+          font-size: 7px;
+          padding-top: 4px;
+        }
+        .world-caption,
+        .world-legend {
+          display: none;
+        }
+        .world-domain {
+          font-size: 7px;
+          padding: 3px 4px;
+        }
+        .world-domain small {
+          display: none;
+        }
+        .viewport-note {
+          display: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+      .function-dock {
+        position: absolute;
+        z-index: 5;
+        left: 14px;
+        bottom: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        max-width: min(62%, 560px);
+      }
+      .function-dock button {
+        height: 27px;
+        padding: 0 9px;
+        border: 1px solid #20332f;
+        border-radius: 5px;
+        background: rgba(6, 14, 13, 0.86);
+        color: #53635f;
+        font-size: 8px;
+        cursor: pointer;
+        backdrop-filter: blur(7px);
+      }
+      .function-dock button:hover {
+        border-color: #3a5e57;
+        color: #91aaa4;
+      }
+      .function-dock button.active {
+        border-color: #327168;
+        background: rgba(17, 49, 43, 0.88);
+        color: #b5ddd5;
+      }
+      .function-dock button.active::before {
+        content: "";
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        margin-right: 5px;
+        border-radius: 50%;
+        background: var(--teal);
+        box-shadow: 0 0 6px var(--teal);
+      }
+      @media (max-width: 560px) {
+        .function-dock {
+          left: 7px;
+          right: 7px;
+          bottom: 7px;
+          max-width: none;
+        }
+        .function-dock button {
+          height: 24px;
+          padding: 0 6px;
+          font-size: 7px;
+        }
+      }
+      .board:not(.is-world) {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        grid-template-rows: repeat(8, minmax(0, 1fr));
+      }
+      .module[data-size="hero"] {
+        grid-column: span 8;
+        grid-row: span 5;
+      }
+      .module[data-size="side"] {
+        grid-column: span 4;
+        grid-row: span 5;
+      }
+      .module[data-size="wide"] {
+        grid-column: span 6;
+        grid-row: span 3;
+      }
+      .module[data-size="third"] {
+        grid-column: span 4;
+        grid-row: span 3;
+      }
+      .module[data-size="tall"] {
+        grid-column: span 4;
+        grid-row: span 8;
+      }
+      .module[data-size="main"] {
+        grid-column: span 8;
+        grid-row: span 8;
+      }
+      .module[data-size="half"] {
+        grid-column: span 6;
+        grid-row: span 4;
+      }
+      .module[data-size="full"] {
+        grid-column: span 12;
+        grid-row: span 3;
+      }
+      .module-feature {
+        align-self: center;
+        display: grid;
+        gap: 10px;
+      }
+      .module-feature strong {
+        font-size: clamp(25px, 3vw, 50px);
+        font-weight: 430;
+        letter-spacing: -0.05em;
+        color: #d9e5e1;
+      }
+      .module-feature .track {
+        height: 2px;
+        background: #1b302c;
+        overflow: hidden;
+      }
+      .module-feature .track i {
+        display: block;
+        width: 68%;
+        height: 100%;
+        background: var(--teal);
+        box-shadow: 0 0 10px rgba(85, 203, 187, 0.45);
+      }
+      .module[data-size="hero"] {
+        background:
+          radial-gradient(
+            circle at 68% 48%,
+            rgba(42, 133, 119, 0.13),
+            transparent 34%
+          ),
+          linear-gradient(145deg, rgba(13, 24, 22, 0.92), rgba(7, 14, 13, 0.92));
+      }
+      .module[data-size="hero"] h2,
+      .module[data-size="main"] h2 {
+        font-size: clamp(20px, 2vw, 30px);
+      }
+      @media (max-width: 920px) {
+        .board:not(.is-world) {
+          grid-template-columns: repeat(8, minmax(0, 1fr));
+          grid-template-rows: repeat(8, minmax(0, 1fr));
+        }
+        .module[data-size="hero"],
+        .module[data-size="main"] {
+          grid-column: span 5;
+        }
+        .module[data-size="side"],
+        .module[data-size="tall"] {
+          grid-column: span 3;
+        }
+        .module[data-size="wide"],
+        .module[data-size="half"],
+        .module[data-size="third"] {
+          grid-column: span 4;
+        }
+      }
+      @media (max-width: 560px) {
+        .board:not(.is-world) {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          grid-template-rows: repeat(8, minmax(0, 1fr));
+        }
+        .module[data-size] {
+          grid-column: span 1;
+          grid-row: span 2;
+        }
+        .module[data-size="hero"],
+        .module[data-size="main"],
+        .module[data-size="full"] {
+          grid-column: span 2;
+          grid-row: span 4;
+        }
+        .module[data-size="tall"],
+        .module[data-size="side"] {
+          grid-row: span 4;
+        }
+        .module-feature strong {
+          font-size: 22px;
+        }
+      }
+      .board.is-decisions {
+        display: block;
+        padding: clamp(10px, 1.25vw, 18px);
+      }
+      .decision-shell {
+        height: 100%;
+        min-height: 0;
+        display: grid;
+        grid-template-rows: 56px 34px minmax(0, 1fr);
+        gap: 9px;
+      }
+      .decision-stats {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 7px;
+      }
+      .decision-stat {
+        border: 1px solid #20322e;
+        border-radius: 6px;
+        background: #08100f;
+        padding: 8px 11px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .decision-stat strong {
+        font-size: 17px;
+        font-weight: 520;
+        letter-spacing: -0.03em;
+      }
+      .decision-stat span {
+        font-size: 8px;
+        line-height: 1.2;
+        color: #65736f;
+      }
+      .decision-stat.attention {
+        border-color: #604c28;
+      }
+      .decision-stat.attention strong {
+        color: #d2a44e;
+      }
+      .decision-stat.critical {
+        border-color: #63362f;
+      }
+      .decision-stat.critical strong {
+        color: #dd7565;
+      }
+      .decision-tabs {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .decision-tabs nav {
+        height: 34px;
+        display: flex;
+        padding: 3px;
+        border: 1px solid #20322e;
+        border-radius: 6px;
+        background: #07100f;
+      }
+      .decision-tabs button {
+        border: 0;
+        border-radius: 3px;
+        background: none;
+        color: #60706b;
+        padding: 0 13px;
+        font-size: 9px;
+        cursor: pointer;
+      }
+      .decision-tabs button.active {
+        background: #142520;
+        color: #c0d8d3;
+      }
+      .decision-tabs select {
+        height: 32px;
+        border: 1px solid #20322e;
+        border-radius: 5px;
+        background: #08100f;
+        color: #81908c;
+        padding: 0 24px 0 10px;
+        font-size: 9px;
+      }
+      .decision-body {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(210px, 26%);
+        gap: 9px;
+      }
+      .decision-queue {
+        min-height: 0;
+        display: grid;
+        grid-template-rows: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+      }
+      .decision-row {
+        min-height: 0;
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(160px, 1.05fr) minmax(190px, 1fr) 92px;
+        align-items: center;
+        gap: 14px;
+        border: 1px solid #233630;
+        border-radius: 7px;
+        background: #08110f;
+        padding: 10px 11px 10px 15px;
+        overflow: hidden;
+      }
+      .decision-row::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 3px;
+        background: #7d6a3d;
+      }
+      .decision-row.high::before {
+        background: #b66050;
+      }
+      .decision-row .priority {
+        color: #9a8870;
+        font-size: 8px;
+      }
+      .decision-row.high .priority {
+        color: #d87666;
+      }
+      .decision-row h2 {
+        margin: 4px 0 2px;
+        font-size: 13px;
+        font-weight: 540;
+      }
+      .decision-row .amount {
+        font-size: 18px;
+        color: #dce6e3;
+        letter-spacing: -0.025em;
+      }
+      .decision-row p {
+        margin: 3px 0 0;
+        color: #667570;
+        font-size: 8px;
+        line-height: 1.35;
+      }
+      .recommendation {
+        height: 100%;
+        border-left: 1px solid #1d2d2a;
+        padding-left: 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .recommendation small {
+        color: #61726e;
+        font-size: 7px;
+        letter-spacing: 0.1em;
+      }
+      .recommendation b {
+        margin: 5px 0;
+        color: var(--teal);
+        font-size: 13px;
+        font-weight: 540;
+      }
+      .recommendation b.review {
+        color: #d1a147;
+      }
+      .decision-actions {
+        display: grid;
+        gap: 5px;
+      }
+      .decision-actions button {
+        height: 27px;
+        border: 1px solid #2c3c38;
+        border-radius: 4px;
+        background: #0b1513;
+        color: #8c9a96;
+        font-size: 9px;
+        cursor: pointer;
+      }
+      .decision-actions button.primary {
+        border-color: #3b8e82;
+        background: #1e786d;
+        color: #ecfffb;
+      }
+      .decision-actions a {
+        color: #6eaea3;
+        font-size: 8px;
+        text-align: center;
+        cursor: pointer;
+      }
+      .authority-panel {
+        min-height: 0;
+        border: 1px solid #20332f;
+        border-radius: 7px;
+        background: #08100f;
+        padding: 13px;
+        overflow: hidden;
+      }
+      .authority-panel h2 {
+        margin: 0;
+        font-size: 13px;
+      }
+      .authority-panel > p {
+        margin: 4px 0 10px;
+        color: #5e6d69;
+        font-size: 8px;
+      }
+      .authority-list {
+        display: grid;
+        gap: 6px;
+      }
+      .authority-rule {
+        border: 1px solid #1b2b28;
+        border-radius: 5px;
+        padding: 8px;
+      }
+      .authority-rule b {
+        display: block;
+        font-size: 9px;
+        font-weight: 520;
+      }
+      .authority-rule span {
+        display: block;
+        margin-top: 3px;
+        color: #5c6c68;
+        font-size: 7px;
+      }
+      .authority-rule.gap {
+        border-color: #61362f;
+        background: #170d0c;
+      }
+      .authority-rule.gap span {
+        color: #cd6c5e;
+      }
+      @media (max-width: 920px) {
+        .decision-stat:nth-child(4) {
+          display: none;
+        }
+        .decision-stats {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        .decision-body {
+          grid-template-columns: minmax(0, 1fr) 180px;
+        }
+        .decision-row {
+          grid-template-columns: minmax(130px, 1fr) minmax(140px, 0.9fr) 76px;
+          gap: 8px;
+          padding-left: 11px;
+        }
+        .decision-row p {
+          font-size: 7px;
+        }
+        .recommendation {
+          padding-left: 8px;
+        }
+      }
+      @media (max-width: 560px) {
+        .decision-shell {
+          grid-template-rows: 45px 30px minmax(0, 1fr);
+          gap: 6px;
+        }
+        .decision-stats {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 4px;
+        }
+        .decision-stat {
+          padding: 5px 6px;
+        }
+        .decision-stat:nth-child(4),
+        .decision-stat:nth-child(5) {
+          display: none;
+        }
+        .decision-stat strong {
+          font-size: 13px;
+        }
+        .decision-stat span {
+          font-size: 6px;
+        }
+        .decision-body {
+          grid-template-columns: 1fr;
+        }
+        .authority-panel {
+          display: none;
+        }
+        .decision-row {
+          grid-template-columns: minmax(0, 1fr) 64px;
+          padding: 7px 7px 7px 10px;
+        }
+        .recommendation {
+          display: none;
+        }
+        .decision-row h2 {
+          font-size: 10px;
+        }
+        .decision-row .amount {
+          font-size: 13px;
+        }
+        .decision-actions button {
+          height: 24px;
+          font-size: 8px;
+        }
+        .decision-tabs button {
+          padding: 0 8px;
+          font-size: 7px;
+        }
+        .decision-tabs select {
+          height: 29px;
+          font-size: 7px;
+        }
+      }
+      @media (min-width: 561px) and (max-width: 920px) {
+        .cockpit.is-rail-open {
+          --rail-w: 238px;
+        }
+        .cockpit.is-rail-open .rail {
+          padding: 0 18px;
+        }
+        .cockpit.is-rail-open .brand {
+          justify-content: flex-start;
+        }
+        .cockpit.is-rail-open .brand-name,
+        .cockpit.is-rail-open .brand-divider,
+        .cockpit.is-rail-open .brand-product,
+        .cockpit.is-rail-open .nav button > span,
+        .cockpit.is-rail-open .tagline,
+        .cockpit.is-rail-open .operator > div,
+        .cockpit.is-rail-open .tune {
+          display: initial;
+        }
+        .cockpit.is-rail-open .nav .count {
+          display: grid;
+          place-items: center;
+        }
+        .cockpit.is-rail-open .nav button {
+          grid-template-columns: 24px minmax(0, 1fr) auto;
+          padding: 0 14px;
+          align-items: center;
+        }
+        .cockpit.is-rail-open .operator {
+          display: grid;
+        }
+        .cockpit.is-rail-open .rail-collapse {
+          transform: none;
+        }
+        .cockpit:not(.is-rail-open) .rail-collapse {
+          transform: rotate(180deg);
+        }
+      }
+      .notice-popover {
+        position: fixed;
+        z-index: 20;
+        right: 18px;
+        top: 68px;
+        width: 250px;
+        padding: 12px;
+        border: 1px solid #2a403b;
+        border-radius: 8px;
+        background: #091210;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+        display: none;
+      }
+      .notice-popover.open {
+        display: block;
+      }
+      .notice-popover b {
+        font-size: 11px;
+      }
+      .notice-popover p {
+        margin: 6px 0 0;
+        color: #687873;
+        font-size: 9px;
+        line-height: 1.4;
+      }
+      .toast {
+        position: fixed;
+        z-index: 30;
+        right: 18px;
+        bottom: 18px;
+        padding: 10px 13px;
+        border: 1px solid #32645c;
+        border-radius: 6px;
+        background: #0d201c;
+        color: #bfe1da;
+        font-size: 10px;
+        opacity: 0;
+        transform: translateY(8px);
+        pointer-events: none;
+        transition:
+          opacity 160ms,
+          transform 160ms;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: none;
+      }
+      .view-options {
+        height: 36px;
+        min-width: 112px;
+        border: 1px solid #293b37;
+        border-radius: 6px;
+        background: #091210;
+        color: #a4b1ad;
+        padding: 0 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        cursor: pointer;
+      }
+      .view-options span {
+        font-size: 10px;
+      }
+      .view-options i {
+        font-style: normal;
+        font-size: 8px;
+        color: #61716c;
+      }
+      .view-drawer {
+        position: absolute;
+        z-index: 15;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: min(330px, 88%);
+        padding: 16px;
+        border-left: 1px solid #2a403b;
+        background: #08100f;
+        box-shadow: -24px 0 60px rgba(0, 0, 0, 0.45);
+        transform: translateX(102%);
+        transition: transform 200ms ease;
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 20px;
+      }
+      .view-drawer.open {
+        transform: none;
+      }
+      .view-drawer header {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+      }
+      .view-drawer header b,
+      .view-drawer header span {
+        display: block;
+      }
+      .view-drawer header b {
+        font-size: 14px;
+      }
+      .view-drawer header span {
+        margin-top: 4px;
+        color: #667570;
+        font-size: 9px;
+      }
+      .view-drawer header button {
+        border: 0;
+        background: none;
+        color: #76847f;
+        font-size: 20px;
+        cursor: pointer;
+      }
+      .view-drawer section h2 {
+        margin: 0 0 8px;
+        color: #687873;
+        font-size: 9px;
+        font-weight: 500;
+      }
+      .view-drawer .domains {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .view-drawer .domains button {
+        justify-content: flex-start;
+      }
+      .module-options {
+        display: grid;
+        gap: 6px;
+      }
+      .module-option {
+        height: 38px;
+        border: 1px solid #20312e;
+        border-radius: 5px;
+        background: #0a1412;
+        color: #7f8e89;
+        padding: 0 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        text-align: left;
+      }
+      .module-option span {
+        font-size: 9px;
+      }
+      .module-option i {
+        width: 22px;
+        height: 12px;
+        border-radius: 8px;
+        background: #26332f;
+        position: relative;
+      }
+      .module-option i::after {
+        content: "";
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        left: 2px;
+        top: 2px;
+        border-radius: 50%;
+        background: #77827f;
+        transition: left 150ms;
+      }
+      .module-option.active {
+        color: #c7d4d0;
+        border-color: #35504a;
+      }
+      .module-option.active i {
+        background: #225f56;
+      }
+      .module-option.active i::after {
+        left: 12px;
+        background: #87d8cb;
+      }
+      .drawer-scrim {
+        position: absolute;
+        z-index: 14;
+        inset: 0;
+        border: 0;
+        background: rgba(2, 6, 5, 0.42);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms;
+      }
+      .drawer-scrim.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .stage-frame.is-company .workspace-head {
+        padding: 12px 18px;
+        align-items: center;
+      }
+      .stage-frame.is-company .semantic-path,
+      .stage-frame.is-company .workspace-title small {
+        display: none;
+      }
+      .stage-frame.is-company .workspace-title {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .stage-frame.is-company .workspace-title h1 {
+        font-size: 22px;
+      }
+      .stage-frame.is-company .workspace-title p {
+        margin: 0;
+        font-size: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .stage-frame.hide-domain-labels .world-domain,
+      .stage-frame.hide-function-dock .function-dock,
+      .stage-frame.hide-legend .world-legend {
+        display: none !important;
+      }
+      .stage-frame.hide-decision-summary .decision-stats,
+      .stage-frame.hide-decision-queue .decision-queue,
+      .stage-frame.hide-authority .authority-panel {
+        display: none;
+      }
+      .stage-frame.hide-decision-summary .decision-shell {
+        grid-template-rows: 34px minmax(0, 1fr);
+      }
+      .stage-frame.hide-authority .decision-body {
+        grid-template-columns: 1fr;
+      }
+      @media (max-width: 560px) {
+        .stage-frame.is-company .workspace-title p {
+          display: none;
+        }
+        .view-options {
+          height: 30px;
+          min-width: 72px;
+          padding: 0 7px;
+        }
+        .view-options i {
+          display: none;
+        }
+        .view-drawer {
+          width: calc(100% - 8px);
+          padding: 12px;
+        }
+      }
+      .stage-frame.hide-company-world .company-world {
+        visibility: hidden;
+      }
+    </style>
+    <style>
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      .command-layer {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        display: grid;
+        place-items: start center;
+        padding: clamp(72px, 11vh, 124px) 16px 16px;
+      }
+      .command-layer[hidden] {
+        display: none;
+      }
+      .command-scrim {
+        position: absolute;
+        inset: 0;
+        border: 0;
+        background: rgba(1, 6, 5, 0.73);
+        backdrop-filter: blur(9px);
+        cursor: default;
+      }
+      .command-dialog {
+        position: relative;
+        display: grid;
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
+        width: min(660px, 100%);
+        max-height: min(650px, calc(100dvh - 100px));
+        overflow: hidden;
+        border: 1px solid #31504a;
+        border-radius: 12px;
+        background: linear-gradient(145deg, #0b1513 0%, #07100e 72%);
+        box-shadow:
+          0 32px 100px rgba(0, 0, 0, 0.7),
+          0 0 0 1px rgba(91, 209, 192, 0.05);
+        animation: command-in 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      @keyframes command-in {
+        from {
+          opacity: 0;
+          transform: translateY(-8px) scale(0.985);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .command-search {
+        display: grid;
+        grid-template-columns: 22px 1fr auto;
+        align-items: center;
+        gap: 12px;
+        padding: 15px 16px;
+        border-bottom: 1px solid #1b2d29;
+      }
+      .command-search svg {
+        width: 20px;
+        fill: none;
+        stroke: #7f938e;
+        stroke-width: 1.7;
+      }
+      .command-search input {
+        min-width: 0;
+        border: 0;
+        background: transparent;
+        color: #e5efec;
+        font: 500 15px/1.2 inherit;
+        outline: 0;
+      }
+      .command-search input::placeholder {
+        color: #667873;
+      }
+      .command-search kbd,
+      .command-footer kbd {
+        border: 1px solid #2a3b37;
+        border-radius: 4px;
+        background: #0e1917;
+        color: #7e908b;
+        font: 600 8px/1 inherit;
+        padding: 5px 6px;
+      }
+      .command-scope {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 16px 8px;
+      }
+      .command-scope span {
+        color: #65c9bb;
+        font-size: 8px;
+        letter-spacing: 0.18em;
+      }
+      .command-scope i {
+        overflow: hidden;
+        color: #72827e;
+        font-size: 9px;
+        font-style: normal;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .command-results {
+        min-height: 180px;
+        overflow: auto;
+        padding: 4px 8px 12px;
+        scroll-padding: 44px 0;
+      }
+      .command-group + .command-group {
+        margin-top: 8px;
+      }
+      .command-group > span {
+        display: block;
+        padding: 7px 9px;
+        color: #62736f;
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      .command-item {
+        display: grid;
+        grid-template-columns: 34px 1fr auto;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        min-height: 48px;
+        padding: 6px 9px;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        background: transparent;
+        color: #b8c7c3;
+        text-align: left;
+      }
+      .command-item:hover,
+      .command-item[aria-selected="true"] {
+        border-color: #2d514a;
+        background: #11221e;
+        color: #e7f0ed;
+      }
+      .command-item .command-icon {
+        display: grid;
+        place-items: center;
+        width: 31px;
+        height: 31px;
+        border: 1px solid #263c37;
+        border-radius: 6px;
+        background: #0b1714;
+        color: #62cbbc;
+        font-size: 13px;
+      }
+      .command-copy {
+        display: grid;
+        gap: 3px;
+      }
+      .command-copy b {
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .command-copy small {
+        color: #70817c;
+        font-size: 9px;
+      }
+      .command-item > kbd {
+        color: #667873;
+        font: 500 8px/1 inherit;
+      }
+      .command-empty {
+        display: grid;
+        place-items: center;
+        min-height: 150px;
+        color: #6d7e79;
+        font-size: 11px;
+      }
+      .command-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+        padding: 10px 15px;
+        border-top: 1px solid #1b2d29;
+        color: #667873;
+        font-size: 8px;
+      }
+      .command-footer span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .component-empty {
+        display: grid;
+        place-items: center;
+        height: 100%;
+        min-height: 180px;
+        border: 1px dashed #25403a;
+        border-radius: 8px;
+        background: rgba(8, 19, 16, 0.35);
+        text-align: center;
+      }
+      .component-empty div {
+        display: grid;
+        gap: 7px;
+      }
+      .component-empty b {
+        color: #a7bab5;
+        font-size: 13px;
+      }
+      .component-empty span {
+        color: #657772;
+        font-size: 10px;
+      }
+      .component-empty button {
+        justify-self: center;
+        margin-top: 5px;
+        padding: 8px 12px;
+        border: 1px solid #315a52;
+        border-radius: 5px;
+        background: #10231f;
+        color: #86c9be;
+        font: 600 9px/1 inherit;
+      }
+      @media (max-width: 560px) {
+        .command-layer {
+          align-items: end;
+          padding: 10px;
+        }
+        .command-dialog {
+          max-height: min(78dvh, 620px);
+          border-radius: 12px;
+        }
+        .command-scope {
+          display: none;
+        }
+        .command-footer {
+          justify-content: flex-start;
+        }
+        .command-footer span:first-child {
+          display: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .command-dialog {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="cockpit">
+      <aside class="rail" aria-label="Innerflect navigation">
+        <div class="brand" aria-label="Innerflect Mirror">
+          <svg class="brand-mark" viewBox="0 0 24 32" aria-hidden="true">
+            <g
+              fill="none"
+              stroke="#55cbbb"
+              stroke-width="2.25"
+              stroke-linecap="round"
+            >
+              <path d="M3 12v8" />
+              <path d="M8 6v20" />
+              <path d="M13 2v28" />
+              <path d="M18 8v16" />
+              <path d="M23 11v10" />
+            </g>
+          </svg>
+          <span class="brand-name">Innerflect</span><i class="brand-divider"></i
+          ><span class="brand-product">Mirror</span>
+        </div>
+        <nav class="nav">
+          <button
+            class="active"
+            aria-current="page"
+            aria-label="Company"
+            data-label="Company"
+            data-status="One domain is at risk"
+          >
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"
+              />
+              <circle cx="12" cy="12" r="2.7" /></svg
+            ><span>Company</span>
+          </button>
+          <button
+            aria-label="Work"
+            data-label="Work"
+            data-status="Work is flowing normally"
+          >
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+              <path d="M6.5 10v4a3 3 0 0 0 3 3H14" /></svg
+            ><span>Work</span>
+          </button>
+          <button
+            aria-label="Decisions, 3 waiting"
+            data-label="Decisions"
+            data-status="3 decisions need you"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="M6 3h9l4 4v14H6z" />
+              <path d="M15 3v5h5M9 14l2 2 4-5" /></svg
+            ><span>Decisions</span><i class="count">3</i>
+          </button>
+          <button
+            aria-label="Knowledge"
+            data-label="Knowledge"
+            data-status="Knowledge is current"
+          >
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v17H6.5A2.5 2.5 0 0 0 4 22zM20 5.5A2.5 2.5 0 0 0 17.5 3H13v17h4.5A2.5 2.5 0 0 1 20 22z"
+              /></svg
+            ><span>Knowledge</span>
+          </button>
+          <button
+            aria-label="Impact"
+            data-label="Impact"
+            data-status="Impact is verified"
+          >
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <circle cx="12" cy="12" r="5" />
+              <circle cx="12" cy="12" r="1" /></svg
+            ><span>Impact</span>
+          </button>
+        </nav>
+        <button
+          class="rail-collapse"
+          aria-label="Collapse sidebar"
+          aria-expanded="true"
+        >
+          <svg viewBox="0 0 16 16"><path d="m10 3-5 5 5 5" /></svg>
+        </button>
+        <div class="rail-bottom">
+          <p class="tagline">A more capable company, by design.</p>
+          <div class="operator">
+            <span class="avatar">IF</span>
+            <div><b>Indias</b><small>Company owner</small></div>
+            <button class="tune" id="settings-button" aria-label="Settings">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 7h10M18 7h2M4 17h2M10 17h10" />
+                <circle cx="16" cy="7" r="2" />
+                <circle cx="8" cy="17" r="2" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+      <header class="topbar">
+        <output class="health" aria-live="polite"
+          ><i></i>System live · 4 domains connected</output
+        >
+        <button class="command">
+          <svg viewBox="0 0 24 24">
+            <circle cx="10.5" cy="10.5" r="6.5" />
+            <path d="m16 16 5 5" /></svg
+          ><span>Ask anything about the company</span><kbd>⌘ K</kbd>
+        </button>
+        <div class="meta">
+          <div class="mode-switch" aria-label="Company mode">
+            <button class="active">Mirror</button><button>Builder</button>
+          </div>
+          <button class="bell" aria-label="Notifications, one unread">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"
+              /></svg
+            ><i></i></button
+          ><span>Sunday · 09:41</span>
+        </div>
+      </header>
+      <section class="stage" aria-label="Product architecture workspace">
+        <div class="stage-frame">
+          <header class="workspace-head">
+            <div class="workspace-title">
+              <div class="semantic-path" id="semantic-path">
+                <b>Company</b><i></i><span>All active functions</span>
+              </div>
+              <small id="surface-type">Stable product surface</small>
+              <h1 id="section-name">Company</h1>
+              <p id="section-note">
+                The current state of the organisation, across every active
+                function.
+              </p>
+            </div>
+            <button
+              class="view-options"
+              id="view-options"
+              aria-expanded="false"
+            >
+              <span>View</span><i>All company</i>
+            </button>
+          </header>
+          <div
+            class="board"
+            id="board"
+            aria-label="Reorderable page sections"
+          ></div>
+          <button
+            class="drawer-scrim"
+            id="drawer-scrim"
+            aria-label="Close view settings"
+          ></button>
+          <aside class="view-drawer" id="view-drawer">
+            <header>
+              <div>
+                <b id="drawer-title">Company view</b
+                ><span>Choose what appears on this page.</span>
+              </div>
+              <button id="drawer-close" aria-label="Close view settings">
+                ×
+              </button>
+            </header>
+            <section>
+              <h2>Area</h2>
+              <div
+                class="domains"
+                id="domains"
+                aria-label="Filter by company function"
+              ></div>
+            </section>
+            <section>
+              <h2>Modules</h2>
+              <div class="module-options" id="module-options"></div>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <div class="command-layer" id="command-layer" hidden>
+      <button
+        class="command-scrim"
+        data-command-close
+        aria-label="Close company command"
+      ></button>
+      <section
+        class="command-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="command-title"
+      >
+        <header class="command-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m16 16 4 4" /></svg
+          ><label id="command-title" class="sr-only" for="command-input"
+            >Ask or navigate Innerflect Mirror</label
+          ><input
+            id="command-input"
+            role="combobox"
+            aria-expanded="true"
+            aria-autocomplete="list"
+            aria-controls="command-results"
+            autocomplete="off"
+            placeholder="Ask the company or run a command…"
+          /><kbd>ESC</kbd>
+        </header>
+        <div class="command-scope">
+          <span>INNERFLECT MIRROR</span
+          ><i id="command-context">Company · All company</i>
+        </div>
+        <div
+          class="command-results"
+          id="command-results"
+          role="listbox"
+          aria-label="Company commands"
+        ></div>
+        <footer class="command-footer">
+          <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span
+          ><span><kbd>↵</kbd> Open</span><span><kbd>esc</kbd> Close</span>
+        </footer>
+      </section>
+    </div>
+    <div class="notice-popover" id="notice-popover">
+      <b>One decision needs attention</b>
+      <p>
+        Invoice reconciliation has no accountable owner and is past its
+        deadline.
+      </p>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+    <script>
+      const cockpit = document.querySelector(".cockpit");
+      const collapse = document.querySelector(".rail-collapse");
+      const syncRail = () => {
+        const tablet = matchMedia("(max-width:920px)").matches,
+          phone = matchMedia("(max-width:560px)").matches;
+        if (phone) {
+          cockpit.classList.remove("is-compact", "is-rail-open");
+          collapse.hidden = true;
+          return;
+        }
+        collapse.hidden = false;
+        if (tablet) {
+          cockpit.classList.remove("is-compact");
+          collapse.setAttribute(
+            "aria-expanded",
+            String(cockpit.classList.contains("is-rail-open")),
+          );
+        } else {
+          cockpit.classList.remove("is-rail-open");
+          collapse.setAttribute(
+            "aria-expanded",
+            String(!cockpit.classList.contains("is-compact")),
+          );
+        }
+      };
+      collapse.addEventListener("click", () => {
+        if (matchMedia("(max-width:920px)").matches) {
+          const open = cockpit.classList.toggle("is-rail-open");
+          collapse.setAttribute("aria-expanded", String(open));
+          collapse.setAttribute(
+            "aria-label",
+            open ? "Collapse sidebar" : "Expand sidebar",
+          );
+        } else {
+          const compact = cockpit.classList.toggle("is-compact");
+          collapse.setAttribute("aria-expanded", String(!compact));
+          collapse.setAttribute(
+            "aria-label",
+            compact ? "Expand sidebar" : "Collapse sidebar",
+          );
+        }
+      });
+      addEventListener("resize", syncRail);
+      syncRail();
+      const sectionName = document.querySelector("#section-name");
+      const sectionNote = document.querySelector("#section-note");
+      const board = document.querySelector("#board");
+      const domainBar = document.querySelector("#domains");
+      const semanticPath = document.querySelector("#semantic-path span");
+      const surfaceType = document.querySelector("#surface-type");
+      const stageFrame = document.querySelector(".stage-frame"),
+        viewButton = document.querySelector("#view-options"),
+        viewDrawer = document.querySelector("#view-drawer"),
+        drawerScrim = document.querySelector("#drawer-scrim"),
+        moduleOptions = document.querySelector("#module-options");
+      const companyFunctions = [
+        {
+          name: "Marketing",
+          symbol: "◒",
+          description: "Demand, audience, content and campaigns.",
+          enabled: true,
+        },
+        {
+          name: "Sales",
+          symbol: "◇",
+          description: "Leads, qualification, proposals and revenue.",
+          enabled: true,
+        },
+        {
+          name: "Delivery",
+          symbol: "▱",
+          description: "Projects, fulfilment, quality and customers.",
+          enabled: true,
+        },
+        {
+          name: "Finance",
+          symbol: "▥",
+          description: "Invoices, payments, reconciliation and reporting.",
+          enabled: true,
+        },
+        {
+          name: "People",
+          symbol: "♙",
+          description: "Hiring, onboarding, development and capacity.",
+          enabled: false,
+        },
+        {
+          name: "Operations",
+          symbol: "⌬",
+          description: "Suppliers, assets, internal service and controls.",
+          enabled: false,
+        },
+      ];
+      const pages = {
+        Company: {
+          note: "The company, live. Configure its operating model in View.",
+          modules: [],
+        },
+        Work: {
+          note: "See work as a system: its shape, live movement and points of intervention.",
+          modules: [
+            [
+              "Operating flow",
+              "Trigger → context → work → decision → action → verification → outcome.",
+              "hero",
+            ],
+            ["Live now", "47 executions moving; 3 require attention.", "side"],
+            [
+              "Workflow builder",
+              "Dismantle the selected workflow and change each semantic part.",
+              "wide",
+            ],
+            [
+              "Actors and exceptions",
+              "Humans, agents, systems and blocked work in one operational view.",
+              "wide",
+            ],
+          ],
+        },
+        Decisions: {
+          note: "Decisions that matter, with full context. A long queue here would be a system failure, not a busy day.",
+          modules: [
+            [
+              "Needs you",
+              "Three decisions are outside autonomous authority.",
+              "main",
+            ],
+            [
+              "Your authority",
+              "Limits, ownership and escalation destinations.",
+              "tall",
+            ],
+            [
+              "Patterns becoming policy",
+              "Repeated judgement ready to become an explicit rule.",
+              "third",
+            ],
+            [
+              "Decision history",
+              "Comparable evidence, choices and verified outcomes.",
+              "third",
+            ],
+          ],
+        },
+        Knowledge: {
+          note: "The company’s usable memory: connected, trusted and visible where it changes work.",
+          modules: [
+            [
+              "Knowledge graph",
+              "Policies, customer context, observed behaviour and outcomes connected to the work that uses them.",
+              "hero",
+            ],
+            [
+              "Ask the company",
+              "Grounded answers with sources, confidence and contradictions.",
+              "side",
+            ],
+            [
+              "Trust and freshness",
+              "Ownership, age, conflicts and verification state.",
+              "third",
+            ],
+            [
+              "Learning queue",
+              "New observations waiting to become trusted memory.",
+              "third",
+            ],
+            [
+              "Documented vs observed",
+              "Where real operating behaviour differs from written procedure.",
+              "third",
+            ],
+          ],
+        },
+        Impact: {
+          note: "Verified value, traced from company outcome back to operational cause.",
+          modules: [
+            [
+              "Autonomy over time",
+              "Earned autonomy increased from 47% to 68%, with every change linked to evidence.",
+              "hero",
+            ],
+            [
+              "Verified outcomes",
+              "99.7% verified · zero unsafe autonomous actions.",
+              "side",
+            ],
+            [
+              "Human capacity",
+              "32 hours returned to the team this week.",
+              "third",
+            ],
+            [
+              "Financial effect",
+              "€12,480 protected or created by verified actions.",
+              "third",
+            ],
+            [
+              "Trace explorer",
+              "Outcome → action → decision → policy → evidence → event.",
+              "third",
+            ],
+          ],
+        },
+        Settings: {
+          note: "The machine-readable constitution defining what the system may know and do.",
+          modules: [
+            [
+              "Company constitution",
+              "Active functions, owners and the operating boundaries inherited across Mirror.",
+              "main",
+            ],
+            [
+              "Authority boundaries",
+              "Scope, financial and risk limits, reversibility and escalation.",
+              "tall",
+            ],
+            [
+              "Systems and access",
+              "Observed and operated systems with explicit permissions.",
+              "half",
+            ],
+            [
+              "Knowledge scope",
+              "Included sources, deliberate exclusions, retention and audit.",
+              "half",
+            ],
+          ],
+        },
+      };
+      const pendingDecisions = [
+        {
+          priority: "High priority",
+          title: "Approve Essência Gate 1",
+          value: "€1,334",
+          context: "Outside autonomous authority · irreversible billing",
+          domain: "▱ Delivery · 12 min ago",
+          recommendation: "Approve",
+          confidence: "96%",
+          reason:
+            "All gate criteria passed; client confirmed receipt and prior gates are unchanged.",
+          high: true,
+        },
+        {
+          priority: "High priority",
+          title: "Assign invoice reconciliation ownership",
+          value: "€6,910",
+          context: "No accountable owner for 56 days",
+          domain: "▥ Finance · 56 days ago",
+          recommendation: "Review",
+          confidence: "71%",
+          reason:
+            "Four payments remain unmatched; the workflow is blocked at action and verification.",
+          high: true,
+        },
+        {
+          priority: "Medium",
+          title: "Lower demand-signal trust threshold",
+          value: "8 signals / week",
+          context: "Changes what Market may accept without review",
+          domain: "◒ Marketing · 2 hours ago",
+          recommendation: "Approve",
+          confidence: "82%",
+          reason:
+            "Observed outcomes remain inside the approved quality boundary.",
+          high: false,
+        },
+      ];
+      const specialModules = {
+        Company: [
+          "Company world",
+          "Area labels",
+          "Function controls",
+          "State legend",
+        ],
+        Decisions: ["Decision summary", "Decision queue", "Your authority"],
+      };
+      const componentRegistry = Object.fromEntries(
+        Object.entries(pages).map(([page, definition]) => [
+          page,
+          (
+            specialModules[page] || definition.modules.map((item) => item[0])
+          ).map((name, index) => ({
+            id: `${page.toLowerCase()}-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+            name,
+            index,
+            enabled: true,
+          })),
+        ]),
+      );
+      const componentsFor = (page) => componentRegistry[page];
+      const enabledComponents = (page) =>
+        new Set(
+          componentsFor(page)
+            .filter((component) => component.enabled)
+            .map((component) => component.name),
+        );
+      const componentIsEnabled = (page, name) =>
+        componentsFor(page).find((component) => component.name === name)
+          ?.enabled !== false;
+      const emptyComponents = (page) => {
+        const company = page === "Company";
+        return `<section class="component-empty"><div><b>${company ? "Company world is off" : `No active ${page.toLowerCase()} components`}</b><span>${company ? "Turn on the world component to restore its dependent layers." : "Choose the elements this surface needs."}</span><button data-open-components>Configure components</button></div></section>`;
+      };
+      let activePage = "Company",
+        activeDomain = "All company",
+        sortable;
+      const domainSymbol = (name) =>
+        companyFunctions.find((item) => item.name === name)?.symbol || "◎";
+      const domainIdentity = (name) =>
+        `<span class="domain-identity"><i class="domain-symbol">${domainSymbol(name)}</i>${name}</span>`;
+      function renderDomains() {
+        const active = companyFunctions.filter((item) => item.enabled);
+        if (
+          activeDomain !== "All company" &&
+          !active.some((item) => item.name === activeDomain)
+        )
+          activeDomain = "All company";
+        domainBar.innerHTML = [
+          `<button class="${activeDomain === "All company" ? "active" : ""}" data-domain="All company"><i class="domain-symbol">◎</i>All</button>`,
+          ...active.map(
+            (item) =>
+              `<button class="${activeDomain === item.name ? "active" : ""}" data-domain="${item.name}"><i class="domain-symbol">${item.symbol}</i>${item.name}</button>`,
+          ),
+        ].join("");
+        domainBar.querySelectorAll("button").forEach((button) =>
+          button.addEventListener("click", () => {
+            activeDomain = button.dataset.domain;
+            render();
+          }),
+        );
+        renderViewOptions();
+      }
+      function renderViewOptions() {
+        stageFrame.className = `stage-frame${activePage === "Company" ? " is-company" : ""}`;
+        document.querySelector("#drawer-title").textContent =
+          `${activePage} view`;
+        viewButton.querySelector("i").textContent =
+          activeDomain === "All company" ? "All company" : activeDomain;
+        moduleOptions.innerHTML = componentsFor(activePage)
+          .map(
+            (component) =>
+              `<button class="module-option ${component.enabled ? "active" : ""}" data-component="${component.id}" aria-pressed="${component.enabled}"><span>${component.name}</span><i></i></button>`,
+          )
+          .join("");
+      }
+      function renderDecisions() {
+        const visible = enabledComponents("Decisions");
+        board.className = "board is-decisions";
+        board.innerHTML = `<section class="decision-shell"><div class="decision-stats"><div class="decision-stat"><strong>3</strong><span>Waiting<br>for you</span></div><div class="decision-stat critical"><strong>2</strong><span>High<br>priority</span></div><div class="decision-stat critical"><strong>1</strong><span>Past its<br>deadline</span></div><div class="decision-stat attention"><strong>1</strong><span>Cannot be<br>undone</span></div><div class="decision-stat"><strong>€8,244</strong><span>Total<br>exposure</span></div></div><div class="decision-tabs"><nav><button class="active">Pending&nbsp; 3</button><button>Reviewed&nbsp; 0</button><button>All</button></nav><select aria-label="Decision priority"><option>Priority</option><option>High priority</option><option>Medium</option></select></div><div class="decision-body"><div class="decision-queue">${pendingDecisions.map((d, i) => `<article class="decision-row ${d.high ? "high" : ""}"><div><span class="priority">● &nbsp;${d.priority}</span><h2>${d.title}</h2><div class="amount">${d.value}</div><p>${d.context}<br>${d.domain}</p></div><div class="recommendation"><small>RECOMMENDATION</small><b class="${d.recommendation === "Review" ? "review" : ""}">${d.recommendation} &nbsp;<span>${d.confidence}</span></b><small>REASON</small><p>${d.reason}</p></div><div class="decision-actions"><button class="primary" data-action="approve" data-index="${i}">Approve</button><button data-action="decline" data-index="${i}">Decline</button><a data-details="${i}">View details</a></div></article>`).join("")}</div><aside class="authority-panel"><h2>Your authority</h2><p>What you can approve without anyone else.</p><div class="authority-list"><div class="authority-rule"><b>Issue an invoice</b><span>Autonomous up to €2,000 · Company owner</span></div><div class="authority-rule gap"><b>Approve a supplier payment</b><span>Unassigned · requires an owner</span></div><div class="authority-rule"><b>Assign a lead owner</b><span>Autonomous · unlimited</span></div><div class="authority-rule"><b>Change a policy</b><span>Human decision · company owner</span></div></div></aside></div></section>`;
+        if (!visible.has("Decision summary"))
+          board.querySelector(".decision-stats")?.remove();
+        if (!visible.has("Decision queue")) {
+          board.querySelector(".decision-queue")?.remove();
+          board.querySelector(".decision-tabs")?.remove();
+        }
+        if (!visible.has("Your authority"))
+          board.querySelector(".authority-panel")?.remove();
+        if (!visible.size) board.innerHTML = emptyComponents("Decisions");
+        board.querySelectorAll("[data-action]").forEach((button) =>
+          button.addEventListener("click", () => {
+            const row = button.closest(".decision-row");
+            row.style.opacity = ".38";
+            button.textContent =
+              button.dataset.action === "approve" ? "Approved" : "Declined";
+            button.disabled = true;
+            showToast(
+              `Decision ${button.dataset.action === "approve" ? "approved" : "declined"} and logged`,
+            );
+          }),
+        );
+        board
+          .querySelectorAll("[data-details]")
+          .forEach((link) =>
+            link.addEventListener("click", () =>
+              showToast(
+                `${pendingDecisions[Number(link.dataset.details)].title} · full evidence selected`,
+              ),
+            ),
+          );
+        board.querySelectorAll(".decision-tabs button").forEach((button) =>
+          button.addEventListener("click", () => {
+            board
+              .querySelectorAll(".decision-tabs button")
+              .forEach((x) => x.classList.remove("active"));
+            button.classList.add("active");
+            showToast(`${button.textContent.trim()} decisions selected`);
+          }),
+        );
+        board
+          .querySelector(".decision-tabs select")
+          ?.addEventListener("change", (event) => {
+            board
+              .querySelectorAll(".decision-row")
+              .forEach(
+                (row, i) =>
+                  (row.hidden =
+                    event.target.value !== "Priority" &&
+                    pendingDecisions[i].priority !== event.target.value),
+              );
+            showToast(`${event.target.value} filter applied`);
+          });
+      }
+      function render() {
+        renderDomains();
+        const page = pages[activePage];
+        sectionName.textContent = activePage;
+        sectionNote.textContent = page.note;
+        surfaceType.textContent =
+          activePage === "Company"
+            ? "Living company model"
+            : activePage === "Decisions"
+              ? "Human authority layer"
+              : "Stable product surface";
+        semanticPath.textContent =
+          activePage === "Company"
+            ? "Active operating system"
+            : `${activeDomain} / ${activePage}`;
+        if (sortable) {
+          sortable.destroy();
+          sortable = null;
+        }
+        if (activePage === "Company") {
+          board.className = "board is-world";
+          const enabled = companyFunctions.filter((item) => item.enabled);
+          const visible = enabledComponents("Company");
+          if (!visible.has("Company world")) {
+            window.destroyCompanyWorld?.();
+            board.innerHTML = emptyComponents("Company");
+            return;
+          }
+          board.innerHTML = `<section class="company-world" id="company-world" aria-label="Interactive 3D model of the company"><div class="world-loading">Assembling company model</div><div class="world-caption"><b>Your company, as a living system</b><span>Move to inspect · active functions define every surface</span></div>${visible.has("Area labels") ? enabled.map((item, i) => `<div class="world-domain" data-slot="${i}">${item.name}<small>active function</small></div>`).join("") : ""}${visible.has("Function controls") ? `<div class="function-dock" aria-label="Company functions">${companyFunctions.map((item, i) => `<button class="${item.enabled ? "active" : ""}" data-index="${i}" aria-pressed="${item.enabled}">${item.name}</button>`).join("")}</div>` : ""}${visible.has("State legend") ? '<div class="world-legend"><span><i></i>Human authority</span><span><i></i>Autonomous system</span></div>' : ""}</section>`;
+          board.querySelectorAll(".function-dock button").forEach((button) =>
+            button.addEventListener("click", () => {
+              const item = companyFunctions[Number(button.dataset.index)];
+              item.enabled = !item.enabled;
+              render();
+            }),
+          );
+          window.mountCompanyWorld?.(
+            document.querySelector("#company-world"),
+            enabled,
+          );
+          return;
+        }
+        window.destroyCompanyWorld?.();
+        if (activePage === "Decisions") {
+          renderDecisions();
+          return;
+        }
+        board.className = "board";
+        board.dataset.layout = activePage.toLowerCase();
+        board.innerHTML = page.modules
+          .filter((module) => componentIsEnabled(activePage, module[0]))
+          .map(
+            (m, i) =>
+              `<article class="module" data-size="${m[2]}" data-id="${activePage}-${i}"><span class="module-index">${activePage === "Work" && i === 0 ? "CANONICAL FLOW" : activePage === "Impact" && i === 0 ? "VERIFIED CHANGE" : String(i + 1).padStart(2, "0")}</span><div class="module-feature"><h2>${m[0]}</h2><p>${m[1]}</p>${i === 0 && activePage === "Impact" ? '<strong>47% → 68%</strong><span class="track"><i></i></span>' : ""}</div><span class="module-meta"><b>${activeDomain}</b><span>Drag to reposition</span></span></article>`,
+          )
+          .join("");
+        if (!board.children.length)
+          board.innerHTML = emptyComponents(activePage);
+        if (window.Sortable)
+          sortable = new Sortable(board, {
+            animation: 180,
+            ghostClass: "sortable-ghost",
+            chosenClass: "sortable-chosen",
+            delay: 80,
+            delayOnTouchOnly: true,
+            touchStartThreshold: 4,
+          });
+      }
+      const closeViewDrawer = () => {
+        viewDrawer.classList.remove("open");
+        drawerScrim.classList.remove("open");
+        viewButton.setAttribute("aria-expanded", "false");
+      };
+      viewButton.addEventListener("click", () => {
+        const open = !viewDrawer.classList.contains("open");
+        viewDrawer.classList.toggle("open", open);
+        drawerScrim.classList.toggle("open", open);
+        viewButton.setAttribute("aria-expanded", String(open));
+      });
+      moduleOptions.addEventListener("click", (event) => {
+        const control = event.target.closest("[data-component]");
+        if (!control) return;
+        const component = componentsFor(activePage).find(
+          (item) => item.id === control.dataset.component,
+        );
+        if (!component) return;
+        component.enabled = !component.enabled;
+        render();
+      });
+      board.addEventListener("click", (event) => {
+        if (event.target.closest("[data-open-components]")) openView();
+      });
+      document
+        .querySelector("#drawer-close")
+        .addEventListener("click", closeViewDrawer);
+      drawerScrim.addEventListener("click", closeViewDrawer);
+      const health = document.querySelector(".health"),
+        toast = document.querySelector("#toast");
+      let toastTimer;
+      const showToast = (message) => {
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+      };
+      const activatePage = (page) => {
+        const target = document.querySelector(
+          `.nav button[data-label="${page}"]`,
+        );
+        document.querySelectorAll(".nav button").forEach((item) => {
+          item.classList.toggle("active", item === target);
+          item === target
+            ? item.setAttribute("aria-current", "page")
+            : item.removeAttribute("aria-current");
+        });
+        activePage = page;
+        if (target) health.lastChild.textContent = target.dataset.status;
+        render();
+      };
+      document.querySelector(".nav").addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-label]");
+        if (button) activatePage(button.dataset.label);
+      });
+      document
+        .querySelector("#settings-button")
+        .addEventListener("click", () => activatePage("Settings"));
+      document.querySelectorAll(".mode-switch button").forEach((button) =>
+        button.addEventListener("click", () => {
+          document
+            .querySelectorAll(".mode-switch button")
+            .forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          showToast(`${button.textContent} mode active`);
+        }),
+      );
+      const commandLayer = document.querySelector("#command-layer"),
+        commandInput = document.querySelector("#command-input"),
+        commandResults = document.querySelector("#command-results"),
+        commandContext = document.querySelector("#command-context"),
+        commandTrigger = document.querySelector(".command"),
+        noticePopover = document.querySelector("#notice-popover");
+      let commandSelection = 0,
+        lastFocus;
+      const openView = () => {
+        viewDrawer.classList.add("open");
+        drawerScrim.classList.add("open");
+        viewButton.setAttribute("aria-expanded", "true");
+      };
+      const commandItems = [
+        ...["Company", "Work", "Decisions", "Knowledge", "Impact"].map(
+          (page, index) => ({
+            group: "Navigate",
+            label: `Open ${page}`,
+            detail: pages[page].note,
+            icon: ["◉", "⌘", "◇", "▤", "◎"][index],
+            keywords: `go page ${page}`,
+            run: () => activatePage(page),
+          }),
+        ),
+        ...["All company", "Marketing", "Sales", "Delivery", "Finance"].map(
+          (name) => ({
+            group: "Company scope",
+            label:
+              name === "All company"
+                ? "View the whole company"
+                : `Focus ${name}`,
+            detail:
+              name === "All company"
+                ? "Every active company function"
+                : companyFunctions.find((item) => item.name === name)
+                    ?.description,
+            icon: domainSymbol(name),
+            keywords: `filter area department domain ${name}`,
+            run: () => {
+              activeDomain = name;
+              render();
+            },
+          }),
+        ),
+        {
+          group: "Actions",
+          label: "Configure this view",
+          detail: "Choose the visible areas and modules",
+          icon: "⊞",
+          keywords: "settings modules filter view",
+          run: openView,
+        },
+        {
+          group: "Ask the company",
+          label: "What needs me?",
+          detail: "3 decisions are outside autonomous authority",
+          icon: "!",
+          keywords: "approval attention urgent waiting",
+          run: () => activatePage("Decisions"),
+        },
+        {
+          group: "Ask the company",
+          label: "Where is autonomy blocked?",
+          detail: "Invoice reconciliation · no accountable owner",
+          icon: "↗",
+          keywords: "blocked risk autonomy owner finance",
+          run: () => {
+            activeDomain = "Finance";
+            activatePage("Decisions");
+          },
+        },
+      ];
+      const visibleCommands = () => {
+        const query = commandInput.value.trim().toLowerCase();
+        return commandItems.filter(
+          (item) =>
+            !query ||
+            `${item.label} ${item.detail} ${item.keywords}`
+              .toLowerCase()
+              .includes(query),
+        );
+      };
+      const renderCommands = () => {
+        const items = visibleCommands();
+        commandSelection = Math.min(
+          commandSelection,
+          Math.max(0, items.length - 1),
+        );
+        const groups = [...new Set(items.map((item) => item.group))];
+        commandResults.innerHTML = items.length
+          ? groups
+              .map(
+                (group) =>
+                  `<section class="command-group"><span>${group}</span>${items.map((item, index) => (item.group === group ? `<button class="command-item" id="command-option-${index}" role="option" aria-selected="${index === commandSelection}" data-command-index="${index}"><i class="command-icon">${item.icon}</i><span class="command-copy"><b>${item.label}</b><small>${item.detail}</small></span><kbd>↵</kbd></button>` : "")).join("")}</section>`,
+              )
+              .join("")
+          : `<div class="command-empty">No matching company action</div>`;
+        const selected = commandResults.querySelector('[aria-selected="true"]');
+        commandInput.setAttribute("aria-activedescendant", selected?.id || "");
+        selected?.scrollIntoView({ block: "nearest" });
+      };
+      const closeCommand = () => {
+        if (commandLayer.hidden) return;
+        commandLayer.hidden = true;
+        commandTrigger.setAttribute("aria-expanded", "false");
+        lastFocus?.focus();
+      };
+      const openCommand = () => {
+        lastFocus = document.activeElement;
+        noticePopover.classList.remove("open");
+        commandLayer.hidden = false;
+        commandTrigger.setAttribute("aria-expanded", "true");
+        commandContext.textContent = `${activePage} · ${activeDomain}`;
+        commandInput.value = "";
+        commandSelection = 0;
+        renderCommands();
+        requestAnimationFrame(() => commandInput.focus());
+      };
+      const runCommand = (index) => {
+        const item = visibleCommands()[index];
+        if (!item) return;
+        closeCommand();
+        item.run();
+        showToast(item.label);
+      };
+      commandTrigger.addEventListener("click", () =>
+        commandLayer.hidden ? openCommand() : closeCommand(),
+      );
+      document
+        .querySelectorAll("[data-command-close]")
+        .forEach((button) => button.addEventListener("click", closeCommand));
+      commandInput.addEventListener("input", () => {
+        commandSelection = 0;
+        renderCommands();
+      });
+      commandInput.addEventListener("keydown", (event) => {
+        const count = visibleCommands().length;
+        if (count && ["ArrowDown", "ArrowUp"].includes(event.key)) {
+          event.preventDefault();
+          commandSelection =
+            (commandSelection + (event.key === "ArrowDown" ? 1 : -1) + count) %
+            count;
+          renderCommands();
+        } else if (event.key === "Enter") {
+          event.preventDefault();
+          runCommand(commandSelection);
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          closeCommand();
+        }
+      });
+      commandResults.addEventListener("pointerover", (event) => {
+        const item = event.target.closest("[data-command-index]");
+        if (!item) return;
+        commandSelection = Number(item.dataset.commandIndex);
+        commandResults
+          .querySelectorAll('[role="option"]')
+          .forEach((option) =>
+            option.setAttribute("aria-selected", String(option === item)),
+          );
+        commandInput.setAttribute("aria-activedescendant", item.id);
+      });
+      commandResults.addEventListener("click", (event) => {
+        const item = event.target.closest("[data-command-index]");
+        if (item) runCommand(Number(item.dataset.commandIndex));
+      });
+      document.querySelector(".bell").addEventListener("click", () => {
+        noticePopover.classList.toggle("open");
+        closeCommand();
+      });
+      addEventListener("keydown", (event) => {
+        if (
+          (event.metaKey || event.ctrlKey) &&
+          event.key.toLowerCase() === "k"
+        ) {
+          event.preventDefault();
+          commandLayer.hidden ? openCommand() : closeCommand();
+        } else if (event.key === "Escape") {
+          closeCommand();
+          noticePopover.classList.remove("open");
+        }
+      });
+      render();
+    </script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from "three";
+      import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+      const ASSETS =
+        location.port === "4178"
+          ? "http://127.0.0.1:4180/public/models/innerflect-v2/"
+          : "/models/innerflect-v2/";
+      const loader = new GLTFLoader();
+      let teardown = () => {};
+      const load = (id) =>
+        new Promise((ok, no) =>
+          loader.load(`${ASSETS}${id}.glb`, (g) => ok(g.scene), undefined, no),
+        );
+      const skin = (name) => {
+        const n = (name || "").toLowerCase();
+        if (n.includes("teal"))
+          return new THREE.MeshStandardMaterial({
+            color: 0x299d90,
+            metalness: 0.38,
+            roughness: 0.24,
+            emissive: 0x0a4941,
+            emissiveIntensity: 0.55,
+          });
+        if (n.includes("amber"))
+          return new THREE.MeshStandardMaterial({
+            color: 0xc28a39,
+            metalness: 0.4,
+            roughness: 0.3,
+            emissive: 0x512a08,
+            emissiveIntensity: 0.45,
+          });
+        if (n.includes("risk"))
+          return new THREE.MeshStandardMaterial({
+            color: 0xa65d47,
+            emissive: 0x37120b,
+            emissiveIntensity: 0.4,
+            transparent: true,
+            opacity: 0.78,
+          });
+        if (n.includes("human"))
+          return new THREE.MeshStandardMaterial({
+            color: 0x929b99,
+            metalness: 0.18,
+            roughness: 0.42,
+          });
+        if (n.includes("glass"))
+          return new THREE.MeshPhysicalMaterial({
+            color: 0x74b7ad,
+            roughness: 0.12,
+            clearcoat: 1,
+            transparent: true,
+            opacity: 0.34,
+            depthWrite: false,
+          });
+        if (n.includes("warm"))
+          return new THREE.MeshStandardMaterial({
+            color: 0xd6ddda,
+            metalness: 0.15,
+            roughness: 0.3,
+          });
+        return new THREE.MeshStandardMaterial({
+          color: n.includes("light") ? 0x34423f : 0x17211f,
+          metalness: 0.52,
+          roughness: 0.32,
+        });
+      };
+      const prep = (root, scale) => {
+        root.scale.setScalar(scale);
+        root.traverse((o) => {
+          if (o.isMesh) {
+            o.castShadow = true;
+            o.receiveShadow = true;
+            o.material = skin(o.material?.name);
+          }
+        });
+        return root;
+      };
+      window.destroyCompanyWorld = () => {
+        teardown();
+        teardown = () => {};
+      };
+      window.mountCompanyWorld = async (container, functions) => {
+        window.destroyCompanyWorld();
+        if (!container) return;
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050a09, 0.045);
+        const camera = new THREE.OrthographicCamera(-7, 7, 4.2, -4.2, 0.1, 100);
+        camera.position.set(8, 8, 10);
+        camera.lookAt(0, 0, 0);
+        const renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: true,
+          powerPreference: "high-performance",
+        });
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 1.7));
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.toneMapping = THREE.AgXToneMapping;
+        renderer.toneMappingExposure = 0.9;
+        renderer.shadowMap.enabled = true;
+        container.prepend(renderer.domElement);
+        scene.add(new THREE.HemisphereLight(0xb9d8d2, 0x06100e, 2.1));
+        const key = new THREE.DirectionalLight(0xb8fff4, 3.1);
+        key.position.set(5, 9, 7);
+        key.castShadow = true;
+        scene.add(key);
+        const rim = new THREE.PointLight(0x27c9b5, 24, 14);
+        rim.position.set(-3, 2, -2);
+        scene.add(rim);
+        const floor = new THREE.Mesh(
+          new THREE.CircleGeometry(7.2, 64),
+          new THREE.MeshStandardMaterial({
+            color: 0x07100f,
+            roughness: 0.72,
+            transparent: true,
+            opacity: 0.68,
+          }),
+        );
+        floor.rotation.x = -Math.PI / 2;
+        floor.position.y = -1.35;
+        floor.receiveShadow = true;
+        scene.add(floor);
+        const grid = new THREE.GridHelper(15, 30, 0x17433d, 0x0d2420);
+        grid.position.y = -1.32;
+        grid.material.transparent = true;
+        grid.material.opacity = 0.35;
+        scene.add(grid);
+        const world = new THREE.Group();
+        world.rotation.x = -0.04;
+        scene.add(world);
+        let dead = false,
+          frame = 0,
+          core;
+        try {
+          const ids = [
+            "company-core",
+            "domain-platform",
+            "human-glyph",
+            "agent-glyph",
+            "tool-glyph",
+            "knowledge-object",
+            "decision-gate",
+            "risk-hotspot",
+          ];
+          const [coreSrc, platform, ...glyphs] = await Promise.all(
+            ids.map(load),
+          );
+          if (dead) return;
+          core = prep(coreSrc, 1.05);
+          core.position.y = -0.25;
+          world.add(core);
+          const slots = [
+            [-3.2, 0.1, -1.7],
+            [3.2, 0.1, -1.7],
+            [-3.35, 0.05, 2],
+            [3.35, 0.05, 2],
+            [0, 0.05, 3.3],
+            [0, 0.05, -3.1],
+          ];
+          functions.forEach((fn, i) => {
+            const p = prep(platform.clone(true), 0.78);
+            p.position.set(...slots[i]);
+            world.add(p);
+            const glyph = prep(glyphs[i % glyphs.length].clone(true), 0.52);
+            glyph.position.set(slots[i][0], slots[i][1] + 0.72, slots[i][2]);
+            world.add(glyph);
+            const curve = new THREE.CatmullRomCurve3([
+              new THREE.Vector3(0, -0.3, 0),
+              new THREE.Vector3(slots[i][0] * 0.48, -0.55, slots[i][2] * 0.48),
+              new THREE.Vector3(slots[i][0], -0.72, slots[i][2]),
+            ]);
+            world.add(
+              new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints(curve.getPoints(28)),
+                new THREE.LineBasicMaterial({
+                  color: 0x43c8b6,
+                  transparent: true,
+                  opacity: 0.58,
+                }),
+              ),
+            );
+          });
+          container.querySelector(".world-loading")?.remove();
+        } catch (e) {
+          const l = container.querySelector(".world-loading");
+          if (l) l.textContent = "3D assets unavailable";
+          console.error(e);
+        }
+        const resize = () => {
+          const w = container.clientWidth,
+            h = container.clientHeight;
+          if (!w || !h) return;
+          renderer.setSize(w, h, false);
+          const a = w / h;
+          camera.left = -4.4 * a;
+          camera.right = 4.4 * a;
+          camera.top = 4.4;
+          camera.bottom = -4.4;
+          camera.updateProjectionMatrix();
+        };
+        const observer = new ResizeObserver(resize);
+        observer.observe(container);
+        resize();
+        let tx = 0,
+          ty = 0;
+        const pointer = (e) => {
+          const r = container.getBoundingClientRect();
+          tx = ((e.clientX - r.left) / r.width - 0.5) * 0.13;
+          ty = ((e.clientY - r.top) / r.height - 0.5) * 0.08;
+        };
+        container.addEventListener("pointermove", pointer);
+        const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const animate = (t) => {
+          if (dead) return;
+          world.rotation.y += (tx - world.rotation.y) * 0.035;
+          world.rotation.x += (-0.04 - ty - world.rotation.x) * 0.035;
+          if (core && !reduced)
+            core.position.y = -0.25 + Math.sin(t * 0.0012) * 0.045;
+          renderer.render(scene, camera);
+          frame = requestAnimationFrame(animate);
+        };
+        frame = requestAnimationFrame(animate);
+        teardown = () => {
+          dead = true;
+          cancelAnimationFrame(frame);
+          observer.disconnect();
+          container.removeEventListener("pointermove", pointer);
+          renderer.dispose();
+          renderer.domElement.remove();
+          scene.traverse((o) => {
+            o.geometry?.dispose?.();
+            if (Array.isArray(o.material))
+              o.material.forEach((m) => m.dispose?.());
+            else o.material?.dispose?.();
+          });
+        };
+      };
+      if (document.querySelector("#company-world"))
+        window.mountCompanyWorld(
+          document.querySelector("#company-world"),
+          companyFunctions.filter((item) => item.enabled),
+        );
+    </script>
+  </body>
 </html>

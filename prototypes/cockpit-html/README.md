@@ -43,3 +43,6 @@ architecture can be tested while the Company composition establishes the shared 
 - Command items are declarative data (`group`, `label`, `detail`, `keywords`, `run`) rendered with event delegation.
 - Domain scope is shared state, so selecting a scope through Command K updates the same View controls and page composition.
 - The command centre becomes a bottom sheet on phone-sized screens while retaining the same keyboard and semantic model.
+- Every configurable surface element is registered as a component with a stable `id`, order and `enabled` state.
+- View controls mutate the component registry through one delegated handler; inactive components are omitted from rendering rather than hidden after it.
+- Empty component compositions provide a direct route back to configuration.
