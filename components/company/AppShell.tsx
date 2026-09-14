@@ -24,7 +24,10 @@ export function AppShell({
       <Rail active={active} decisionsWaiting={decisionsWaiting} />
       <section className="main">
         <TopBar status={status} state={state} />
-        {children}
+        {/* The one thing that scrolls. The frame around it is fixed to
+            100dvh and never scrolls the document — each surface owns its
+            own overflow instead. */}
+        <div className="stage">{children}</div>
       </section>
     </main>
   );

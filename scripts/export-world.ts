@@ -27,6 +27,9 @@ import { stateTokens, coreEmissive } from '../components/company-world/tokens/sc
 import { world, shell } from '../lib/tokens';
 import { stateLabel } from '../lib/model/state';
 import { domains, feed } from '../data/company';
+import { executions } from '../data/executions';
+import { WORK_STAGES } from '../lib/model/work';
+import { tools } from '../data/tools';
 import { worldRecords } from '../data/world-records';
 import { decisionQueue } from '../data/decisions-queue';
 import { exceptions } from '../data/exceptions';
@@ -187,6 +190,142 @@ for (const d of domains) {
 for (const d of decisionQueue) recordLabels[`decision:${d.id}`] = { kind: 'Decision', label: d.title, detail: `${d.domainLabel} · ${d.breachedRule}` };
 for (const e of exceptions) recordLabels[`exception:${e.id}`] = { kind: 'Exception', label: e.summary, detail: `${e.kind} · ${e.severity}` };
 
+// ---------------------------------------------------------------------------
+// The detail layer.
+//
+// A window that opens on a record has to show the record, not a paraphrase of
+// it: the field that put the object in the world, both control axes, and the
+// chain of what actually happened. All of that already exists in the model; it
+// simply never left it. Nothing below is computed or rounded - it is the record.
+// ---------------------------------------------------------------------------
+const byId = <T extends { id: string }>(xs: readonly T[]) => Object.fromEntries(xs.map((x) => [x.id, x]));
+const toolById = byId(tools);
+
+/** What each record type is DRAWN as, straight from the element registry's own
+ *  `drivenBy` column. The world and a builder must not disagree about this. */
+const GLYPH_FOR = {
+  domain: 'domain-platform',
+  workflow: 'workflow-line',
+  agent: 'agent-glyph',
+  person: 'human-glyph',
+  decision: 'decision-gate',
+  exception: 'risk-hotspot',
+  tool: 'tool-glyph',
+  knowledge: 'knowledge-object',
+  step: 'step-node',
+} as const;
+
+const nameOfRef = (r: { type: string; id: string }): string => {
+  if (r.type === 'tool') return toolById[r.id]?.name ?? r.id;
+  if (r.type === 'agent') {
+    for (const d of domains) { const a = d.agents.find((x) => x.id === r.id); if (a) return a.name; }
+  }
+  return r.id;
+};
+
+type Detail = Record<string, unknown>;
+const records: Record<string, Detail> = {};
+
+for (const d of domains) {
+  records[`domain:${d.id}`] = {
+    kind: 'Domain', name: d.label, drivenBy: 'Domain record',
+    state: d.state, stateLabel: stateLabel[d.state],
+    facts: [
+      ['Processes', String(d.processes)],
+      ['Autonomous', `${d.autonomy}%`],
+      ['In flight', String(d.activeWork)],
+      ['Needs a person', String(d.openItems)],
+    ],
+    workflows: d.workflows.map((w) => `workflow:${w.id}`),
+  };
+
+  for (const w of d.workflows) {
+    const doc = w as unknown as {
+      steps?: { id: string; stage: string; label: string; note: string; mode: string }[];
+      outcome?: string; owner?: string; volume?: string; cycleTime?: string;
+      humanEffort?: string; errorRate?: string; systems?: string[]; level?: string;
+    };
+    const exe = executions.find((e) => e.workflowId === w.id);
+    records[`workflow:${w.id}`] = {
+      kind: 'Workflow', name: w.name, drivenBy: 'Workflow record',
+      state: w.state, stateLabel: stateLabel[w.state], domain: d.label,
+      facts: [
+        ['Autonomous', `${w.autonomy}%`],
+        ['Throughput', `${w.throughput} / day`],
+        ['People', String(w.humans)],
+        ...(doc.cycleTime ? [['Cycle time', doc.cycleTime]] : []),
+        ...(doc.errorRate ? [['Error rate', doc.errorRate]] : []),
+      ],
+      outcome: doc.outcome ?? null,
+      owner: doc.owner ?? null,
+      level: doc.level ?? null,
+      systems: doc.systems ?? null,
+      // Only four of the thirty-eight are mapped step by step. Saying so is the
+      // point: an unmapped workflow must not render as a documented one.
+      steps: doc.steps ?? null,
+      execution: exe
+        ? {
+            id: exe.id, token: exe.token, state: exe.state, startedAt: exe.startedAt,
+            steps: exe.steps.map((st) => ({
+              stepId: st.stepId, stage: st.stage, at: st.at,
+              actorKind: st.control.actor, mode: st.control.mode,
+              actor: nameOfRef(st.actor), actorType: st.actor.type,
+              tools: st.tools.map(nameOfRef),
+              knowledge: st.knowledge.map(nameOfRef),
+              decision: st.decision ? `decision:${st.decision.id}` : null,
+            })),
+            verifications: exe.verifications.map((v) => ({ check: v.check, result: v.result, at: v.at })),
+            outcome: exe.outcome ?? null,
+          }
+        : null,
+      decision: decisionQueue.find((x) => x.workflowId === w.id)?.id ?? null,
+      exception: exceptions.find((x) => x.workflowId === w.id)?.id ?? null,
+    };
+  }
+
+  for (const a of d.agents) {
+    records[`agent:${a.id}`] = {
+      kind: 'Agent', name: (a as { name?: string }).name ?? a.id,
+      drivenBy: 'Agent record (pose from Agent.activity)',
+      state: 'active', stateLabel: 'Active', domain: d.label,
+      facts: [
+        ['Doing', (a as { job?: string }).job ?? '\u2014'],
+        ['Activity', (a as { activity?: string }).activity ?? '\u2014'],
+      ],
+    };
+  }
+}
+
+for (const dec of decisionQueue) {
+  records[`decision:${dec.id}`] = {
+    kind: 'Decision', name: dec.title, drivenBy: 'Decision / Authority record',
+    state: dec.state, stateLabel: stateLabel[dec.state], domain: dec.domainLabel,
+    situation: dec.situation,
+    facts: [
+      ['Amount', dec.amount],
+      ['Raised', dec.raised],
+      ['Deadline', dec.deadline],
+      ['Priority', dec.priority],
+    ],
+    breachedRule: dec.breachedRule,
+    recommended: dec.recommendation ?? dec.recommended,
+    reason: dec.reason,
+    workflow: dec.workflowId ? `workflow:${dec.workflowId}` : null,
+  };
+}
+
+for (const e of exceptions) {
+  records[`exception:${e.id}`] = {
+    kind: 'Exception', name: e.summary, drivenBy: 'Exception record (open)',
+    state: e.severity, stateLabel: stateLabel[e.severity],
+    facts: [
+      ['Kind', e.kind],
+      ['Raised', e.raisedAt.slice(0, 10)],
+    ],
+    workflow: e.workflowId ? `workflow:${e.workflowId}` : null,
+  };
+}
+
 // --- the file ---------------------------------------------------------------
 const scene = {
   generated: new Date().toISOString().slice(0, 10),
@@ -201,6 +340,16 @@ const scene = {
   islands,
   connections,
   recordLabels,
+  stages: [...WORK_STAGES],
+  glyphFor: GLYPH_FOR,
+  records,
+  // What each domain holds, so a domain view can be built without guessing.
+  contents: Object.fromEntries(domains.map((d) => [d.id, {
+    workflows: d.workflows.map((w) => ({ ref: `workflow:${w.id}`, name: w.name, state: w.state, documented: Boolean((w as { steps?: unknown[] }).steps?.length) })),
+    agents: d.agents.map((a) => ({ ref: `agent:${a.id}`, name: (a as { name?: string }).name ?? a.id })),
+    decisions: decisionQueue.filter((x) => x.domainId === d.id).map((x) => ({ ref: `decision:${x.id}`, name: x.title })),
+    exceptions: exceptions.filter((x) => x.domainId === d.id).map((x) => ({ ref: `exception:${x.id}`, name: x.summary })),
+  }])),
 };
 
 const out = process.argv[2] ?? 'world.json';

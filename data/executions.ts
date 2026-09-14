@@ -58,7 +58,7 @@ export const executions: Execution[] = [
         at: '2026-09-11T09:20:00Z',
         tools: [],
         knowledge: [],
-        decision: { type: 'decision', id: 'gate-1' },
+        decision: { type: 'decision', id: 'gate-1-essencia' },
       },
     ],
     verifications: [

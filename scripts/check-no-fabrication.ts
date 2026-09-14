@@ -78,4 +78,60 @@ for (const e of ELEMENTS) {
 console.log(`\nrendered: ${ELEMENTS.filter((e) => e.rendered).length}/15 — the rest are modelled but not yet drawn`);
 
 console.log(failed ? `\n${failed} check(s) failed` : '\nno fabricated aggregates');
-process.exit(failed ? 1 : 0);
+// (exit moved to the end of the file: the reference check below must run too)
+
+// ---------------------------------------------------------------------------
+// Every RecordRef must resolve.
+//
+// `RecordRef` was introduced so an object could point at the record that
+// justifies it. A ref pointing at nothing is worse than no ref: it reads as
+// provenance while carrying none. This caught `decision:gate-1` in the Gate 1
+// execution, where the only decision record is `gate-1-essencia`.
+// ---------------------------------------------------------------------------
+import { executions as allExecutions } from '../data/executions';
+import { decisionQueue as queue } from '../data/decisions-queue';
+import { tools as allTools } from '../data/tools';
+import { domains as allDomains } from '../data/company';
+
+const known = new Set<string>([
+  ...queue.map((d) => `decision:${d.id}`),
+  ...allTools.map((t) => `tool:${t.id}`),
+  ...allDomains.flatMap((d) => [
+    `domain:${d.id}`,
+    ...d.workflows.map((w) => `workflow:${w.id}`),
+    ...d.agents.map((a) => `agent:${a.id}`),
+  ]),
+]);
+
+// Person and knowledge records have no catalogue of their own yet; a ref to one
+// cannot be checked until they do, so it is reported rather than failed.
+const uncheckable = new Set(['person', 'knowledge']);
+let dangling = 0;
+let unchecked = 0;
+
+for (const e of allExecutions) {
+  const refs: { where: string; ref: { type: string; id: string } }[] = [];
+  for (const s of e.steps) {
+    refs.push({ where: `${e.id}/${s.stepId} actor`, ref: s.actor });
+    for (const t of s.tools) refs.push({ where: `${e.id}/${s.stepId} tool`, ref: t });
+    for (const k of s.knowledge) refs.push({ where: `${e.id}/${s.stepId} knowledge`, ref: k });
+    if (s.decision) refs.push({ where: `${e.id}/${s.stepId} decision`, ref: s.decision });
+  }
+  for (const v of e.verifications) refs.push({ where: `${e.id}/${v.id} by`, ref: v.by });
+
+  for (const { where, ref } of refs) {
+    const key = `${ref.type}:${ref.id}`;
+    if (uncheckable.has(ref.type)) { unchecked++; continue; }
+    if (!known.has(key)) {
+      console.log(`FAIL  ${where} -> ${key} resolves to no record`);
+      dangling++;
+    }
+  }
+}
+
+console.log(
+  dangling
+    ? `\n${dangling} dangling record reference(s)`
+    : `every record reference resolves (${unchecked} unchecked: person and knowledge have no catalogue yet)`,
+);
+process.exit(failed || dangling ? 1 : 0);
