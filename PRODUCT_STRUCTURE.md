@@ -31,6 +31,40 @@ Mirror is one projection inside a larger system with two users and two Shops. Th
 surfaces share one company graph, one typed operation catalogue, and one evidence trail;
 they are not separate products that happen to link to each other.
 
+### Repository boundary
+
+This repository is the source and coordination environment for the **full Innerflect
+ecosystem**, not only the Mirror product. Mirror is the operational core, but the same
+repository will contain the shared model and the entry surfaces for:
+
+- Mirror and the free/open Open Mirror edition;
+- OS Shop and Forge Shop;
+- Studio and Admin;
+- the company graph, typed operation catalogue, governance, knowledge, agent runtime,
+  integrations, identity/access, audit and outcomes;
+- the design system, ecosystem index, diagrams and conformance tooling that keep every
+  surface aligned.
+
+One repository does not mean one undifferentiated application. Products may become
+separate deployments or hosts, and each keeps its own audience and access boundary. They
+still import the same records, tokens, operations and semantic registry, so a change to
+the system cannot drift between products.
+
+| Entry surface | Canonical repository path | Audience / access |
+|---|---|---|
+| Ecosystem index | /ecosystem | Public map of the full environment; planned |
+| Open Mirror | /open-mirror | Self-builder; public/open; planned |
+| OS Shop | /shops/os | Self-builder; public patterns; planned |
+| Forge Shop | /shops/forge | Public catalogue with gated proprietary capabilities; planned |
+| Mirror | / and /mirror | Authenticated company operator; live |
+| Studio | /studio | Managed client; authenticated; planned |
+| Admin | /admin | Innerflect team; internal; planned |
+| Design and system surfaces | /design/* | Development and conformance; partially live |
+
+These paths are canonical inside the repository. Deployment hosts may map them differently
+later without changing product identity. ECOSYSTEM_PAGES records every entry point and its
+implementation state.
+
 | Audience | Journey | What they receive |
 |---|---|---|
 | Self-builder | Open Mirror → OS Shop → Forge Shop | A free/open operational twin, patterns for an operating system, and reusable open components to build their own OS. |
@@ -55,8 +89,9 @@ Interface or agent → typed operation → policy and authority → effect → e
 
 The ecosystem board is an executable index, not a second source of truth. Product meaning
 is defined here; lib/design/ecosystem.ts exposes the registered nodes, relations and pages;
-the board projects that registry. Every future route is registered with its source file,
-purpose and implementation state.
+the board projects that registry. ECOSYSTEM_PAGES registers every route across the full
+environment with its owning surface, source file, access boundary, purpose and implementation
+state.
 
 The board's change contract is intentionally two-way:
 

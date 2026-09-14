@@ -98,17 +98,55 @@ export type EcosystemRelation = {
   label: string;
 };
 
-export type MirrorPageGroupId = 'operate' | 'design' | 'system';
+export type EcosystemEntryId =
+  | 'environment'
+  | 'open-mirror'
+  | 'os-shop'
+  | 'forge-shop'
+  | 'mirror'
+  | 'studio'
+  | 'admin'
+  | 'design-system';
 
-export type MirrorPage = {
+export type EcosystemPageGroupId =
+  | 'environment'
+  | 'build'
+  | 'operate'
+  | 'deliver'
+  | 'design'
+  | 'system';
+
+export type EcosystemAccess = 'public' | 'authenticated' | 'internal' | 'development';
+
+export type EcosystemPage = {
   id: string;
   name: string;
-  group: MirrorPageGroupId;
+  surface: EcosystemEntryId;
+  group: EcosystemPageGroupId;
   href: string;
   file: string;
+  access: EcosystemAccess;
   purpose: string;
   state: ImplementationState;
 };
+
+export const REPOSITORY_SCOPE = {
+  id: 'innerflect-environment',
+  repository: 'InnerFlect-Tech/innerflect-mirror',
+  statement:
+    'The source and coordination environment for Mirror, Open Mirror, both Shops, Studio, Admin, shared engines, infrastructure and design system.',
+  operationalCore: 'mirror',
+  entrySurfaces: [
+    'environment',
+    'open-mirror',
+    'os-shop',
+    'forge-shop',
+    'mirror',
+    'studio',
+    'admin',
+    'design-system',
+  ] satisfies readonly EcosystemEntryId[],
+} as const;
 
 export const ECOSYSTEM_CATEGORIES = [
   { id: 'journeys', name: 'Journeys', description: 'Who is building or operating an OS.' },
@@ -379,30 +417,39 @@ export const ECOSYSTEM_RELATIONS: readonly EcosystemRelation[] = [
   { id: 'audit-receives-outcomes', from: 'audit-outcomes', to: 'studio', kind: 'updates', label: 'reports into' },
 ];
 
-export const MIRROR_PAGE_GROUPS = [
-  { id: 'operate', name: 'Operate', description: 'The company and its operational surfaces.' },
+export const ECOSYSTEM_PAGE_GROUPS = [
+  { id: 'environment', name: 'Environment', description: 'The index and shared entry boundary.' },
+  { id: 'build', name: 'Build', description: 'Open Mirror and the two Shops for self-builders.' },
+  { id: 'operate', name: 'Operate', description: 'Mirror and its operational company surfaces.' },
+  { id: 'deliver', name: 'Deliver', description: 'Studio and Admin for managed operating systems.' },
   { id: 'design', name: 'Design', description: 'The shared 2D and 3D visual language.' },
-  { id: 'system', name: 'System', description: 'Evidence, access and implementation contracts.' },
+  { id: 'system', name: 'System', description: 'Architecture, evidence and conformance contracts.' },
 ] as const;
 
-export const MIRROR_PAGES: readonly MirrorPage[] = [
-  { id: 'company', name: 'Company', group: 'operate', href: '/', file: 'app/page.tsx', purpose: 'Company health, activity and the operational world.', state: 'live' },
-  { id: 'mirror', name: 'Mirror', group: 'operate', href: '/mirror', file: 'app/mirror/page.tsx', purpose: 'The company reflected as a system.', state: 'live' },
-  { id: 'processes', name: 'Processes', group: 'operate', href: '/processes', file: 'app/processes/page.tsx', purpose: 'Workflows, capabilities and the canonical work spine.', state: 'live' },
-  { id: 'approvals', name: 'Approvals', group: 'operate', href: '/approvals', file: 'app/approvals/page.tsx', purpose: 'Human authority and judgement queue.', state: 'live' },
-  { id: 'knowledge', name: 'Knowledge', group: 'operate', href: '/knowledge', file: 'app/knowledge/page.tsx', purpose: 'Trusted knowledge and its evidence links.', state: 'live' },
-  { id: 'outcomes', name: 'Outcomes', group: 'operate', href: '/outcomes', file: 'app/outcomes/page.tsx', purpose: 'Verified business value and audit.', state: 'live' },
-  { id: 'settings', name: 'Settings', group: 'operate', href: '/settings', file: 'app/settings/page.tsx', purpose: 'Company constitution, access and connections.', state: 'live' },
-  { id: 'elements', name: 'Elements', group: 'design', href: '/design/elements', file: 'app/design/elements/page.tsx', purpose: 'Every semantic element in paired 2D and 3D isolation.', state: 'live' },
-  { id: 'floor', name: 'Floor', group: 'design', href: '/design/floor', file: 'app/design/floor/page.tsx', purpose: 'The production CompanyWorld composition.', state: 'live' },
-  { id: 'shell', name: 'Shell', group: 'design', href: '/design/shell', file: 'app/design/shell/page.tsx', purpose: 'The HTML shell and token surface.', state: 'live' },
-  { id: 'lab', name: 'Lab', group: 'design', href: '/design/lab', file: 'app/design/lab/page.tsx', purpose: 'Drag, connect and compare 2D and 3D compositions.', state: 'planned' },
-  { id: 'ecosystem', name: 'Ecosystem', group: 'system', href: '/design/ecosystem', file: 'app/design/ecosystem/page.tsx', purpose: 'The source-backed index of products, pages and infrastructure.', state: 'planned' },
+export const ECOSYSTEM_PAGES: readonly EcosystemPage[] = [
+  { id: 'ecosystem-home', name: 'Innerflect environment', surface: 'environment', group: 'environment', href: '/ecosystem', file: 'app/ecosystem/page.tsx', access: 'public', purpose: 'The navigable index of the complete Innerflect environment.', state: 'planned' },
+  { id: 'open-mirror', name: 'Open Mirror', surface: 'open-mirror', group: 'build', href: '/open-mirror', file: 'app/open-mirror/page.tsx', access: 'public', purpose: 'The free/open operational twin for self-builders.', state: 'planned' },
+  { id: 'os-shop', name: 'OS Shop', surface: 'os-shop', group: 'build', href: '/shops/os', file: 'app/shops/os/page.tsx', access: 'public', purpose: 'Patterns, playbooks and operating-system architectures.', state: 'planned' },
+  { id: 'forge-shop', name: 'Forge Shop', surface: 'forge-shop', group: 'build', href: '/shops/forge', file: 'app/shops/forge/page.tsx', access: 'public', purpose: 'Reusable open components and gated proprietary capabilities.', state: 'planned' },
+  { id: 'company', name: 'Company', surface: 'mirror', group: 'operate', href: '/', file: 'app/page.tsx', access: 'authenticated', purpose: 'Company health, activity and the operational world.', state: 'live' },
+  { id: 'mirror', name: 'Mirror', surface: 'mirror', group: 'operate', href: '/mirror', file: 'app/mirror/page.tsx', access: 'authenticated', purpose: 'The company reflected as a system.', state: 'live' },
+  { id: 'processes', name: 'Processes', surface: 'mirror', group: 'operate', href: '/processes', file: 'app/processes/page.tsx', access: 'authenticated', purpose: 'Workflows, capabilities and the canonical work spine.', state: 'live' },
+  { id: 'approvals', name: 'Approvals', surface: 'mirror', group: 'operate', href: '/approvals', file: 'app/approvals/page.tsx', access: 'authenticated', purpose: 'Human authority and judgement queue.', state: 'live' },
+  { id: 'knowledge', name: 'Knowledge', surface: 'mirror', group: 'operate', href: '/knowledge', file: 'app/knowledge/page.tsx', access: 'authenticated', purpose: 'Trusted knowledge and its evidence links.', state: 'live' },
+  { id: 'outcomes', name: 'Outcomes', surface: 'mirror', group: 'operate', href: '/outcomes', file: 'app/outcomes/page.tsx', access: 'authenticated', purpose: 'Verified business value and audit.', state: 'live' },
+  { id: 'settings', name: 'Settings', surface: 'mirror', group: 'operate', href: '/settings', file: 'app/settings/page.tsx', access: 'authenticated', purpose: 'Company constitution, access and connections.', state: 'live' },
+  { id: 'studio', name: 'Studio', surface: 'studio', group: 'deliver', href: '/studio', file: 'app/studio/page.tsx', access: 'authenticated', purpose: 'Client project, evidence and collaboration workspace.', state: 'planned' },
+  { id: 'admin', name: 'Admin', surface: 'admin', group: 'deliver', href: '/admin', file: 'app/admin/page.tsx', access: 'internal', purpose: 'Innerflect delivery, integration, access and governance console.', state: 'planned' },
+  { id: 'elements', name: 'Elements', surface: 'design-system', group: 'design', href: '/design/elements', file: 'app/design/elements/page.tsx', access: 'development', purpose: 'Every semantic element in paired 2D and 3D isolation.', state: 'live' },
+  { id: 'floor', name: 'Floor', surface: 'design-system', group: 'design', href: '/design/floor', file: 'app/design/floor/page.tsx', access: 'development', purpose: 'The production CompanyWorld composition.', state: 'live' },
+  { id: 'shell', name: 'Shell', surface: 'design-system', group: 'design', href: '/design/shell', file: 'app/design/shell/page.tsx', access: 'development', purpose: 'The HTML shell and token surface.', state: 'live' },
+  { id: 'lab', name: 'Lab', surface: 'design-system', group: 'design', href: '/design/lab', file: 'app/design/lab/page.tsx', access: 'development', purpose: 'Drag, connect and compare 2D and 3D compositions.', state: 'planned' },
+  { id: 'ecosystem-design', name: 'Ecosystem board', surface: 'design-system', group: 'system', href: '/design/ecosystem', file: 'app/design/ecosystem/page.tsx', access: 'development', purpose: 'The source-backed index and conformance view of the full environment.', state: 'planned' },
 ];
 
 export const ECOSYSTEM_CHANGE_CONTRACT = {
   source: 'PRODUCT_STRUCTURE.md defines meaning; lib/design/ecosystem.ts defines the registered projection.',
-  read: 'The board reads nodes, typed relations and MIRROR_PAGES; it does not invent cards from local state.',
+  read: 'The board reads nodes, typed relations and ECOSYSTEM_PAGES; it does not invent cards from local state.',
   write: 'A production edit authenticates an actor, checks permission and revision, validates the operation, writes canonical state, records an event, then refreshes this projection.',
   draftOnly: 'The public board may export a typed layout proposal. A browser draft or localStorage value is not canonical.',
   forbidden: 'Do not put secrets, customer data or private infrastructure coordinates in this public registry.',
@@ -418,6 +465,8 @@ export function validateRegistry(): true {
   const relations = new Set<string>();
   const pages = new Set<string>();
   const hrefs = new Set<string>();
+  const pageGroups = new Set(ECOSYSTEM_PAGE_GROUPS.map((group) => group.id));
+  const entrySurfaces = new Set(REPOSITORY_SCOPE.entrySurfaces);
 
   for (const node of ECOSYSTEM_NODES) {
     if (nodes.has(node.id)) throw new Error('Duplicate ecosystem node id: ' + node.id);
@@ -435,12 +484,14 @@ export function validateRegistry(): true {
     }
     if (!relation.label.trim()) throw new Error('Unlabelled ecosystem relation: ' + relation.id);
   }
-  for (const page of MIRROR_PAGES) {
-    if (pages.has(page.id)) throw new Error('Duplicate Mirror page id: ' + page.id);
+  for (const page of ECOSYSTEM_PAGES) {
+    if (pages.has(page.id)) throw new Error('Duplicate ecosystem page id: ' + page.id);
     pages.add(page.id);
-    if (hrefs.has(page.href)) throw new Error('Duplicate Mirror page href: ' + page.href);
+    if (hrefs.has(page.href)) throw new Error('Duplicate ecosystem page href: ' + page.href);
     hrefs.add(page.href);
-    if (!page.file || !page.purpose.trim()) throw new Error('Incomplete Mirror page: ' + page.id);
+    if (!pageGroups.has(page.group)) throw new Error('Unknown ecosystem page group: ' + page.group);
+    if (!entrySurfaces.has(page.surface)) throw new Error('Unknown ecosystem entry surface: ' + page.surface);
+    if (!page.file || !page.purpose.trim()) throw new Error('Incomplete ecosystem page: ' + page.id);
   }
   return true;
 }

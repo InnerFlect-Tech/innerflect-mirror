@@ -15,12 +15,13 @@ import {
   ECOSYSTEM_NODES,
   ECOSYSTEM_NODES_BY_ID,
   ECOSYSTEM_RELATIONS,
-  MIRROR_PAGE_GROUPS,
-  MIRROR_PAGES,
+  ECOSYSTEM_PAGE_GROUPS,
+  ECOSYSTEM_PAGES,
+  REPOSITORY_SCOPE,
   type EcosystemCategoryId,
   type EcosystemNode,
   type EcosystemNodeId,
-  type MirrorPageGroupId,
+  type EcosystemPageGroupId,
 } from '@/lib/design/ecosystem';
 import styles from './EcosystemBoard.module.css';
 
@@ -48,8 +49,8 @@ function StateBadge({ state }: { state: EcosystemNode['state'] }) {
   return <span className={styles.stateBadge}>{state}</span>;
 }
 
-function groupPages(group: MirrorPageGroupId) {
-  return MIRROR_PAGES.filter((page) => page.group === group);
+function groupPages(group: EcosystemPageGroupId) {
+  return ECOSYSTEM_PAGES.filter((page) => page.group === group);
 }
 
 function sourceHref(path: string) {
@@ -168,6 +169,8 @@ export function EcosystemBoard() {
   };
 
   const onPanKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const handled = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '=', '-', '_', '0'];
+    if (handled.includes(event.key)) event.preventDefault();
     const step = 40;
     if (event.key === 'ArrowLeft') setPan((value) => ({ ...value, x: value.x + step }));
     if (event.key === 'ArrowRight') setPan((value) => ({ ...value, x: value.x - step }));
@@ -182,9 +185,9 @@ export function EcosystemBoard() {
     <main className={styles.root}>
       <header className={styles.toolbar}>
         <div className={styles.heading}>
-          <span className={styles.eyebrow}>Innerflect Mirror · shared system map</span>
+          <span className={styles.eyebrow}>Innerflect environment · shared system map</span>
           <h1>Ecosystem index</h1>
-          <p>Journeys, Shops, products, engines and pages from one registry.</p>
+          <p>{REPOSITORY_SCOPE.statement}</p>
         </div>
         <nav className={styles.viewTabs} aria-label="Ecosystem views">
           {[
@@ -255,6 +258,7 @@ export function EcosystemBoard() {
                 onPointerUp={endPan}
                 onPointerCancel={endPan}
                 onWheel={onWheel}
+                onKeyDown={onPanKeyDown}
               />
               <div
                 className={styles.board}
@@ -354,16 +358,16 @@ export function EcosystemBoard() {
           <div className={styles.catalogueIntro}>
             <span className={styles.eyebrow}>Registered route catalogue</span>
             <h2>Every page has a place in the system.</h2>
-            <p>Routes are discovered from MIRROR_PAGES. A route is not live until its source file and registry state agree.</p>
+            <p>All repository entry points are discovered from ECOSYSTEM_PAGES. A page is not live until its source file, owning surface and registry state agree.</p>
           </div>
           <div className={styles.pageGroups}>
-            {MIRROR_PAGE_GROUPS.map((group) => (
+            {ECOSYSTEM_PAGE_GROUPS.map((group) => (
               <section key={group.id} className={styles.pageGroup}>
                 <div><span className={styles.eyebrow}>{group.id}</span><h3>{group.name}</h3><p>{group.description}</p></div>
                 <div className={styles.pageList}>
                   {groupPages(group.id).map((page) => (
                     <a key={page.id} href={page.href} className={styles.pageRow}>
-                      <span><b>{page.name}</b><small>{page.purpose}</small></span>
+                      <span><b>{page.name}</b><small>{page.surface} · {page.access} · {page.purpose}</small></span>
                       <code>{page.href}</code>
                       <StateBadge state={page.state} />
                     </a>

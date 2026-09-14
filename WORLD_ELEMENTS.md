@@ -255,8 +255,9 @@ selection, state, labels and inspector content exactly.
 
 The ecosystem map is a real product/design-system surface, not a diagram maintained by hand.
 Its executable registry lives in lib/design/ecosystem.ts and is the single index for the
-journeys, Shops, products, engines, infrastructure and real Mirror routes that are safe to
-show in the board.
+journeys, Shops, products, engines, infrastructure and repository entry points that are safe
+to show in the board. The repository boundary is the complete Innerflect environment, not only
+Mirror.
 
 The model is deliberately small:
 
@@ -265,8 +266,9 @@ The model is deliberately small:
   meaning is owned.
 - A relation is directional and typed. It says how a user journey, product or engine
   connects to another concept; an unlabeled line is not a valid relation.
-- A Mirror page is registered with its route, file, purpose and live/building/planned state.
-  No new index page is real until it is in MIRROR_PAGES.
+- Every ecosystem page is registered with its owning surface, route, file, access boundary,
+  purpose and live/building/planned state. No new entry point is real until it is in
+  ECOSYSTEM_PAGES.
 
 The two journeys represented by the registry are binding:
 
@@ -514,7 +516,7 @@ Numbers are never reused, so a reference to "request 5" always means the same th
 
 17. **Ecosystem route and page catalogue.** Add the UI-shell route requested above, register
     it as live only when the route exists, and keep the catalogue as the place future agents
-    discover every design, operation and system page.
+    discover every page across the full Innerflect environment.
 
 18. **Typed bidirectional writes.** Board edits remain draft proposals until the authenticated
     operation path validates and records them in canonical state. The same operation contract
@@ -524,27 +526,21 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     requests visible in AGENTS.md and WORLD_ELEMENTS.md. A future agent should be able to
     discover the whole ecosystem and the next safe action without recovering a chat transcript.
 
-20. **`npm run check` is currently red on the pulled tip (`4b943d5`) — `oxlint` fails.**
-    `components/company-world/design/EcosystemBoard.tsx:170` declares `onPanKeyDown` and
-    never wires it up. It is not dead code by accident: the pan surface's own
-    `aria-label` (line ~252) promises *"Use arrow keys to move and plus or minus to
-    zoom"*, so the missing handler is an accessibility contract the element already
-    claims to meet and does not. Exact diff, on the `<button className={styles.panSurface}>`
-    around line 249:
+20. ✅ **DONE — ecosystem board keyboard navigation.** The pan surface now wires
+    `onKeyDown={onPanKeyDown}`, matching its accessible label: arrow keys pan, plus and
+    minus zoom, and zero returns to the fitted view.
 
-    ```diff
-                   onPointerCancel={endPan}
-                   onWheel={onWheel}
-    +              onKeyDown={onPanKeyDown}
-                 />
-    ```
-
-    Filed as a request rather than fixed directly: this file is under active claim by
-    Codex today (`docs/STATUS.md`, 2026-09-14) inside `components/company-world/design/**`,
-    which `WORLD_ELEMENTS.md`'s own Ownership section assigns to the 3D/design session —
-    the same declared-ownership-vs-active-claim conflict already open for `Scene.tsx` /
-    `layouts/**`. Recorded in `docs/STATUS.md` rather than resolved unilaterally a second
-    time.
+21. **Root repository scope — update `AGENTS.md` and add a root `README.md`.** The first
+    screen a human or agent reads must say: *This repository is the source and coordination
+    environment for the full Innerflect ecosystem: Mirror, Open Mirror, OS Shop, Forge
+    Shop, Studio, Admin, shared engines, infrastructure and design system.* Mirror remains
+    the operational core; the repository is not Mirror-only. Point readers to
+    `PRODUCT_STRUCTURE.md` for the product/deployment boundary and
+    `lib/design/ecosystem.ts` for the executable index. Append the same repository/deployment
+    boundary as the newest entry in `docs/DECISIONS.md`; it rules out a Mirror-only source
+    repository and duplicated product truths. Acceptance: a new contributor can
+    identify every product, audience, entry point, access boundary and source of truth from
+    the root without recovering a chat transcript.
 
 ## Semantic review for the next element pass
 
