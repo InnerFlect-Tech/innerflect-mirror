@@ -1,0 +1,79 @@
+<title>Mirror Product UI</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/*__CSS__*/
+/* --- capture chrome: the only CSS written for this page ------------------- */
+body{margin:0;--font-inter:Inter}
+.capture-bar{
+  position:fixed;left:0;right:0;top:0;z-index:90;display:flex;align-items:center;gap:12px;
+  padding:8px 16px;background:rgba(6,9,9,.92);border-bottom:1px solid rgba(160,200,196,.12);
+  backdrop-filter:blur(10px);font:500 12px/1.4 Inter,system-ui,sans-serif;color:#8fa3a1;flex-wrap:wrap;
+}
+.capture-bar b{color:#dfe9e7;font-weight:600}
+.capture-bar .dot{width:6px;height:6px;border-radius:50%;background:#e0a03c;flex:none}
+.capture-bar .spacer{flex:1}
+.capture-bar a{color:#55cbbb;text-decoration:none;border-bottom:1px solid rgba(85,203,187,.4)}
+.capture-bar a:hover{border-bottom-color:#55cbbb}
+.mirror{padding-top:37px}
+.capture-3d{display:grid;place-items:center;min-height:320px;
+  background:radial-gradient(ellipse at 50% 40%,rgba(54,124,116,.14),transparent 60%),#080c0d;
+  border:1px dashed rgba(160,200,196,.22);border-radius:12px}
+.capture-3d-link{display:block;text-align:center;text-decoration:none;padding:24px}
+.capture-3d-link b{display:block;color:#dfe9e7;font:600 14px Inter,sans-serif;margin-bottom:6px}
+.capture-3d-link span{color:#55cbbb;font:400 12.5px Inter,sans-serif}
+.capture-3d-link:hover span{text-decoration:underline}
+</style>
+
+<div class="capture-bar">
+  <span class="dot"></span>
+  <b>Product UI &mdash; captured</b>
+  <span id="whichPage"></span>
+  <span class="spacer"></span>
+  <span>A still of the real app, not the running one &middot;
+    <a href="https://claude.ai/code/artifact/e1e6764a-c394-4f5f-a012-a1292dc8e7e5">back to the hub</a></span>
+</div>
+<div id="root"></div>
+
+<script>
+const PAGES = "__PAGES__";
+const LABELS = "__LABELS__";
+const root = document.getElementById('root');
+const which = document.getElementById('whichPage');
+
+// Map the app's own hrefs onto the captured pages, so the rail in the capture
+// navigates for real instead of trying to reach a server that is not there.
+const BY_HREF = { '/': 'company', '/mirror': 'mirror', '/processes': 'processes',
+  '/approvals': 'approvals', '/knowledge': 'knowledge', '/outcomes': 'outcomes',
+  '/settings': 'settings' };
+
+function show(key) {
+  if (!PAGES[key]) key = 'company';
+  root.innerHTML = PAGES[key];
+  which.textContent = '\u00b7 ' + LABELS[key];
+  location.hash = key;
+  // The rail marks the current page with its own class; the capture froze
+  // whichever page it was taken on, so re-point it at where we actually are.
+  root.querySelectorAll('a[href]').forEach(a => {
+    const href = a.getAttribute('href');
+    const target = BY_HREF[href];
+    if (!target) {
+      if (href && href.startsWith('/')) { a.removeAttribute('href'); a.style.cursor = 'default'; }
+      return;
+    }
+    a.setAttribute('href', '#' + target);
+    a.classList.toggle('is-active', target === key);
+    a.setAttribute('aria-current', target === key ? 'page' : 'false');
+    a.onclick = e => { e.preventDefault(); show(target); };
+  });
+  // Nothing in a capture can submit, toggle or search.
+  root.querySelectorAll('button, input, select, textarea').forEach(el => {
+    el.setAttribute('disabled', '');
+    el.style.cursor = 'default';
+  });
+  root.scrollTop = 0; window.scrollTo(0, 0);
+}
+
+addEventListener('hashchange', () => show(location.hash.slice(1)));
+show(location.hash.slice(1) || 'company');
+</script>
