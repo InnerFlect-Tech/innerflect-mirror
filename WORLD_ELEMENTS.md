@@ -251,6 +251,43 @@ The 2D surface is not a simplified product and the 3D surface is not a decorativ
 They are two projections of the same graph. Changing projection must preserve ids, topology,
 selection, state, labels and inspector content exactly.
 
+## Registry-driven ecosystem index
+
+The ecosystem map is a real product/design-system surface, not a diagram maintained by hand.
+Its executable registry lives in lib/design/ecosystem.ts and is the single index for the
+journeys, Shops, products, engines, infrastructure and real Mirror routes that are safe to
+show in the board.
+
+The model is deliberately small:
+
+- A node is a stable, source-backed concept. It has an id, kind, category, state, position
+  proposal and source pointer. A card must explain what the concept does and where its
+  meaning is owned.
+- A relation is directional and typed. It says how a user journey, product or engine
+  connects to another concept; an unlabeled line is not a valid relation.
+- A Mirror page is registered with its route, file, purpose and live/building/planned state.
+  No new index page is real until it is in MIRROR_PAGES.
+
+The two journeys represented by the registry are binding:
+
+1. Self-builder: free/open Mirror → OS Shop patterns → Forge Shop components → the user's
+   own operating system.
+2. Managed client: managed OS → proprietary Forge → Studio and Mirror; Innerflect operates
+   delivery through Admin and its own Mirror.
+
+### Bidirectional change contract
+
+Canonical authority → registry validation → board projection.
+
+Board draft → authenticated typed operation → canonical authority → validation → event or
+commit → refreshed registry projection.
+
+Until the authenticated operation exists, a board edit is only a layout proposal. Browser
+state and localStorage are never a source of truth. The production write path must record
+the actor, reason, revision, permission check, validation result and resulting event. The
+public map must never contain secrets, customer data or private infrastructure coordinates.
+
+
 ## Requests to the UI-shell session
 
 These sit in files this layer does not own. ✅ marks one that has landed; the rest are open.
@@ -468,6 +505,24 @@ Numbers are never reused, so a reference to "request 5" always means the same th
    layout and no longer match its markup. Keep the `.floor-*` rules used by `/design/floor`.
    Verify `/design/elements` is unchanged after removal and `/design/floor` still fills the
    viewport. This is dead-code cleanup, not a visual redesign.
+
+
+16. **Registry-driven ecosystem index.** Add the executable ecosystem registry and board
+    described above. The board is the shared map of both user journeys, the two Shops, the
+    product surfaces and the record-backed engines; it is not a decorative architecture
+    poster and it never becomes a second database.
+
+17. **Ecosystem route and page catalogue.** Add the UI-shell route requested above, register
+    it as live only when the route exists, and keep the catalogue as the place future agents
+    discover every design, operation and system page.
+
+18. **Typed bidirectional writes.** Board edits remain draft proposals until the authenticated
+    operation path validates and records them in canonical state. The same operation contract
+    must be usable by humans and agents; local browser state cannot win over a newer revision.
+
+19. **Coordination contract.** Keep the authority chain, ownership boundaries and numbered
+    requests visible in AGENTS.md and WORLD_ELEMENTS.md. A future agent should be able to
+    discover the whole ecosystem and the next safe action without recovering a chat transcript.
 
 ## Semantic review for the next element pass
 

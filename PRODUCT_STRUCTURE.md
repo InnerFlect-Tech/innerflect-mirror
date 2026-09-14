@@ -1,7 +1,7 @@
 # Innerflect Mirror — Product and UI Structure
 
 Status: active product contract  
-Last aligned with UI: 2026-09-13
+Last aligned with UI: 2026-09-14
 
 Implementation baseline: React Three Fiber 9.7.0 · Drei 10.7.8 · React Postprocessing 3.1.1 · maath 0.10.8 · Three.js 0.186.0 · React 19.2
 
@@ -24,6 +24,47 @@ The visible product object is the company. Agents appear only as workers acting 
 Promise: **See how your company works. Make it run itself.**
 
 Governing rule: **Every autonomous action must have authority, evidence, an observable outcome, and an audit trail.**
+
+## Innerflect ecosystem
+
+Mirror is one projection inside a larger system with two users and two Shops. The
+surfaces share one company graph, one typed operation catalogue, and one evidence trail;
+they are not separate products that happen to link to each other.
+
+| Audience | Journey | What they receive |
+|---|---|---|
+| Self-builder | Open Mirror → OS Shop → Forge Shop | A free/open operational twin, patterns for an operating system, and reusable open components to build their own OS. |
+| Managed client | Managed OS → Forge → Studio → Mirror | A managed operating system, proprietary Forge capabilities, a client project workspace, and a live operational twin. |
+| Innerflect team | Innerflect Mirror → Admin → managed clients | The same operational twin for Innerflect itself, plus the internal delivery and governance console. |
+
+### Product roles
+
+| Product | Role in the ecosystem |
+|---|---|
+| Mirror | The operational twin and constrained visual builder. It has a simpler free/open edition for self-builders. |
+| OS Shop | Patterns, playbooks and proven operating-system architectures. |
+| Forge Shop | Reusable design and implementation components: open components for self-builders and proprietary capabilities for managed clients. |
+| Studio | Client-facing project, evidence and collaboration workspace for a managed operating system. |
+| Admin | Innerflect's internal delivery, access, integration and governance console. |
+
+### One mechanism under every surface
+
+A human in the UI and an agent acting through an integration use the same typed operation:
+
+Interface or agent → typed operation → policy and authority → effect → event → verification → outcome → Mirror
+
+The ecosystem board is an executable index, not a second source of truth. Product meaning
+is defined here; lib/design/ecosystem.ts exposes the registered nodes, relations and pages;
+the board projects that registry. Every future route is registered with its source file,
+purpose and implementation state.
+
+The board's change contract is intentionally two-way:
+
+1. Canonical product or implementation source → registry validation → board projection.
+2. Board draft → authenticated typed operation → canonical authority → validation → event or commit → refreshed projection.
+
+A browser draft or localStorage value is never canonical. The public repository contains
+no secrets, customer data or private infrastructure coordinates.
 
 ## Stable product world
 
