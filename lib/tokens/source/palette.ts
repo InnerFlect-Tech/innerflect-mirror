@@ -32,9 +32,11 @@ export const ink = {
 export const teal = {
   600: '#12332f',
   500: '#1c7a6d',
+  450: '#229083',
   400: '#2f9c8c',
   300: '#55cbbb',
   200: '#a8ede2',
+  100: '#eafffb',
 } as const;
 
 /**

@@ -24,9 +24,9 @@ export const semantic = {
   '--text-accent': 'var(--c-teal-300)',
 
   '--action-bg': 'var(--c-teal-500)',
-  '--action-bg-hover': '#229083',
+  '--action-bg-hover': 'var(--c-teal-450)',
   '--action-border': 'var(--c-teal-400)',
-  '--action-text': '#eafffb',
+  '--action-text': 'var(--c-teal-100)',
 
   '--focus-ring': 'var(--c-teal-300)',
 } as const;

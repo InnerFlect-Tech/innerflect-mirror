@@ -9,10 +9,15 @@
  * effort removed.
  */
 import { readFileSync } from 'node:fs';
-import { tokenVariables } from '../lib/tokens/css';
+import { tokenVariables, validateTokenReferences } from '../lib/tokens/css';
+import { semantic } from '../lib/tokens/source/semantic';
 
 const generated = tokenVariables();
+validateTokenReferences(generated);
 const css = readFileSync('app/tokens.css', 'utf8');
+const rawSemanticValues = Object.entries(semantic).filter(([, value]) =>
+  /#[\da-f]{3,8}|(?:rgb|hsl|oklch)a?\(/i.test(value),
+);
 
 const declared = new Map<string, string>();
 for (const m of css.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
@@ -24,6 +29,8 @@ const tier3 = [...declared.keys()].filter((name) => !(name in generated));
 
 console.log(`declared in app/tokens.css : ${declared.size} (tier 3, hand-authored)`);
 console.log(`emitted from lib/tokens    : ${Object.keys(generated).length}`);
+console.log('references                 : aliases resolve without cycles');
+console.log('semantic primitives         : no raw colours');
 console.log(`tier 3: ${tier3.join(', ')}`);
 if (duplicated.length) {
   console.log(
@@ -32,4 +39,9 @@ if (duplicated.length) {
 } else {
   console.log('\nno token is defined in two places.');
 }
-process.exit(duplicated.length ? 1 : 0);
+if (rawSemanticValues.length) {
+  console.log(
+    `\nRAW SEMANTIC COLOURS — add primitives to palette.ts and reference them:\n  ${rawSemanticValues.map(([name, value]) => `${name}: ${value}`).join('\n  ')}`,
+  );
+}
+process.exit(duplicated.length || rawSemanticValues.length ? 1 : 0);
