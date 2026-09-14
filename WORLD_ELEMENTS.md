@@ -514,9 +514,10 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     product surfaces and the record-backed engines; it is not a decorative architecture
     poster and it never becomes a second database.
 
-17. **Ecosystem route and page catalogue.** Add the UI-shell route requested above, register
-    it as live only when the route exists, and keep the catalogue as the place future agents
-    discover every page across the full Innerflect environment.
+17. ⏳ **PARTLY DONE — Ecosystem route and page catalogue.** `app/design/ecosystem/page.tsx`
+    now exists and renders the real `EcosystemBoard`. Still open: the registry's own
+    `ecosystem-design` page entry reads `state: 'planned'` — flipping it to `'live'` is
+    request 22, filed against `lib/design/ecosystem.ts` since that file is not owned here.
 
 18. **Typed bidirectional writes.** Board edits remain draft proposals until the authenticated
     operation path validates and records them in canonical state. The same operation contract
@@ -530,7 +531,7 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     `onKeyDown={onPanKeyDown}`, matching its accessible label: arrow keys pan, plus and
     minus zoom, and zero returns to the fitted view.
 
-21. **Root repository scope — update `AGENTS.md` and add a root `README.md`.** The first
+21. ✅ **DONE — Root repository scope — update `AGENTS.md` and add a root `README.md`.** The first
     screen a human or agent reads must say: *This repository is the source and coordination
     environment for the full Innerflect ecosystem: Mirror, Open Mirror, OS Shop, Forge
     Shop, Studio, Admin, shared engines, infrastructure and design system.* Mirror remains
@@ -541,6 +542,13 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     repository and duplicated product truths. Acceptance: a new contributor can
     identify every product, audience, entry point, access boundary and source of truth from
     the root without recovering a chat transcript.
+
+22. **Request to the 3D/design session — flip `ecosystem-design` to `live` in
+    `lib/design/ecosystem.ts`.** Request 17 is done: `/design/ecosystem` now exists
+    (`app/design/ecosystem/page.tsx`) and renders the real `EcosystemBoard`. The registry
+    entry at line ~447 still reads `state: 'planned'` for `id: 'ecosystem-design'` — one
+    field, `'planned'` → `'live'`. Not applied directly because `lib/design/**` is this
+    session's owned path, per the ownership section below.
 
 ## Semantic review for the next element pass
 

@@ -7,6 +7,28 @@ Keep entries short: what was decided, why, and what it rules out. Link the commi
 
 ---
 
+## 2026-09-14 — This repository is the full Innerflect environment, not a Mirror-only source
+
+**Decided:** the repository and deployment boundary is: this repo is the source and
+coordination environment for the complete Innerflect ecosystem — Mirror and Open Mirror,
+OS Shop and Forge Shop, Studio and Admin, the shared company graph, typed operation
+catalogue, governance, knowledge, agent runtime, integrations, identity/access, audit and
+outcomes, plus the design system, ecosystem index, diagrams and conformance tooling. Mirror
+remains the operational core and the only product with a live surface; the others are
+registered planned entry points in the same repository (`lib/design/ecosystem.ts`,
+`PRODUCT_STRUCTURE.md` → *Innerflect ecosystem*), not separate repositories.
+
+**Why:** a new contributor — human or agent — needs to identify every product, audience,
+entry point, access boundary and source of truth from the root without recovering a chat
+transcript. `AGENTS.md` now opens with this scope and a root `README.md` states it as the
+first thing anyone reads, both pointing at `PRODUCT_STRUCTURE.md` for the product/deployment
+boundary and `lib/design/ecosystem.ts` for the executable index. Closes WORLD_ELEMENTS.md
+request 21.
+
+**Rules out:** a Mirror-only source repository, a second repository per product, and any
+document that restates the product/entry-point list instead of pointing at
+`lib/design/ecosystem.ts` as the single index.
+
 ## 2026-09-13 — OPEN: `healthy` and `active` read identically to a user
 
 **Found:** `stateLabel` maps BOTH `healthy` and `active` to "Healthy". They are distinct

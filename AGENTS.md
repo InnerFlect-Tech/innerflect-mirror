@@ -6,8 +6,17 @@ agent all start here.
 
 ## What this is
 
-Mirror is the **operational digital twin of a company**. The home surface is a spatial 3D
-world: domain islands around a company core, with a Mirror layer beneath it.
+This repository is the source and coordination environment for the **full Innerflect
+ecosystem**: Mirror and Open Mirror, OS Shop and Forge Shop, Studio and Admin, the shared
+company graph, operations, governance, agents and infrastructure, and the unified UI,
+2D/3D design system, diagrams and ecosystem index that keep every surface aligned.
+
+Mirror is the operational core and the only product with a live surface today — the
+home surface is a spatial 3D world: domain islands around a company core, with a Mirror
+layer beneath it — but this is not a Mirror-only repository. `PRODUCT_STRUCTURE.md` is
+the authority on the product/deployment boundary between products; `lib/design/ecosystem.ts`
+is the executable index of every product, entry point, relation and page across the
+whole environment.
 
 > See how your company works. Make it run itself.
 

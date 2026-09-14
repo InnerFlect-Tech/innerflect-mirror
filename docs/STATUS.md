@@ -17,21 +17,15 @@ numbered request in `WORLD_ELEMENTS.md`.
 
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
-| Claude · 3D/design | reconciling a concurrent edit to `Scene.tsx` (requests 2/3/4) | `components/company-world/Scene.tsx`, `layouts/companyLayout.ts`, `docs/**` | 2026-09-13 |
-| Claude · UI shell | — idle — closed request 12: real `AppShell` is now `100dvh` CSS Grid, verified via CDP (no doc scroll, `.stage` owns its own overflow); added `/design/shell`; applied the standalone-prototype ruling to `prototypes/cockpit-html` in `docs/DECISIONS.md` (2026-09-14 entry) rather than patching its scene | `app/**`, `components/company/**`, `lib/model/{work,decision,knowledge,impact,mirror,activity,constitution}.ts`, `data/{work,decisions-queue,knowledge,impact,mirror,activity,constitution}.ts` | 2026-09-14 |
-| Codex · ChatGPT | rebuilding the accepted unified 2D/3D language and registry-driven ecosystem index | `components/company-world/design/**`, `components/company-world/glyphs/**`, `components/company-world/generated/**`, `lib/design/**`, `tools/glyph-kit/**`, `public/models/innerflect-v2/**`, `WORLD_ELEMENTS.md`, `PRODUCT_STRUCTURE.md` | 2026-09-14 |
+| Claude · 3D/design | housekeeping this board — released the stale `Scene.tsx` claim (requests 2/3/4 closed, landed `2734696`), consolidated the repeated ownership-conflict note | `docs/STATUS.md` | 2026-09-14 |
+| Claude · UI shell | wiring `/design/ecosystem` route (request 17) against the existing `EcosystemBoard`; request 21 — updating `AGENTS.md` scope language and adding root `README.md` | `app/design/ecosystem/**`, `AGENTS.md`, `README.md` | 2026-09-14 |
+| Codex · ChatGPT | specifying the ecosystem-wide user-journey, E2E and production-readiness contract as a numbered cross-boundary request | `WORLD_ELEMENTS.md`, `docs/STATUS.md` (coordination entries only) | 2026-09-14 |
 
 ## In flight / blocked
 
-- **Two sessions wrote `Scene.tsx` in the same working tree within minutes.** The UI-shell
-  session's `ded0c2c` overwrote the 3D session's uncommitted request-4 implementation while
-  its own message praised that exact code, and marked request 3 blocked on props that had
-  existed since `8574c0c`. Both were stale reads. Neither session had claimed the file on this
-  board first — the 3D session released its claim after phase 9 and audited without
-  re-claiming. That is the protocol failing on the human side, not the mechanism. Also note
-  the shell session's claim row lists `Scene.tsx` and `layouts/**`, which the ownership block
-  in `WORLD_ELEMENTS.md` assigns to the 3D session — the two declarations now disagree and
-  need a decision from the user.
+- **RESOLVED — the `Scene.tsx` race.** Reconciled in `2734696`; requests 2, 3 and 4 in
+  `WORLD_ELEMENTS.md` are all ✅. The file-level cause (neither session had claimed it here
+  first) is folded into the single ownership-conflict escalation below rather than repeated.
 
 - **Dependency advisories — unowned, needs a decision.** `npm audit` reports 11
   (10 high, 1 low); 5 reach production. Mostly build chain: `esbuild`,
@@ -41,21 +35,25 @@ numbered request in `WORLD_ELEMENTS.md`.
   likely to break the build as to fix anything. Whoever owns the toolchain should take
   this; it became visible when the repo went public and GitHub enabled Dependabot.
 
-## In flight / blocked (new)
+- **RESOLVED — `npm run check` red on `4b943d5`.** Request 20 (the missing
+  `onKeyDown={onPanKeyDown}` in `EcosystemBoard.tsx`) landed in `88eaadc`. `npm run check`
+  is green on the current tip.
 
-- **`npm run check` is red on the pulled tip (`4b943d5`).** `oxlint` fails on
-  `components/company-world/design/EcosystemBoard.tsx:170` — `onPanKeyDown` is declared,
-  never attached, and the pan surface's own `aria-label` already promises the keyboard
-  behaviour it provides. Exact one-line fix filed as request 20 in `WORLD_ELEMENTS.md`
-  rather than applied directly, because the file sits inside Codex's active claim below.
-  Until Codex (or whoever next owns that path) lands it, `npm run check` fails for
-  everyone who pulls this tip — flagging here so nobody re-diagnoses it.
-
-- **A second declared-ownership-vs-active-claim conflict, same pattern as `Scene.tsx`.**
-  Codex's claim row below lists `lib/design/**` and `WORLD_ELEMENTS.md` itself; the
-  Ownership section in `WORLD_ELEMENTS.md` assigns both to the 3D/design session. Not
-  resolved here — noting it so the next session that touches either path checks both
-  documents before assuming which one is current.
+- **The ownership-conflict pattern has now recurred three times — needs one decision from
+  the user, not three separate notes.** `WORLD_ELEMENTS.md`'s static Ownership section
+  assigns `components/company-world/**`, `lib/design/**`, `lib/model/**`, `data/**`,
+  `public/models/**`, `tools/glyph-kit/**`, `WORLD_ELEMENTS.md` and `PRODUCT_STRUCTURE.md`
+  to "the 3D/design-system session." In practice, Codex's active claim row today covers
+  most of that same list, and has done the actual work on it (`88eaadc`,
+  `EcosystemBoard.tsx`, `lib/design/ecosystem.ts`). The static section has not kept up with
+  who is really building the design system. Two ways to close it, either is fine, but one
+  needs to be chosen: (a) rewrite the Ownership section to name Codex as the design-system
+  owner and narrow "3D/design" to the R3F scene proper
+  (`components/company-world/{nodes,assets,camera,connections,world,labels,tokens,effects}/**`,
+  `Scene.tsx`, `CompanyWorld.tsx`), or (b) keep the static section as the standing default
+  and treat every `docs/STATUS.md` claim as a temporary, session-scoped override of it —
+  written down as the rule, not left implicit. Until one is chosen, do not assume the
+  Ownership section is current for anything Codex has an active claim on today.
 
 ## Hand-off — read this first if you are picking the work up
 
