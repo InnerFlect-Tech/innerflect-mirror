@@ -334,6 +334,21 @@ Numbers are never reused, so a reference to "request 5" always means the same th
    Five of the eleven were never referenced once. The six that were used are now aliases
    onto `lib/tokens`, verified in-browser as resolving to identical values.
 
+12. ✅ **DONE (UI shell) — Release or implement the fixed cockpit shell before adding more page content.**
+   *Implemented directly in the real `AppShell`/`Rail`/`TopBar`, not the standalone prototype.
+   `.mirror` is now `height:100dvh;display:grid;grid-template-columns:226px minmax(0,1fr);
+   overflow:hidden` — the document never scrolls. `.rail` sits in the grid column instead of
+   `position:fixed`. `.main` is a two-row grid (`TopBar` / `.stage`), and `.stage` is the one
+   thing that scrolls (`overflow-y:auto;overflow-x:auto;min-width:0;min-height:0`). Verified
+   with real layout measurement (CDP `Runtime.evaluate`, not a screenshot guess):
+   `docScrollW === innerWidth` and `.stage.scrollWidth === .stage.clientWidth` at a forced
+   375px viewport. The canonical wordmark is NOT done — this session has no Drive access to
+   fetch `innerflect_favicon_512.png` from `innerflect_logo_pack`; `.mirror-glyph` stays as a
+   placeholder until someone supplies the file. A reviewable proof of the contract now lives
+   at `/design/shell`, built from the real `AppShell` component — not a description of it.*
+
+   Original request:
+
 12. **Release or implement the fixed cockpit shell before adding more page content.** The
    user has asked Codex to build this, but `app/**` and `components/company/**` remain
    claimed by the UI-shell session while that session is marked idle. Required result:

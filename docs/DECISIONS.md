@@ -224,3 +224,36 @@ separate target once per transmissive object. The budget is 120.
 
 **Rules out:** using the kit's `r3f/InnerFlectGlyphs.tsx` as the integration path — it
 clones raw scenes and carries the full transmission cost.
+
+## 2026-09-14 — The standalone-prototype ruling extends to the cockpit shell prototype
+
+**Decided:** `prototypes/cockpit-html/index.html`'s Company view is the same anti-pattern
+already ruled out on 2026-09-13 ("The design system is routes in the app, not pages beside
+it") — a second, hand-rolled implementation of the company scene, built to be reviewed
+rather than shipped. It does not import `components/company-world`, loads none of the
+fifteen canonical GLBs, carries no record binding, and has no pick table. It is worse than
+the prototype that ruling retired: that one at least reused the product's colour tokens by
+name (and drifted anyway). This one reimplements Three.js from primitives.
+
+**Why:** the standing ruling's reasoning applies unchanged — "a page can only *assert*
+alignment. A route that imports the real tokens *is* alignment." The cockpit's information
+architecture ideas (a `Mirror · Builder` mode switch, `100dvh` grid frame, per-surface
+domain filters) are worth keeping; its scene is not worth maintaining a second time.
+
+**Resolved this way:**
+1. The IA fix it was demonstrating — a non-scrolling `100dvh` CSS Grid shell — is now
+   implemented directly in `components/company/AppShell.tsx` / `Rail.tsx` / `TopBar.tsx`
+   and `app/globals.css`, not in the standalone file. Request 12 in `WORLD_ELEMENTS.md`
+   is closed against the real shell.
+2. A reviewable proof of that shell now lives at `/design/shell`, built from the real
+   `AppShell`, following the same "routes not pages" precedent as `/design/elements`.
+3. `prototypes/cockpit-html/` is left in place rather than deleted — it is the user's own
+   commit (`57a89b8`), not an agent's, and retiring someone's own file is their call. It
+   should stop being extended with new IA ideas once its ideas have a home in the real app;
+   new proposals belong in a `/design/*` route from the start.
+
+**Rules out:** patching the cockpit prototype's Company scene to match the canonical
+element set colour-by-colour. That repeats the exact failure mode ("a prototype page that
+declared itself 'the single source of truth' had already drifted within days") rather than
+fixing it. If the cockpit's `Mirror · Builder` mode toggle is wanted in the product, it
+should be proposed as a change to the real `Rail`/`AppShell`, not built a third time.

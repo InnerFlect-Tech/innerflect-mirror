@@ -18,7 +18,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 | Agent | Working on | Paths claimed | Since |
 |---|---|---|---|
 | Claude · 3D/design | reconciling a concurrent edit to `Scene.tsx` (requests 2/3/4) | `components/company-world/Scene.tsx`, `layouts/companyLayout.ts`, `docs/**` | 2026-09-13 |
-| Claude · UI shell | — idle — (request 2 landed; 4 re-applied after a concurrent-write race; 3 is NOT blocked — `DomainContent` has taken `running`/`reducedMotion` since `8574c0c`) | `app/**`, `components/company/**`, `components/company-world/{camera,connections,effects,labels,layouts,world}/**`, `Scene.tsx`, `CompanyWorld.tsx`, `lib/model/{work,decision,knowledge,impact,mirror,activity,constitution}.ts`, `data/{work,decisions-queue,knowledge,impact,mirror,activity,constitution}.ts` | 2026-09-13 |
+| Claude · UI shell | — idle — closed request 12: real `AppShell` is now `100dvh` CSS Grid, verified via CDP (no doc scroll, `.stage` owns its own overflow); added `/design/shell`; applied the standalone-prototype ruling to `prototypes/cockpit-html` in `docs/DECISIONS.md` (2026-09-14 entry) rather than patching its scene | `app/**`, `components/company/**`, `lib/model/{work,decision,knowledge,impact,mirror,activity,constitution}.ts`, `data/{work,decisions-queue,knowledge,impact,mirror,activity,constitution}.ts` | 2026-09-14 |
 | Codex · ChatGPT | active — coordination bridge; reading claims and requests before every change | no implementation paths claimed | 2026-09-13 |
 
 ## In flight / blocked

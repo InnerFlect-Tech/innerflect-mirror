@@ -548,8 +548,8 @@ a.panel-cta{text-decoration:none}
 /* ── Summary strip ───────────────────────────────────────────────────────────
    Tier one of Summary → Context → Details. Capped at five numbers: past that a
    summary stops summarising. Only attention and critical break the calm. */
-.summary-strip{list-style:none;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:var(--summary-gap);margin:0 var(--space-6) var(--space-4);padding:0}
-.summary-strip li{border:1px solid var(--panel-border);border-radius:var(--card-radius);background:var(--panel-bg);padding:var(--space-3) var(--space-4)}
+.summary-strip{list-style:none;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:var(--summary-gap);margin:0 var(--space-6) var(--space-4);padding:0;min-width:0}
+.summary-strip li{min-width:0;border:1px solid var(--panel-border);border-radius:var(--card-radius);background:var(--panel-bg);padding:var(--space-3) var(--space-4)}
 .summary-strip li[data-tone=attention]{border-color:#5c4826}
 .summary-strip li[data-tone=critical]{border-color:#69332d}
 .summary-strip a{display:block;text-decoration:none;color:inherit}
