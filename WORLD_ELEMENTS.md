@@ -416,6 +416,14 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     id and resolve it against the matching collection. Until then the mechanism is proven
     (`npm run check:picks`) but not visible.
 
+    **Before implementing:** this session checked `CompanyWorkspace.tsx` and found it
+    already modified in the shared working tree under Codex's active cockpit-production
+    claim as of 2026-09-14 — confirm on pickup whether this is already addressed there
+    before writing a second fix. If not, research how the current `CockpitShell`/
+    `CommandCenter` state pattern (whichever ships from request 24) represents selection,
+    rather than bolting a `RecordRef` onto the older `focusedId` pattern this note
+    describes — the two may need to converge on one selection model, not two.
+
 11. ✅ **DONE — Collapse the third palette in `app/globals.css`.** Its `:root` hand-declared
     eleven hexes and the whole `--fs-*` scale while the docs claimed one definition existed.
    Five of the eleven were never referenced once. The six that were used are now aliases
@@ -493,6 +501,21 @@ Numbers are never reused, so a reference to "request 5" always means the same th
    cannot be met with the existing stack; a library choice is an implementation decision, not
    part of the product contract.
 
+    **Before implementing:** the existing text below already says not to add a canvas
+    library before proving the interactions can't be met with the existing stack — treat
+    that as a research requirement, not a formality. Before writing any drag/connect code,
+    check current (2026, not training-data-vintage) practice for: (a) whether a
+    zero-dependency approach (native pointer events + SVG/Canvas, the same pattern
+    `EcosystemBoard.tsx`'s pan surface already uses) still holds up for undo/redo and
+    keyboard reordering at this graph's likely size, or whether a maintained library has
+    since become the pragmatic default; (b) accessible drag-and-drop patterns for a
+    node-and-port graph specifically — most drag libraries assume list reordering, not
+    typed ports with validation, and get this wrong; (c) whichever selection/state pattern
+    request 24's Command Centre ships with, so the lab doesn't invent a third one. Record
+    the finding in `docs/DECISIONS.md` before writing the component, not after — this repo's
+    own history (V2.1, the three-palette collapse) is entirely instances of skipping that
+    step and re-deriving the same answer later at higher cost.
+
 14. ✅ **DONE — Record the V2.1 composition decision in `docs/DECISIONS.md`.** That file is currently
    claimed by the 3D/design session, so this pass did not race it. Add a newest-first entry
    stating: the fifteen semantics remain fixed; all geometry was rebuilt as composable pieces;
@@ -521,6 +544,21 @@ Numbers are never reused, so a reference to "request 5" always means the same th
 18. **Typed bidirectional writes.** Board edits remain draft proposals until the authenticated
     operation path validates and records them in canonical state. The same operation contract
     must be usable by humans and agents; local browser state cannot win over a newer revision.
+
+    **Before implementing:** this is unowned — no session has claimed it, and it is the one
+    request here that touches real authentication, authorization and write-durability, none
+    of which exist anywhere in this repo yet (everything today is read-only mock data).
+    Whoever picks this up should research, not assume: current best practice for an
+    authenticated typed-operation write path on this stack specifically — Cloudflare
+    Workers via `vinext` (React 19 RSC), which constrains the options (e.g. Workers' own
+    binding model for KV/D1/Durable Objects vs. an external API, session handling without
+    Node-only middleware). Check what's *current* for this stack combination rather than a
+    generic Next.js auth pattern, since vinext is a beta compatibility layer and generic
+    guidance may not transfer. Also research: how the "human and agent use the same typed
+    operation" invariant (AGENTS.md, PRODUCT_STRUCTURE.md) is usually implemented elsewhere
+    — a single command/operation bus both a UI action and an agent call go through — before
+    designing a bespoke one. This is the highest-risk request in this file; do not start
+    writing code before that research is written down in `docs/DECISIONS.md`.
 
 19. ✅ **DONE, standing — Coordination contract.** Not a one-time deliverable: AGENTS.md's
     authority chain, this file's Ownership section (with the 2026-09-14 tie-break rule) and
@@ -556,6 +594,16 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     implementation. Build this in the production shell from the shared ecosystem registry and
     typed operations. This crosses `docs/**`, `app/**`, `components/company/**`, tests and
     infrastructure; owning sessions should land it in reviewable phases.
+
+    **Before implementing further:** Codex has claimed this and is actively building it
+    (`docs/STATUS.md`, 2026-09-14) — confirm current progress there before adding to this
+    note. Whoever continues it should research current patterns for a typed command
+    palette (the `cmdk`/Radix combination already in `package.json` suggests this is
+    underway) against real accessibility and keyboard-navigation guidance, not just visual
+    parity with the retired standalone cockpit prototype — the whole point of retiring that
+    prototype was that a page can only assert alignment, and a Command Centre inherits that
+    same risk if built to look right rather than researched to work right for screen readers
+    and keyboard-only operation.
 
     **Canonical artifacts**
 
@@ -670,6 +718,32 @@ Numbers are never reused, so a reference to "request 5" always means the same th
       (6) observability/failure injection; (7) cross-product journeys and release gates.
       Do not expose a command before its journey, error behaviour, telemetry policy and E2E
       acceptance are named.
+
+26. **Deploy the production surface.** (Narrower and more immediate than request 25's
+    "Production platform" layer — this is the one concrete blocker sitting in front of it:
+    nobody can exercise the golden slice PROD-01 describes without a live deploy target.)
+    Raised in conversation, not previously written down —
+    per this file's own rule, that means it did not exist as a request until now. Nobody has
+    deployed anything from this repo: there is no committed `wrangler.json`/`wrangler.toml`
+    at the root (only a build-time-generated `dist/server/wrangler.json` referenced from
+    `npm run start`), and no session's environment has Cloudflare credentials. This is
+    infrastructure access, not a code change — it needs the user to either provide Cloudflare
+    account access to a session, or run the deploy themselves.
+
+    **Before implementing:** whoever gets credentials should research current (not
+    training-data-vintage) Cloudflare Workers deployment practice for this exact stack —
+    `vinext` is a beta Next-compatible RSC-on-Workers compatibility layer, pinned at
+    `1.0.0-beta.5` deliberately (see `docs/DECISIONS.md`, the vinext advisory finding), and
+    generic Next.js-on-Cloudflare guidance may already be stale against it or assume a
+    different adapter entirely. Confirm current, not remembered: (a) whether `vinext`'s own
+    docs/changelog describe a supported `wrangler.json` shape for this version line, since a
+    guessed config is worse than no config; (b) whether the repo's public-repo, no-secrets
+    rule means deploy should go through GitHub Actions with repo secrets rather than a local
+    `wrangler deploy`, so credentials never touch a session's environment or shell history;
+    (c) current Cloudflare Workers limits and pricing for this workload (WebGL asset sizes,
+    the GLB kit, draw-call/asset-serving pattern) before assuming the free tier suffices.
+    Do not write a `wrangler.json` from memory of an older `vinext`/Workers pairing — verify
+    against what the pinned version actually expects, first.
 
 23. ✅ **DONE — `healthy` merged into `active` in `SceneState`.** The user
     decided this directly: the two states shared one user-facing word ("Healthy" in
