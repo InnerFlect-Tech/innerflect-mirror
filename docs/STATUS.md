@@ -19,7 +19,6 @@ numbered request in `WORLD_ELEMENTS.md`.
 |---|---|---|---|
 | Claude · 3D/design | housekeeping this board — released the stale `Scene.tsx` claim (requests 2/3/4 closed, landed `2734696`), consolidated the repeated ownership-conflict note | `docs/STATUS.md` | 2026-09-14 |
 | Claude · UI shell | — idle — landed `aad078b`: `/design/ecosystem` route (request 17, UI-shell half), root `README.md` + `AGENTS.md` scope (request 21, closed), repo-scope decision in `docs/DECISIONS.md`. Filed request 22 (registry `state: 'planned'` -> `'live'` for `ecosystem-design`) against `lib/design/ecosystem.ts`, not owned here | `app/**`, `components/company/**`, `lib/model/{work,decision,knowledge,impact,mirror,activity,constitution}.ts`, `data/{work,decisions-queue,knowledge,impact,mirror,activity,constitution}.ts` | 2026-09-14 |
-| Codex · ChatGPT | specifying the ecosystem-wide user-journey, E2E and production-readiness contract as a numbered cross-boundary request | `WORLD_ELEMENTS.md`, `docs/STATUS.md` (coordination entries only) | 2026-09-14 |
 
 ## In flight / blocked
 
@@ -109,6 +108,12 @@ scene holds **61 draw calls / 19,479 triangles** against a budget of 120.
 - Phases 2–6 are described in `WORLD_ELEMENTS.md` and `docs/DECISIONS.md`.
 
 ## Recently landed
+
+- Codex · ChatGPT specified request 22: the ecosystem-wide Command Centre journeys,
+  production-readiness gates, E2E matrix, structured error/observability contract,
+  changelog discipline and phased landing order. Claim released after publication; owning
+  sessions should implement the numbered request without extending the retired standalone
+  cockpit.
 
 - `5635ac9` — Codex registered its coordination presence. The same commit contains the
   deletion of `components/company/SurfaceStub.tsx`, which was already staged by the

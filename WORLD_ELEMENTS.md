@@ -550,6 +550,126 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     field, `'planned'` → `'live'`. Not applied directly because `lib/design/**` is this
     session's owned path, per the ownership section below.
 
+22. **Ecosystem Command Centre, journey catalogue and production-readiness gates.** The
+    standalone cockpit proved the interaction, but it is retired and must not become a second
+    implementation. Build this in the production shell from the shared ecosystem registry and
+    typed operations. This crosses `docs/**`, `app/**`, `components/company/**`, tests and
+    infrastructure; owning sessions should land it in reviewable phases.
+
+    **Canonical artifacts**
+
+    - Add `docs/PRODUCT_READINESS.md` as the execution contract for journeys, acceptance,
+      observability and release gates. It references product meaning in
+      `PRODUCT_STRUCTURE.md` and routes in `ECOSYSTEM_PAGES`; it does not redefine either.
+    - Register every real Command Centre destination in `ECOSYSTEM_PAGES` before exposure.
+    - Add one typed command catalogue (suggested `lib/operations/commands.ts`) with stable id,
+      intent, required capability, destination or typed operation, availability predicate,
+      keywords and audit policy. UI and agents consume it; no component-local duplicate list.
+    - Add the production Command Centre under the real shared shell (suggested
+      `components/company/CommandCenter.tsx`). It projects the catalogue and never writes
+      canonical state directly.
+    - Add Playwright journeys under `tests/e2e/command-centre/`, catalogue contract tests,
+      accessibility checks, ecosystem route coverage, and a root `CHANGELOG.md` with
+      Unreleased plus Added / Changed / Deprecated / Removed / Fixed / Security sections.
+
+    **Required Command Centre journeys**
+
+    | ID | Journey | Ordered steps | Observable completion |
+    |---|---|---|---|
+    | CMD-01 | Open and dismiss | Any page → `⌘/Ctrl+K` → focus search → Escape or scrim | One modal; inert background; focus restored; no state change |
+    | CMD-02 | Keyboard discovery | Open → Arrow Up/Down → active descendant follows → Enter | Visible and announced selection; no focus loss |
+    | CMD-03 | Search and aliases | Type page, record, operation or natural-language alias → rank exact intent then availability | Stable result ids and deterministic order |
+    | CMD-04 | In-product navigation | Choose a registered page → preserve permitted company context → navigate | URL exists in `ECOSYSTEM_PAGES`; title and focus update |
+    | CMD-05 | Cross-product navigation | Search Open Mirror, Shops, Mirror, Studio or Admin → show access boundary → open allowed destination | Product context survives only where authorised |
+    | CMD-06 | Change scope | Choose company/domain → validate membership and access → apply shared scope | Every projection uses the same scoped records |
+    | CMD-07 | Open a record | Search type/id/name → show type, state and domain → open inspector | HTML, 2D and 3D resolve the same `RecordRef` |
+    | CMD-08 | Safe operation | Select action → show target/effect/reversibility → invoke typed operation → verify | Operation, actor, authority, event and audit ids recorded |
+    | CMD-09 | Governed operation | Select privileged/irreversible action → policy/evidence → approval, modification or rejection → execute if authorised | No bypass; approval and effect share a correlation id |
+    | CMD-10 | Ask the company | Ask → retrieve permitted evidence → answer with sources, freshness and confidence → open cited record | Every material claim resolves to evidence |
+    | CMD-11 | Unavailable command | Search action lacking role, integration, data or route → disabled result with exact reason and next step | No dead click or hidden permission failure |
+    | CMD-12 | No results | Enter unmatched text → recovery suggestions and available scopes | Actionable, announced empty state |
+    | CMD-13 | Slow/offline | Start remote action → progress → timeout/offline → retry or cancel idempotently | No duplicate effect; retry keeps correlation id |
+    | CMD-14 | Concurrent revision | Open result → canonical record changes elsewhere → act → detect stale revision → refresh and reconfirm | Browser/local state never overwrites canonical state |
+    | CMD-15 | Partial failure | Effect succeeds but verification/audit export is delayed → honest pending state → asynchronous reconciliation | Never report success before required proof exists |
+    | CMD-16 | Responsive/assistive | Repeat CMD-01–12 on desktop/tablet/mobile, keyboard, screen reader and reduced motion | Equivalent capability; mobile creates no WebGL context |
+    | CMD-17 | Session/tenant boundary | Change account/company or expire session while open → invalidate results → re-authorise safely | No cross-tenant result, cache or telemetry leakage |
+    | CMD-18 | Agent parity | Agent discovers and invokes the same command/operation → policy → effect → UI event/audit | Human and agent paths differ only by actor identity |
+
+    **Whole-ecosystem journey groups for `docs/PRODUCT_READINESS.md`**
+
+    1. Identity: sign in/out, invitation, role change, session expiry, company switch and
+       tenant isolation.
+    2. Self-builder: Open Mirror → connect → reconstruct → review → OS Shop pattern → Forge
+       open component → apply through a typed operation.
+    3. Managed client: Studio engagement → evidence/approval → Forge capability → publish
+       operating change → observe in Mirror → verify outcome.
+    4. Innerflect operator: Admin client/integration governance → safe intervention → audit →
+       client-visible state without internal-only leakage.
+    5. Mirror operator: Company health → domain → workflow/execution → record → decision →
+       action → verification → outcome.
+    6. Builder: reconstruct → propose → validate canonical spine → simulate → compare →
+       approve → publish version → rollback or supersede.
+    7. Approvals: receive → evidence/policy/history → approve, modify, decline or simulate →
+       record authority → verify downstream effect.
+    8. Knowledge: ingest evidence → candidate knowledge → resolve conflict → assign
+       owner/trust/freshness → use → reverify or retire.
+    9. Agent lifecycle: register → scoped capability → evaluate → supervise → run →
+       pause/revoke → audit each operation.
+    10. Failure/recovery: integration degradation, stale data, backlog, unsafe action,
+        provider outage, partial effect, retry, compensation and escalation.
+
+    **E2E and contract acceptance**
+
+    - Run every CMD id in Chromium, WebKit and Firefox with desktop and mobile projects;
+      CMD-01/02/11/12/16 are accessibility-blocking.
+    - Use role/name locators and auto-retrying web assertions; no sleeps, coordinate clicks or
+      assertions against implementation-only classes.
+    - Every mutation asserts operation schema, authorisation, idempotency key, canonical
+      revision, event, verification, audit record and user-visible result.
+    - Contract-test that destinations exist in `ECOSYSTEM_PAGES`, operation ids exist in the
+      typed catalogue, disabled commands give reasons, and products have no private duplicate
+      command lists.
+    - Use visual snapshots only for invariant shell/dialog states. Run axe and ARIA snapshots
+      for dialog, combobox, listbox, groups, options, empty, loading and error states.
+    - CI gates: typecheck, lint, the existing six conformance checks, unit/contract tests, E2E
+      smoke per PR, full cross-browser suite before release, build, dependency/secret scans,
+      migration validation and changelog presence.
+
+    **Error and observability contract**
+
+    - One structured error envelope: stable code, safe user message, retryability, operation
+      id, correlation id, trace id, product, page, pseudonymous tenant/company id, actor kind,
+      `RecordRef`, timestamp and cause chain. Never log prompts, source documents, credentials,
+      customer data or raw provider payloads by default.
+    - Error classes: validation, authentication, authorisation, stale revision, dependency,
+      timeout, rate limit, unavailable, invariant violation, unsafe/blocked, partial effect and
+      unknown. Each maps to one user treatment and one operator severity.
+    - Browser boundaries capture `error`, `unhandledrejection`, route/render failures and
+      WebGL fallback; server boundaries capture request/job failures. Record once at the owning
+      boundary, then correlate rather than duplicate.
+    - Emit OpenTelemetry-compatible traces, metrics and structured logs. Trace command → policy
+      → operation → effect → event → verification → outcome across queues and agents.
+    - Minimum metrics: command open/search/no-result/selection/latency/failure by stable id;
+      operation success/failure/retry/compensation; policy denials; approval age; stale
+      conflicts; verification delay; integration freshness; Web Vitals; WebGL fallback and
+      draw-call budget breaches. Never put high-cardinality text in metric labels.
+    - Alerts follow user-impacting SLOs, each with owner, runbook, threshold, deduplication key
+      and recovery signal; raw exception volume alone does not page.
+
+    **Release discipline and landing order**
+
+    - Local → preview → staging → production with schema-compatible test data. Every release
+      has migration/rollback, feature-flag policy, compatibility window, changelog, owner,
+      verification query and runbook.
+    - Production-ready means: all blocking journeys green; no critical accessibility,
+      security or isolation issue; observability proven by forced failure; rollback/restore
+      rehearsed; performance budgets met; canonical data survives refresh, device and actor.
+    - Land in order: (1) readiness document and command schema; (2) read-only navigation/search;
+      (3) record search/access predicates; (4) typed safe operations; (5) governed operations;
+      (6) observability/failure injection; (7) cross-product journeys and release gates.
+      Do not expose a command before its journey, error behaviour, telemetry policy and E2E
+      acceptance are named.
+
 ## Semantic review for the next element pass
 
 The ten V1 GLBs are present and their geometry is unchanged from the imported kit. The
