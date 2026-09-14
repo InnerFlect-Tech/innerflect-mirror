@@ -7,6 +7,121 @@ Keep entries short: what was decided, why, and what it rules out. Link the commi
 
 ---
 
+## 2026-09-14 — RESEARCH: cmdk 1.1.1's `Command.Input` cannot carry a working `aria-activedescendant`
+
+**For whoever continues `components/company/CommandCenter.tsx` (Codex's active claim) —
+request 24 asked for current-practice research before building further; this is that
+research, not an implementation.**
+
+**Found, verified against the installed source** (`node_modules/cmdk/dist/index.js`, cmdk
+`1.1.1`, the exact version pinned in `package.json`), not just cited from search results:
+
+`CommandInput` renders `<input {...consumerProps} aria-activedescendant={selectedItemId} />`
+— the consumer's own props are spread first, then the library unconditionally overwrites
+`aria-activedescendant` from its internal `selectedItemId` store value. Passing your own
+`aria-activedescendant` prop to `Command.Input` is silently discarded; there is no supported
+way to override it from outside. Per the ARIA combobox pattern, this attribute is exactly
+what tells a screen reader which row is "active" while real focus stays in the input — so a
+stale or absent value is not cosmetic, it is the single most load-bearing accessibility wire
+in a command palette.
+
+Two concrete defects follow from how `selectedItemId` is populated:
+- **Absent on mount.** The root's initial state sets `selectedItemId: undefined`, and it is
+  only computed later, inside a scheduled callback that fires on a `"value"` state change.
+  Before the first interaction, `aria-activedescendant` is `undefined`, so React omits the
+  attribute entirely — a screen-reader user gets no "active option" announcement at all
+  until they move the selection once.
+  Also: `CommandList`'s wrapping `div[role="listbox"]` receives the same
+  `aria-activedescendant` — that attribute belongs on the combobox input per the APG
+  pattern, not the listbox; harmless in practice (nothing reads it there) but worth not
+  copying if this is ever reimplemented rather than patched around.
+- **Stale after filtering.** The recompute reads the DOM for
+  `[aria-selected="true"]` via a scheduled (deferred) callback rather than synchronously
+  with the filter/search state change, so there is a window where the announced id can name
+  a row the visible list no longer shows as selected, or no longer shows at all.
+
+**Recommended remediation — do not fight the library's internal override.** Add an
+independent status region beside `Command.Input`, driven from `cmdk`'s own
+`useCommandState` (already imported by the library, exported as public API) rather than
+from the DOM:
+
+```tsx
+const value = useCommandState((s) => s.value); // the currently-selected item's own `value` prop
+// ...
+<span className="sr-only" role="status" aria-live="polite">
+  {value ? `${labelFor(value)} selected` : 'No selection'}
+  {resultCount === 0 ? ' · no matching command' : ` · ${resultCount} results`}
+</span>
+```
+
+This sidesteps the buggy attribute entirely — a separate `aria-live="polite"` node is
+always correct because it is not the thing cmdk overwrites, and it doubles as CMD-03's
+"announce result count" and CMD-12's "actionable, announced empty state" requirement from
+request 24's acceptance table. `Command.Empty` already exists and is presentational
+(`role="presentation"`), so it does not itself announce — the live region is still needed
+even with it in place.
+
+**Not applicable here:** the separately-reported "`Command.Dialog` missing `DialogTitle`"
+issue does not affect this repo — `CommandCenter.tsx` already composes a raw
+`Dialog.Root`/`Dialog.Title`/`Dialog.Description` from `@radix-ui/react-dialog` directly
+rather than using cmdk's own bundled `Command.Dialog` wrapper, so that particular upstream
+gap is already avoided by the composition choice, not by luck.
+
+**Rules out:** trying to pass a corrected `aria-activedescendant` prop into `Command.Input`
+(the library discards it) or patching cmdk itself (upstream, not this repo's surface to
+fix) — the live-region workaround above is the one that survives an upstream `cmdk` update
+without needing to be re-verified against its internals again.
+
+Sources: [cmdk#413 — stale/absent `aria-activedescendant`](https://github.com/dip/cmdk/issues/413) · [W3C APG Combobox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) · [W3C APG Listbox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/)
+
+## 2026-09-14 — RESEARCH: the world's HTML equivalent stops at domain level, not the record picks under it
+
+**A gap, not a decision — flagging for whoever next touches `CompanyWorkspace.tsx` (UI) or
+`DomainIsland.tsx`'s pick surface (3D/design), since it crosses both.**
+
+`CompanyWorld`'s `aria-label` already tells a screen-reader/keyboard user the canvas is
+decorative and that "every domain is also selectable from the buttons below the world" —
+and that's true today, because `CompanyWorkspace`'s domain-controls `<fieldset>` mirrors
+every domain as a real, focusable HTML button. That satisfies `PRODUCT_STRUCTURE.md`'s own
+rule ("Labels and all meaningful controls remain accessible HTML. WebGL is the spatial
+model only") at the domain level.
+
+Request 10 (closed this session, `5b9776e`) made a *specific* pylon/agent/workflow pick
+meaningful in the HTML inspector for the first time — but the only way to *produce* that
+pick is still a pointer click on the 3D canvas. A keyboard-only or screen-reader user can
+select a domain, but cannot reach "the decision pylon on Finance" or "the agent named Cash
+Sentinel" specifically — there is no HTML control for that yet. This matters directly:
+`PRODUCT_STRUCTURE.md`'s own "Human-led → Observed → Assisted → Supervised → Autonomous"
+promise and request 24's CMD-07 ("Open a record" — search type/id/name → inspector) both
+assume every record is reachable without a mouse; today only the Command Centre's future
+search will be (once built), not the world itself.
+
+**Checked, not assumed, before writing this:** whether a scene-accessibility library already
+solves this for this exact stack. `@react-three/a11y` (`3.0.0`, published 2026-08-07,
+peer deps `react-three-fiber >=8`, `three >=0.133.0`, `react >=18` — all satisfied by this
+repo's pinned versions) is maintained by pmndrs, the same collective as `@react-three/fiber`
+and `drei`, both already dependencies here. It works by syncing a real, absolutely-positioned
+HTML element over each focusable 3D object, which is the same "HTML overlay over WebGL"
+pattern this repo already uses by hand for domain selection — not a different philosophy,
+a packaged version of it.
+
+**Not recommending adoption outright** — this repo already has a working, zero-dependency,
+hand-authored version of the same pattern (the domain-controls buttons), and the project's
+own standing preference is "no component library... a half-installed library is worse than
+either choice" (`PRODUCT_STRUCTURE.md`, Application architecture). The real choice is
+between (a) extending the existing hand-rolled HTML-button pattern down to
+workflow/agent/decision/exception level — likely a flat, filterable list per focused domain,
+not a literal button per pylon — or (b) adopting `@react-three/a11y` if the hand-rolled
+version turns out to need focus-ring syncing, hover-state parity, or other machinery the
+library already solved. Whoever picks this up should make that call with working code in
+front of them, not from this note alone.
+
+**Rules out:** treating request 10's `RecordRef` wiring as accessibility-complete because
+`npm run check:picks` passes — that check proves the pick *table* resolves correctly, not
+that a non-pointer user can reach a pick at all.
+
+Sources: [@react-three/a11y on npm](https://www.npmjs.com/package/@react-three/a11y) · [pmndrs/react-three-a11y on GitHub](https://github.com/pmndrs/react-three-a11y)
+
 ## 2026-09-14 — V2.1 composition decision
 
 **Decided:** the fifteen element semantics remain fixed. All geometry was rebuilt as
