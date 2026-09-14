@@ -516,6 +516,19 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     own history (V2.1, the three-palette collapse) is entirely instances of skipping that
     step and re-deriving the same answer later at higher cost.
 
+    **Research done, progress made (this session, 2026-09-14).** Findings and full
+    reasoning in `docs/DECISIONS.md`: build on `@xyflow/react` (MIT, ~15kB), not a custom
+    canvas — it has purpose-built keyboard/screen-reader support this criterion set
+    requires, which a hand-rolled pointer-events canvas would have to re-implement from
+    scratch. Built and verified without needing that dependency yet:
+    `lib/design/composition.ts` (`validatePlacement()` enforces exactly the rule this
+    criterion states, `paletteByFamily()` + `validatePalette()` satisfy criterion 2) and
+    `scripts/check-composition.ts` (25 checks, green, run manually pending a
+    `check:composition` entry in `npm run check` — `package.json` is claimed elsewhere).
+    Still open: the actual `@xyflow/react` dependency and the canvas component that calls
+    these functions. Whoever adds the dependency should wire the canvas directly against
+    `validatePlacement()` rather than re-deriving the rule inside a node-type component.
+
 14. ✅ **DONE — Record the V2.1 composition decision in `docs/DECISIONS.md`.** That file is currently
    claimed by the 3D/design session, so this pass did not race it. Add a newest-first entry
    stating: the fifteen semantics remain fixed; all geometry was rebuilt as composable pieces;
@@ -744,6 +757,27 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     the GLB kit, draw-call/asset-serving pattern) before assuming the free tier suffices.
     Do not write a `wrangler.json` from memory of an older `vinext`/Workers pairing — verify
     against what the pinned version actually expects, first.
+
+27. **Two accessibility research findings, filed against `docs/DECISIONS.md`, not applied
+    as code.** Following request 24's and 13's own "research current practice before
+    implementing" instruction:
+
+    - **`Command.Input` (cmdk `1.1.1`) cannot carry a working `aria-activedescendant`** —
+      verified against the installed source, not just cited. Recommended fix is an
+      independent `aria-live="polite"` status region driven from `useCommandState`, not a
+      prop override (the library discards one). For whoever continues
+      `components/company/CommandCenter.tsx`.
+    - **The world's HTML equivalent stops at domain level.** Request 10's `RecordRef` pick
+      is only reachable by a pointer click on the 3D canvas — no keyboard/screen-reader path
+      reaches a specific pylon, agent or workflow, only the domain it sits on. Checked
+      `@react-three/a11y` (pmndrs, actively maintained, peer-deps already satisfied) as a
+      possible fit without prescribing it — the call is between extending the existing
+      hand-rolled HTML-button pattern or adopting the library, and needs working code in
+      front of whoever decides, not this note alone.
+
+    Full detail, sources and exact remediation are in `docs/DECISIONS.md` (both entries
+    dated 2026-09-14) — not duplicated here per this file's own rule against a second
+    source of truth.
 
 23. ✅ **DONE — `healthy` merged into `active` in `SceneState`.** The user
     decided this directly: the two states shared one user-facing word ("Healthy" in

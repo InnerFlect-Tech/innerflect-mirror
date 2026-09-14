@@ -7,6 +7,40 @@ Keep entries short: what was decided, why, and what it rules out. Link the commi
 
 ---
 
+## 2026-09-14 — `/design/lab` canvas: `@xyflow/react`, not a custom SVG canvas
+
+**Researched before writing any component code**, per request 13's own directive. Question:
+does the zero-dependency native-pointer-events pattern `EcosystemBoard.tsx` already uses
+hold up for a node/port graph with undo/redo and keyboard operation, or has a library become
+the pragmatic default since this stack was last touched?
+
+**Found:** React Flow (`@xyflow/react`, MIT, ~15kB gzipped, actively maintained) has
+purpose-built accessibility for exactly this shape of UI — Tab moves focus through nodes and
+edges, Enter/Space select, arrow keys move a focused node, ARIA roles and descriptions are
+generated automatically, and focus-follow keeps the moved node in view. A hand-rolled
+SVG/pointer-events canvas gets none of this for free; industry commentary from 2026 frames
+pan/zoom/drag/connect/selection/accessibility as "weeks of undifferentiated work" when built
+from scratch. Canvas-based renderers only outperform DOM-based ones at roughly
+thousands-of-nodes scale — irrelevant here, where the whole registry is fifteen elements.
+
+**Decided:** build `/design/lab` on `@xyflow/react`, not a custom canvas. This reverses the
+"do not add a canvas library before proving the interactions cannot be met with the existing
+stack" instruction in request 13 — proven now, in the other direction: the existing stack
+(native pointer events) cannot meet criterion 7 (full keyboard operation) without
+re-implementing what the library already ships, tested, for free.
+
+**Not yet applied:** adding the dependency requires editing `package.json`, which is under
+Codex's active claim (`docs/STATUS.md`, 2026-09-14). This session instead built the part of
+request 13 that needs no new dependency: `lib/design/composition.ts` (`validatePlacement()`,
+`paletteByFamily()`, `validatePalette()`) and `scripts/check-composition.ts`, both verified
+green. Whoever adds `@xyflow/react` can wire the canvas directly against these — the
+placement rule and the palette are already the composition contract, not something the
+canvas component needs to re-derive.
+
+**Rules out:** a hand-rolled SVG/Canvas node editor for `/design/lab`; re-deriving the
+composition rules inside a React Flow node-type component instead of calling
+`validatePlacement()`.
+
 ## 2026-09-14 — RESEARCH: cmdk 1.1.1's `Command.Input` cannot carry a working `aria-activedescendant`
 
 **For whoever continues `components/company/CommandCenter.tsx` (Codex's active claim) —
