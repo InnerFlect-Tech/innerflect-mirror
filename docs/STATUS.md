@@ -22,6 +22,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 | Claude · toolchain + a11y | — released — built request 13's **2D projection** at `/design/lab` on `@xyflow/react`: palette generated from `paletteByFamily()` (15 elements, 7 families), every placement through `validatePlacement()` with the contract's own refusal text shown verbatim, inspector contract, undo/redo, and state recolour proven by computed token (`critical` step `#d6342a` vs Human Glyph `#233536` — the neutral token, driven by `takesState`, never an id branch). **Criteria 1 and 9 are not met and not claimed**: there is no 3D projection yet, so the 2D/3D toggle and the draw-call budget have nothing to measure. Attachments validate but do not visually dock to their step. Also installed Playwright's chromium — the repo's `tests/e2e` suite could not run on this machine at all | — | 2026-09-14 |
 | Claude · toolchain + a11y (earlier) | — released — landed the two verified dependency bumps (`vinext` beta.5→beta.9, `@vitejs/plugin-rsc` 0.5.26→0.5.34; 11 advisories → 9) against the existing lockfile as `docs/DECISIONS.md` prescribes, and closed request 27's open half: `CompanyWorkspace.tsx` renders `listPickableRecords()` as 52 real buttons so a keyboard or screen-reader user can reach a specific workflow, decision, exception or agent, not just the domain. **Did not** add `@xyflow/react` despite it being decided for request 13 — nothing imports it yet and `PRODUCT_STRUCTURE.md:307` rules that a half-installed library is worse than either choice; it belongs in the same change as the `/design/lab` build. `npm run check` green on the pushed commit | — | 2026-09-14 |
 | Codex · cockpit production | — released — landed `f1c63c4`; accessible cmdk/Radix Command Centre follow-up landed through `616ee44` | — | 2026-09-14 |
+| Claude · Open Mirror | — released — landed the first **Open Mirror** slice: `app/open-mirror/page.tsx` (the route `ECOSYSTEM_PAGES` has pointed at since before it existed), `data/open-mirror.ts` and `components/company/OpenMirrorSurface.{tsx,module.css}`. Built in the app from the product's own `SurfaceHead`/`SurfaceSummary`/token surface rather than as a fifth static prototype under `prototypes/` — the retired cockpit (request 24, "a page can only assert alignment") is the precedent. The product question it answers: a free edition cannot promise measurement, so it promises **honesty about measurement** — every reconstructed step carries a required `provenance` grade (declared / inferred / observed) and the unverified share is the largest number on the page. Provenance is drawn as fill and weight, never hue, so it does not borrow the state palette (rule 1). Aggregates are counted from the records, never typed beside them. **Did not** flip the `open-mirror` page's state in `lib/design/ecosystem.ts`, though it is now wrong: the page still says `planned` while its node already says `building` and the route exists on disk. That file is mid-change in the working tree for the operating-layers work, and `WORLD_ELEMENTS.md` is mid-change too, so there was nowhere to file this without sweeping someone's in-flight edit — the `ded0c2c` shape. Left as a one-line request for whoever lands the layers change, exact diff: in `ECOSYSTEM_PAGES`, the `open-mirror` row becomes `state: 'building'` with purpose `'The free/open operational twin for self-builders. The entry surface is built at app/open-mirror/page.tsx; reconstruction, grading and the connect step are not.'` | — | 2026-09-14 |
 
 ## In flight / blocked
 
@@ -57,6 +58,28 @@ numbered request in `WORLD_ELEMENTS.md`.
   on this session's own pushed commit until request 23 lands** — deliberately, since the
   type change is the enforcement mechanism. Whoever owns those three files should take it;
   each diff is a one-line deletion of an already-redundant branch.
+
+- **OPEN — `tsc` is red in the working tree, and not from the Open Mirror work.** Whoever is
+  mid-change on `lib/design/ecosystem.ts` has added an `EcosystemCategoryId` of `'layers'`
+  ("Operating layers") without widening the consumer at `lib/design/ecosystem.ts:543`:
+
+  ```
+  lib/design/ecosystem.ts(543,25): error TS2345: Type '"layers"' is not assignable to
+    '"delivery" | "journeys" | "shops" | "products" | "engine" | "infrastructure"'
+  ```
+
+  It is uncommitted, so it is invisible to everyone but the tree it is in. It also breaks
+  `/design/ecosystem` at runtime — `EcosystemBoard.tsx:148` throws
+  `Cannot read properties of undefined (reading 'x')`, because the new category has no
+  position the board can read. Verified by stashing only that file: `tsc` goes green, which
+  is also how the Open Mirror slice was verified against its own gates (`oxlint`,
+  `check:records` and `check-ecosystem-registry` all pass on it). Not touched — it is
+  someone's in-flight change, and finishing it for them is how the `ded0c2c` collision
+  happened. Flagging it here instead, per this file's own job.
+
+- **Pre-existing, unrelated:** in dev, the Inter woff2 is requested at an absolute host path
+  (`localhost:3000/Users/indiasfernandes/.codex/...`) and 404s on every route. Cosmetic in
+  dev; worth someone's attention before it reaches a build.
 
 ## Note on this session's own commit
 
