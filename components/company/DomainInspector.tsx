@@ -2,7 +2,15 @@
 
 import { ArrowRight } from 'lucide-react';
 import type { Domain } from '@/lib/model/domain';
+import type { RecordRef } from '@/lib/model/record';
 import { stateColors } from '@/lib/tokens/state';
+
+const RECORD_TYPE_LABEL: Partial<Record<RecordRef['type'], string>> = {
+  workflow: 'Workflow',
+  agent: 'Agent',
+  decision: 'Decision waiting',
+  exception: 'Exception open',
+};
 
 const ACTIVITY_GLYPH: Record<string, string> = {
   acting: '⚡',
@@ -17,10 +25,14 @@ const ACTIVITY_GLYPH: Record<string, string> = {
 export function DomainInspector({
   domain,
   focused,
+  picked,
   onOpenAgent,
 }: {
   domain: Domain;
   focused: boolean;
+  /** The exact record a click resolved to — a pylon, an agent, a workflow —
+   *  distinct from `domain`, which is only ever the island it sits on. */
+  picked?: { ref: RecordRef; label: string } | null;
   onOpenAgent: (name: string) => void;
 }) {
   const accent = stateColors[domain.state].label;
@@ -40,6 +52,12 @@ export function DomainInspector({
         </div>
         <span className={`mode-pill ${pill}`}>{domain.mode}</span>
       </div>
+
+      {picked && RECORD_TYPE_LABEL[picked.ref.type] && (
+        <p>
+          <span className="eyebrow">{RECORD_TYPE_LABEL[picked.ref.type]}</span> {picked.label}
+        </p>
+      )}
 
       <ul className="team-row">
         {domain.agents.map((a, i) => (
