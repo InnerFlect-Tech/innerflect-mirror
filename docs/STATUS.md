@@ -109,6 +109,11 @@ scene holds **61 draw calls / 19,479 triangles** against a budget of 120.
 
 ## Recently landed
 
+- `5f969f4` — Codex hardened the canonical token serializer: duplicate names now throw
+  before object construction, missing and circular aliases fail validation, semantic tokens
+  cannot contain raw colours, and the remaining action colours moved into the primitive teal
+  ramp. Claim on `lib/tokens/**` and `scripts/check-tokens.ts` released.
+
 - Codex · ChatGPT specified request 22: the ecosystem-wide Command Centre journeys,
   production-readiness gates, E2E matrix, structured error/observability contract,
   changelog discipline and phased landing order. Claim released after publication; owning
