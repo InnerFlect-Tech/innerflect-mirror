@@ -791,12 +791,27 @@ Numbers are never reused, so a reference to "request 5" always means the same th
       `buildIslandGeometry`/`buildAgentGeometry` produce (17 checks, green) — the accessible
       list cannot silently name a record the pointer path can't also reach, or vice versa.
 
-      **Still open, and not this session's to close:** nothing renders this list as HTML yet.
-      `CompanyWorkspace.tsx` (`components/company/**`) owns the surface where a keyboard user
-      would actually see and activate these buttons — call `listPickableRecords()` there,
-      render one button per entry beside the existing domain-controls fieldset, wire each to
-      `onSelectRecord`. No new decision needed: the data and the record-reachability proof
-      already exist.
+      **✅ CLOSED (2026-09-14, toolchain + a11y session).** `CompanyWorkspace.tsx` now calls
+      `listPickableRecords()` for every domain and renders a `.record-controls` fieldset —
+      52 buttons across the four domains, one per workflow, decision, exception and agent the
+      islands actually draw. Each activates `selectRecord()`, which sets `pickedRef` and frames
+      that record's own domain, landing in the same state a 3D click produces (`DomainIsland`
+      fires `onSelectRecord` then `onSelect`); it sets focus rather than toggling it, so
+      re-activating a record cannot unframe the domain it lives on.
+
+      Visually hidden until `:focus-within`, then revealed above the domain pills — the composed
+      scene is the product, and 52 permanently visible buttons would be a second, worse
+      navigation on top of it; a sighted keyboard user still sees what they tabbed into rather
+      than driving an invisible list. Two things worth knowing for anyone touching it:
+      `jsx-a11y(prefer-tag-over-role)` rejects `<div role="group">`, so the per-domain groups
+      are nested `<fieldset>`s with `sr-only` legends; and `<fieldset>` has a default
+      `min-inline-size:min-content` that silently overrode `width:1px` and left an 89px sliver
+      visible — fixed with `min-inline-size:0`, the same fix `app/globals.css:46` already
+      applies to `.segmented` and `.domain-controls` for exactly this quirk.
+
+      Verified in the running dev server, not just typechecked: 52 buttons in 4 groups, hidden
+      state a true 1×1, revealed state 760×327 sitting above the domain pills and inside the
+      viewport, and activation setting `aria-pressed="true"`. `npm run check` green (six gates).
 
     Full detail, sources and exact remediation are in `docs/DECISIONS.md` (both entries
     dated 2026-09-14) — not duplicated here per this file's own rule against a second

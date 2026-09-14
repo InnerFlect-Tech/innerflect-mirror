@@ -16,6 +16,8 @@ import { DomainInspector } from './DomainInspector';
 import { NeedsYou } from './NeedsYou';
 import { ActivityLog } from './ActivityLog';
 import { activity } from '@/data/activity';
+import { listPickableRecords } from '@/components/company-world/assets/pickableRecords';
+import { worldRecords } from '@/data/world-records';
 
 /**
  * Resolves a picked `RecordRef` against the collection its type actually lives
@@ -126,6 +128,26 @@ export function CompanyWorkspace({
     setPickedRef(null);
   }, [toggleFocus]);
 
+  // Every record the world actually draws an object for, per domain, as plain
+  // data — see `listPickableRecords`. Derived from the same `worldRecords` maps
+  // `Scene` hands the islands, so the HTML list below and the 3D scene cannot
+  // disagree about which records exist.
+  const pickable = useMemo(
+    () => domains.map((d) => ({ domain: d, records: listPickableRecords(d, worldRecords) })),
+    [domains],
+  );
+
+  // The keyboard equivalent of clicking a pylon, agent or hotspot. `DomainIsland`
+  // fires `onSelectRecord` and then `onSelect` on a 3D click, so a record pick
+  // always ends up framing its own domain; this lands in that same state rather
+  // than a second one only the keyboard can reach. Unlike `focusDomainOnly` it
+  // sets focus instead of toggling it — re-activating a record must not unframe
+  // the domain the record lives on.
+  const selectRecord = useCallback((domainId: string, target: RecordRef) => {
+    setPickedRef(target);
+    setFocusedId(domainId);
+  }, []);
+
   return (
     <>
       <section className="command-deck">
@@ -202,6 +224,32 @@ export function CompanyWorkspace({
                   <i aria-hidden="true" />
                   <span><b>{d.label}</b><small>{d.mode} · {d.autonomy}%</small></span>
                 </button>
+              ))}
+            </fieldset>
+            {/* The record-level keyboard path. A pointer can click any pylon,
+                agent or hotspot on any island; until this existed the only HTML
+                controls were the four domain pills, so a keyboard or screen-reader
+                user could reach a domain and nothing inside it (WORLD_ELEMENTS.md
+                request 27, second finding). Visually hidden until something in it
+                takes focus: the composed scene is the product, and fifteen more
+                permanently visible buttons would be a second, worse navigation
+                sitting on top of it. */}
+            <fieldset className="record-controls">
+              <legend className="sr-only">Records inside each domain</legend>
+              {pickable.map(({ domain, records }) => (
+                <fieldset key={domain.id}>
+                  <legend className="sr-only">{domain.label}</legend>
+                  {records.map((r) => (
+                    <button
+                      key={`${r.ref.type}:${r.ref.id}`}
+                      type="button"
+                      aria-pressed={pickedRef?.type === r.ref.type && pickedRef?.id === r.ref.id}
+                      onClick={() => selectRecord(domain.id, r.ref)}
+                    >
+                      {domain.label} — {r.label}
+                    </button>
+                  ))}
+                </fieldset>
               ))}
             </fieldset>
           </div>
