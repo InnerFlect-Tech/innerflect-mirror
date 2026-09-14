@@ -11,6 +11,27 @@ V2 is the approved semantic set: Company Core, Domain Platform, Human Glyph, Age
 Tool Glyph, Knowledge Object, Workflow Line, Decision Gate, Action Pulse, Risk Hotspot,
 Step Node, Record Token, Verification Marker, Outcome Marker and Permission Boundary.
 
+## V2.1 composition grammar
+
+The 2026-09-14 pass rebuilt all fifteen shapes as one composable language. The important
+change is not decorative: elements no longer behave like fifteen unrelated sculptures.
+
+- **Step Node is the repeated primary unit.** Actors compose on top of it; tools and
+  knowledge attach beside it.
+- **Decision, Verification and Outcome are node variants.** Their diamond, ring and flag
+  silhouettes remain legible without colour.
+- **Workflow Line is a unit connector.** Runtime owns its length and curvature.
+- **Record Token and Action Pulse live on an edge.** Risk Hotspot overlays the affected
+  node; none of the three brings its own environment.
+- **Permission Boundary is a normalised style unit.** Runtime derives its extent from the
+  authority record and scales/repeats the unit around that scope.
+- **Human and Agent are deliberately different silhouettes.** A Human remains entirely
+  grey; an Agent is a compact machine head and may receive the work state.
+
+The matching lightweight projection is
+`components/company-world/design/ElementSymbol2D.tsx`. It uses the same fifteen ids, the
+same authored registry and the same state tokens. It is not a second semantic catalogue.
+
 ## Regenerating
 
 ```bash
@@ -23,13 +44,14 @@ and render fonts from Linux-only paths, so they degrade on macOS. Previews are o
 because the live `/design/elements` route is the real contact sheet now — it renders the
 actual product materials under the actual bloom pass, which a matplotlib raster never could.
 
-## ⚠️ Regeneration is not byte-reproducible
+## Reproducibility and artifact policy
 
-The committed V2 artifacts and their checksums are the accepted baseline. The warning
-below was measured against V1, but still applies because V2 uses the same
-`scipy.spatial.ConvexHull` chamfer path.
+The committed V2 artifacts and their checksums remain the accepted baseline. The generator
+now canonicalises every convex-hull triangle by preserving winding, rotating the smallest
+vertex index first, and sorting the faces before serialisation. Two complete V2.1 runs in
+the current environment (numpy 2.3.5, scipy 1.17.0) were byte-identical.
 
-Measured on 2026-09-13, regenerating with scipy 1.13.1 against the committed artifacts:
+The earlier V1 investigation remains useful history. With scipy 1.13.1 it measured:
 
 | Model | Difference |
 |---|---|
@@ -37,13 +59,13 @@ Measured on 2026-09-13, regenerating with scipy 1.13.1 against the committed art
 | `decision-gate` | max delta 2.3e-16 — float noise, harmless |
 | `company-core`, `agent-glyph` | **max delta ~2.5 world units on ~40 floats** |
 
-The JSON chunk (materials, colours, node graph) is identical in every case, so this is
-purely geometry. A 2.5-unit delta on a 3.3 m model is a genuinely different shape, not
-rounding — almost certainly `scipy.spatial.ConvexHull` (used by `chamfered_box`) emitting
-faces in a different order or orientation than the version the kit was authored against.
+The JSON chunk was identical. The large flattened-position delta was consistent with
+`scipy.spatial.ConvexHull` emitting equivalent triangles in a different order; that is the
+specific nondeterminism `canonical_faces()` removes. Reproduction across scipy versions has
+not yet been measured, so a toolchain change still requires the full visual and checksum
+review below.
 
-**So: the committed GLBs are the artifacts, not a cache.** Do not regenerate casually and
-commit the result. If you change geometry:
+**The committed GLBs are artifacts, not a disposable cache.** If you change geometry:
 
 1. regenerate,
 2. **look at every model** on `/design/elements`, not just the one you edited,

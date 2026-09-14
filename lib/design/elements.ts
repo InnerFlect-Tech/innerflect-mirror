@@ -1,5 +1,28 @@
 import type { GlyphId } from '@/components/company-world/generated/glyphIds';
 
+export type ElementFamily =
+  | 'structure'
+  | 'actor'
+  | 'attachment'
+  | 'flow'
+  | 'control'
+  | 'signal'
+  | 'terminal';
+
+/** Where an element is allowed to live in a composed workflow. */
+export type CompositionRole =
+  | 'root'
+  | 'container'
+  | 'node'
+  | 'attachment'
+  | 'connector'
+  | 'edge-token'
+  | 'node-overlay'
+  | 'scope';
+
+/** The first semantic zoom level at which the object earns its pixels. */
+export type RevealLevel = 'company' | 'workflow' | 'execution';
+
 /**
  * The element registry — the authored half of the system.
  *
@@ -11,6 +34,12 @@ import type { GlyphId } from '@/components/company-world/generated/glyphIds';
 export type ElementDef = {
   id: GlyphId;
   name: string;
+  /** Visual family controls grouping in palettes; category never controls colour. */
+  family: ElementFamily;
+  /** Composition is constrained: not every glyph is a free-standing node. */
+  composition: CompositionRole;
+  /** Progressive disclosure keeps the company view quiet. */
+  revealAt: RevealLevel;
   /** The field that puts this object in the world. One row of the object table. */
   drivenBy: string;
   /**
@@ -40,45 +69,180 @@ export type ElementDef = {
 };
 
 export const ELEMENTS: readonly ElementDef[] = [
-  { id: 'company-core', name: 'Company Core', takesState: true, modelled: true, rendered: true,
-    drivenBy: 'Company record' },
-  { id: 'domain-platform', name: 'Domain Platform', takesState: true, modelled: true, rendered: true,
-    drivenBy: 'Domain record' },
-  { id: 'human-glyph', name: 'Human Glyph', takesState: false, modelled: true, rendered: true,
-    drivenBy: 'Workflow.humans / Person record' },
+  {
+    id: 'company-core',
+    name: 'Company Core',
+    family: 'structure',
+    composition: 'root',
+    revealAt: 'company',
+    takesState: true,
+    modelled: true,
+    rendered: true,
+    drivenBy: 'Company record',
+  },
+  {
+    id: 'domain-platform',
+    name: 'Domain Platform',
+    family: 'structure',
+    composition: 'container',
+    revealAt: 'company',
+    takesState: true,
+    modelled: true,
+    rendered: true,
+    drivenBy: 'Domain record',
+  },
+  {
+    id: 'human-glyph',
+    name: 'Human Glyph',
+    family: 'actor',
+    composition: 'attachment',
+    revealAt: 'workflow',
+    takesState: false,
+    modelled: true,
+    rendered: true,
+    drivenBy: 'Workflow.humans / Person record',
+  },
   // The glyph is the Agent; pose may express activity. Identity and activity are
   // separate fields and must not collapse into one.
-  { id: 'agent-glyph', name: 'Agent Glyph', takesState: true, modelled: true, rendered: true,
-    drivenBy: 'Agent record (pose from Agent.activity)' },
+  {
+    id: 'agent-glyph',
+    name: 'Agent Glyph',
+    family: 'actor',
+    composition: 'attachment',
+    revealAt: 'workflow',
+    takesState: true,
+    modelled: true,
+    rendered: true,
+    drivenBy: 'Agent record (pose from Agent.activity)',
+  },
   // `Tool` records exist in data/tools.ts but nothing reads them yet.
-  { id: 'tool-glyph', name: 'Tool Glyph', takesState: true, modelled: true, rendered: false,
-    drivenBy: 'Tool record' },
+  {
+    id: 'tool-glyph',
+    name: 'Tool Glyph',
+    family: 'attachment',
+    composition: 'attachment',
+    revealAt: 'execution',
+    takesState: true,
+    modelled: true,
+    rendered: false,
+    drivenBy: 'Tool record',
+  },
   // The knowledge object itself, not the file. A document is evidence FOR it.
-  { id: 'knowledge-object', name: 'Knowledge Object', takesState: true, modelled: true, rendered: false,
-    drivenBy: 'Knowledge object in use at a step' },
-  { id: 'workflow-line', name: 'Workflow Line', takesState: true, modelled: true, rendered: true,
-    drivenBy: 'Workflow record' },
+  {
+    id: 'knowledge-object',
+    name: 'Knowledge Object',
+    family: 'attachment',
+    composition: 'attachment',
+    revealAt: 'execution',
+    takesState: true,
+    modelled: true,
+    rendered: false,
+    drivenBy: 'Knowledge object in use at a step',
+  },
+  {
+    id: 'workflow-line',
+    name: 'Workflow Line',
+    family: 'flow',
+    composition: 'connector',
+    revealAt: 'workflow',
+    takesState: true,
+    modelled: true,
+    rendered: true,
+    drivenBy: 'Workflow record',
+  },
   // Justified by an actual decision, not inferred from a colour. One pylon per
   // Decision record whose workflowId matches.
-  { id: 'decision-gate', name: 'Decision Gate', takesState: true, modelled: true, rendered: true,
-    drivenBy: 'Decision / Authority record' },
-  { id: 'action-pulse', name: 'Action Pulse', takesState: true, modelled: true, rendered: true,
-    drivenBy: 'ExecutionStep / ActivityEvent record' },
+  {
+    id: 'decision-gate',
+    name: 'Decision Gate',
+    family: 'control',
+    composition: 'node',
+    revealAt: 'workflow',
+    takesState: true,
+    modelled: true,
+    rendered: true,
+    drivenBy: 'Decision / Authority record',
+  },
+  {
+    id: 'action-pulse',
+    name: 'Action Pulse',
+    family: 'signal',
+    composition: 'edge-token',
+    revealAt: 'execution',
+    takesState: true,
+    modelled: true,
+    rendered: true,
+    drivenBy: 'ExecutionStep / ActivityEvent record',
+  },
   // One hotspot per OPEN Exception record. An aggregate count is not a record.
-  { id: 'risk-hotspot', name: 'Risk Hotspot', takesState: true, modelled: true, rendered: true,
-    drivenBy: 'Exception record (open)' },
-  { id: 'step-node', name: 'Step Node', takesState: true, modelled: true, rendered: false,
-    drivenBy: 'ProcessStep record (id + stage)' },
-  { id: 'record-token', name: 'Record Token', takesState: true, modelled: true, rendered: false,
-    drivenBy: 'Execution.token (RecordToken)' },
-  { id: 'verification-marker', name: 'Verification Marker', takesState: true, modelled: true, rendered: false,
-    drivenBy: 'Verification record' },
+  {
+    id: 'risk-hotspot',
+    name: 'Risk Hotspot',
+    family: 'signal',
+    composition: 'node-overlay',
+    revealAt: 'workflow',
+    takesState: true,
+    modelled: true,
+    rendered: true,
+    drivenBy: 'Exception record (open)',
+  },
+  {
+    id: 'step-node',
+    name: 'Step Node',
+    family: 'flow',
+    composition: 'node',
+    revealAt: 'workflow',
+    takesState: true,
+    modelled: true,
+    rendered: false,
+    drivenBy: 'ProcessStep record (id + stage)',
+  },
+  {
+    id: 'record-token',
+    name: 'Record Token',
+    family: 'flow',
+    composition: 'edge-token',
+    revealAt: 'workflow',
+    takesState: true,
+    modelled: true,
+    rendered: false,
+    drivenBy: 'Execution.token (RecordToken)',
+  },
+  {
+    id: 'verification-marker',
+    name: 'Verification Marker',
+    family: 'terminal',
+    composition: 'node',
+    revealAt: 'workflow',
+    takesState: true,
+    modelled: true,
+    rendered: false,
+    drivenBy: 'Verification record',
+  },
   // No Outcome instance exists: the one execution is unfinished, correctly.
-  { id: 'outcome-marker', name: 'Outcome Marker', takesState: true, modelled: false, rendered: false,
-    drivenBy: 'Outcome record' },
-  // The review says boundaries are procedural, not GLBs — see request 9.
-  { id: 'permission-boundary', name: 'Permission Boundary', takesState: true, modelled: true, rendered: false,
-    drivenBy: 'AuthorityLimit / RoleGrant record' },
+  {
+    id: 'outcome-marker',
+    name: 'Outcome Marker',
+    family: 'terminal',
+    composition: 'node',
+    revealAt: 'workflow',
+    takesState: true,
+    modelled: false,
+    rendered: false,
+    drivenBy: 'Outcome record',
+  },
+  // The GLB is a normalised style unit; record scope controls its runtime extent.
+  {
+    id: 'permission-boundary',
+    name: 'Permission Boundary',
+    family: 'control',
+    composition: 'scope',
+    revealAt: 'execution',
+    takesState: true,
+    modelled: true,
+    rendered: false,
+    drivenBy: 'AuthorityLimit / RoleGrant record',
+  },
 ];
 
 export const ELEMENTS_BY_ID = Object.fromEntries(

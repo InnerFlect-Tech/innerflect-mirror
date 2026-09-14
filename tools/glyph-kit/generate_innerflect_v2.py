@@ -209,6 +209,22 @@ def orient_convex_faces(vertices: np.ndarray, faces: np.ndarray) -> np.ndarray:
     return np.asarray(output, dtype=np.int32)
 
 
+def canonical_faces(faces: np.ndarray) -> np.ndarray:
+    """Keep equivalent hull output byte-stable when Qhull changes face order.
+
+    Winding remains untouched: each triangle is only rotated so its smallest
+    vertex index comes first, then the rows are sorted. Rotation preserves its
+    normal; sorting removes an implementation detail from the GLB bytes.
+    """
+    canonical: list[list[int]] = []
+    for face in np.asarray(faces, dtype=np.int32):
+        values = face.tolist()
+        first = values.index(min(values))
+        canonical.append(values[first:] + values[:first])
+    canonical.sort(key=lambda face: (face[0], face[1], face[2]))
+    return np.asarray(canonical, dtype=np.int32)
+
+
 def chamfered_box(size: tuple[float, float, float], bevel: float = 0.08) -> tuple[np.ndarray, np.ndarray]:
     half = np.asarray(size, dtype=float) / 2.0
     bevel = min(float(bevel), float(np.min(half)) * 0.72)
@@ -237,7 +253,7 @@ def chamfered_box(size: tuple[float, float, float], bevel: float = 0.08) -> tupl
                 ])
     vertices = np.unique(np.round(np.asarray(points, dtype=float), 8), axis=0)
     hull = ConvexHull(vertices)
-    faces = orient_convex_faces(vertices, np.asarray(hull.simplices, dtype=np.int32))
+    faces = canonical_faces(orient_convex_faces(vertices, np.asarray(hull.simplices, dtype=np.int32)))
     return vertices, faces
 
 
@@ -426,206 +442,168 @@ def display_plinth(size: float = 3.45) -> list[Part]:
 
 
 def company_core() -> list[Part]:
-    parts = [
-        make_part("Core_Base", chamfered_box((3.3, 0.22, 3.3), 0.09), "graphite", (0, 0.11, 0)),
-        make_part("Mirror_Foundation", chamfered_box((2.9, 0.38, 2.9), 0.10), "teal_glass", (0, 0.41, 0)),
-        make_part("Mirror_Volume", chamfered_box((2.35, 1.02, 2.35), 0.12), "teal_glass", (0, 1.05, 0)),
-        make_part("Mirror_Seam", chamfered_box((2.52, 0.065, 2.52), 0.025), "teal_bright", (0, 1.59, 0)),
-        make_part("Company_Volume", chamfered_box((2.35, 1.16, 2.35), 0.12), "glass", (0, 2.20, 0)),
-        make_part("Company_State", chamfered_box((1.46, 1.32, 1.46), 0.10), "graphite_light", (0, 2.10, 0)),
-        make_part("State_Light", low_sphere(0.12, 4, 8), "teal_bright", (0, 1.60, -0.78)),
+    """The only tall object: company above, Mirror below, one readable seam."""
+    return [
+        make_part("Core_Footprint", chamfered_box((3.0, 0.18, 3.0), 0.08), "graphite", (0, 0.09, 0)),
+        make_part("Mirror_Lower", chamfered_box((2.62, 0.66, 2.62), 0.13), "teal_glass", (0, 0.48, 0)),
+        make_part("Mirror_Seam", chamfered_box((2.78, 0.075, 2.78), 0.025), "teal_bright", (0, 0.84, 0)),
+        make_part("Company_Upper", chamfered_box((2.36, 0.92, 2.36), 0.14), "glass", (0, 1.34, 0)),
+        make_part("Company_Heart", chamfered_box((1.14, 0.70, 1.14), 0.12), "graphite_light", (0, 1.34, 0)),
+        make_part("Company_Status", low_sphere(0.11, 4, 8), "teal_bright", (0, 1.35, -0.62)),
     ]
-    for index, (x, z) in enumerate(((-0.94, -0.94), (0.94, -0.94), (-0.94, 0.94), (0.94, 0.94))):
-        parts.append(make_part(f"Company_Frame_{index+1}", chamfered_box((0.12, 1.02, 0.12), 0.025), "glass", (x, 2.20, z)))
-    return parts
 
 
 def domain_platform() -> list[Part]:
-    parts = [
-        make_part("Zone_Base", chamfered_box((3.35, 0.22, 3.0), 0.09), "graphite", (0, 0.11, 0)),
-        make_part("Zone_Field", chamfered_box((3.12, 0.18, 2.77), 0.07), "teal_glass", (0, 0.30, 0)),
-        make_part("Zone_Inner", chamfered_box((2.62, 0.08, 2.27), 0.04), "glass", (0, 0.43, 0)),
-        make_part("Zone_Threshold_Left", chamfered_box((0.12, 0.78, 0.12), 0.025), "graphite_light", (-1.05, 0.75, -1.02)),
-        make_part("Zone_Threshold_Right", chamfered_box((0.12, 0.78, 0.12), 0.025), "graphite_light", (-0.35, 0.75, -1.02)),
-        make_part("Zone_Threshold_Top", chamfered_box((0.82, 0.12, 0.12), 0.025), "teal_bright", (-0.70, 1.14, -1.02)),
-        make_part("Zone_State", chamfered_box((1.42, 0.045, 0.045), 0.012), "teal_bright", (0.68, 0.48, 1.12)),
+    """A quiet container. Its contents, not architecture, explain the domain."""
+    return [
+        make_part("Domain_Shadow", chamfered_box((3.20, 0.16, 2.72), 0.09), "graphite", (0, 0.08, 0)),
+        make_part("Domain_Field", chamfered_box((3.02, 0.16, 2.54), 0.075), "teal_glass", (0, 0.22, 0)),
+        make_part("Domain_Workplane", chamfered_box((2.72, 0.075, 2.24), 0.04), "glass", (0, 0.34, 0)),
+        make_part("Domain_Signal", chamfered_box((1.28, 0.045, 0.055), 0.014), "teal_bright", (0, 0.39, -1.13)),
     ]
-    return parts
 
 
 def human_glyph() -> list[Part]:
-    parts = [
-        make_part("Human_Torso", chamfered_box((0.64, 0.92, 0.40), 0.10), "neutral", (0, 1.43, 0)),
-        make_part("Human_Head", low_sphere(0.31, 4, 8), "white", (0, 2.22, 0)),
-        make_part("Human_Leg_Left", chamfered_box((0.23, 0.86, 0.25), 0.055), "neutral", (-0.19, 0.52, 0)),
-        make_part("Human_Leg_Right", chamfered_box((0.23, 0.86, 0.25), 0.055), "neutral", (0.19, 0.52, 0)),
-        make_part("Human_Arm_Left", chamfered_box((0.19, 0.83, 0.22), 0.045), "neutral", (-0.43, 1.41, 0), rotation=(0, 0, -5)),
-        make_part("Human_Arm_Right", chamfered_box((0.19, 0.83, 0.22), 0.045), "neutral", (0.43, 1.41, 0), rotation=(0, 0, 5)),
+    # Compact enough to sit ON a Step Node. Every part stays neutral at runtime.
+    return [
+        make_part("Human_Head", low_sphere(0.20, 4, 8), "white", (0, 1.28, 0)),
+        make_part("Human_Torso", chamfered_box((0.48, 0.56, 0.30), 0.09), "neutral", (0, 0.88, 0)),
+        make_part("Human_Leg_Left", chamfered_box((0.16, 0.50, 0.18), 0.045), "neutral", (-0.14, 0.36, 0)),
+        make_part("Human_Leg_Right", chamfered_box((0.16, 0.50, 0.18), 0.045), "neutral", (0.14, 0.36, 0)),
+        make_part("Human_Arm_Left", chamfered_box((0.14, 0.50, 0.17), 0.04), "neutral", (-0.32, 0.86, 0), rotation=(0, 0, -4)),
+        make_part("Human_Arm_Right", chamfered_box((0.14, 0.50, 0.17), 0.04), "neutral", (0.32, 0.86, 0), rotation=(0, 0, 4)),
     ]
-    return parts
 
 
 def agent_glyph() -> list[Part]:
-    parts = [
-        make_part("Agent_Core", octahedron(0.47), "teal_bright", (0, 1.25, 0)),
-        make_part("Agent_Orbit_A", torus(0.82, 0.035, 32, 6), "teal", (0, 1.25, 0), rotation=(90, 0, 0)),
-        make_part("Agent_Orbit_B", torus(0.67, 0.025, 28, 6), "glass", (0, 1.25, 0), rotation=(0, 0, 90)),
-        make_part("Agent_Frame_Left", chamfered_box((0.13, 1.72, 0.13), 0.035), "graphite_light", (-0.98, 1.12, 0)),
-        make_part("Agent_Frame_Right", chamfered_box((0.13, 1.72, 0.13), 0.035), "graphite_light", (0.98, 1.12, 0)),
-        make_part("Agent_Frame_Top", chamfered_box((2.08, 0.13, 0.13), 0.035), "graphite_light", (0, 1.98, 0)),
+    # A machine head, not a robotic person: actor kind is legible by silhouette.
+    return [
+        make_part("Agent_Stem", chamfered_box((0.10, 0.25, 0.10), 0.025), "graphite_light", (0, 1.47, 0)),
+        make_part("Agent_Antenna", low_sphere(0.10, 4, 8), "teal_bright", (0, 1.66, 0)),
+        make_part("Agent_Head", chamfered_box((0.92, 0.72, 0.58), 0.14), "graphite_light", (0, 1.02, 0)),
+        make_part("Agent_Face", chamfered_box((0.70, 0.46, 0.06), 0.08), "teal_glass", (0, 1.02, -0.31)),
+        make_part("Agent_Eye_Left", low_sphere(0.075, 4, 8), "teal_bright", (-0.21, 1.05, -0.36)),
+        make_part("Agent_Eye_Right", low_sphere(0.075, 4, 8), "teal_bright", (0.21, 1.05, -0.36)),
+        make_part("Agent_Base", frustum(0.28, 0.38, 0.28, 8), "graphite", (0, 0.30, 0)),
+        make_part("Agent_Neck", chamfered_box((0.18, 0.48, 0.18), 0.04), "graphite_light", (0, 0.60, 0)),
     ]
-    for index, position in enumerate(((-0.74, 1.66, 0), (0.74, 0.84, 0), (0.06, 1.25, 0.68))):
-        parts.append(make_part(f"Agent_Node_{index+1}", low_sphere(0.10, 4, 8), "teal_bright", position))
-    return parts
 
 
 def tool_glyph() -> list[Part]:
-    parts = [
-        make_part("Tool_System", chamfered_box((1.15, 1.74, 0.92), 0.12), "graphite_light", (-0.28, 1.00, 0.18)),
-        make_part("Tool_Console", chamfered_box((1.02, 0.70, 0.44), 0.08), "graphite", (0.43, 0.53, -0.42)),
-        make_part("Tool_Screen", chamfered_box((0.82, 0.63, 0.08), 0.045), "glass", (0.35, 1.13, -0.52), rotation=(-12, 0, 0)),
-        make_part("Tool_Line_A", chamfered_box((0.53, 0.045, 0.022), 0.012), "teal_bright", (0.35, 1.23, -0.585), rotation=(-12, 0, 0)),
-        make_part("Tool_Line_B", chamfered_box((0.38, 0.045, 0.022), 0.012), "teal", (0.28, 1.06, -0.622), rotation=(-12, 0, 0)),
-        make_part("Tool_Status", low_sphere(0.10, 5, 10), "teal_bright", (0.47, 0.53, -0.69)),
+    # Three stacked cylinders are the universal system/database silhouette.
+    return [
+        make_part("Tool_Lower", frustum(0.34, 0.48, 0.48, 12), "graphite", (0, 0.30, 0)),
+        make_part("Tool_Middle", frustum(0.34, 0.48, 0.48, 12), "graphite_light", (0, 0.65, 0)),
+        make_part("Tool_Upper", frustum(0.34, 0.48, 0.48, 12), "graphite_light", (0, 1.00, 0)),
+        make_part("Tool_Status", torus(0.39, 0.035, 24, 6), "teal_bright", (0, 1.18, 0)),
     ]
-    return parts
 
 
 def knowledge_object() -> list[Part]:
-    parts = [
-        make_part("Knowledge_Base", chamfered_box((1.85, 0.20, 1.62), 0.075), "graphite", (0, 0.10, 0)),
-        make_part("Knowledge_Layer_1", chamfered_box((1.62, 0.30, 1.38), 0.075), "teal_glass", (0, 0.38, 0)),
-        make_part("Knowledge_Layer_2", chamfered_box((1.42, 0.30, 1.20), 0.07), "glass", (0, 0.73, 0)),
-        make_part("Knowledge_Layer_3", chamfered_box((1.20, 0.30, 1.02), 0.065), "teal_glass", (0, 1.08, 0)),
-        make_part("Knowledge_Core", octahedron(0.31), "teal_bright", (0, 1.48, 0)),
+    # A structured source in use. Upright and planar, unlike the Tool cylinder.
+    return [
+        make_part("Knowledge_Back", chamfered_box((0.92, 1.28, 0.14), 0.07), "graphite_light", (0, 0.72, 0)),
+        make_part("Knowledge_Face", chamfered_box((0.72, 1.02, 0.055), 0.04), "glass", (0, 0.74, -0.09)),
+        make_part("Knowledge_Title", chamfered_box((0.43, 0.055, 0.025), 0.012), "teal_bright", (-0.08, 0.99, -0.13)),
+        make_part("Knowledge_Line_1", chamfered_box((0.50, 0.035, 0.022), 0.010), "neutral", (0, 0.76, -0.13)),
+        make_part("Knowledge_Line_2", chamfered_box((0.38, 0.035, 0.022), 0.010), "neutral", (-0.06, 0.59, -0.13)),
+        make_part("Knowledge_Line_3", chamfered_box((0.46, 0.035, 0.022), 0.010), "neutral", (-0.02, 0.42, -0.13)),
     ]
-    for index, (x, z) in enumerate(((-0.56, -0.46), (0.56, -0.46), (-0.56, 0.46), (0.56, 0.46))):
-        parts.append(make_part(f"Knowledge_Relation_{index+1}", low_sphere(0.075, 4, 8), "neutral", (x, 0.77, z)))
-    return parts
 
 
 def workflow_line() -> list[Part]:
-    path = np.array([
-        [-1.45, 0.28, 0.50], [-1.02, 0.31, 0.40], [-0.62, 0.43, 0.28],
-        [-0.22, 0.68, 0.13], [0.25, 0.76, 0.04], [0.72, 1.06, -0.15],
-        [1.25, 1.30, -0.36],
-    ])
-    parts = [
-        make_part("Workflow_Human", tube(path[:4], 0.055, 8), "neutral"),
-        make_part("Workflow_Autonomous", tube(path[3:], 0.058, 8), "teal_bright"),
+    # A unit connector. Runtime stretches/curves it between record-backed nodes.
+    direction = np.array([1.0, 0.0, 0.0])
+    return [
+        make_part("Flow_Rail", tube([(-1.25, 0.18, 0), (1.03, 0.18, 0)], 0.035, 6), "teal"),
+        make_part("Flow_Arrow", frustum(0.38, 0.15, 0.0, 8), "teal_bright", (1.18, 0.18, 0), matrix=align_y_to(direction)),
+        make_part("Flow_Origin", low_sphere(0.075, 4, 8), "teal_bright", (-1.25, 0.18, 0)),
     ]
-    for index in (0, 3, 5):
-        parts.append(make_part(
-            f"Workflow_Node_{index}", low_sphere(0.105, 5, 10),
-            "neutral" if index == 0 else "teal_bright", tuple(path[index]),
-        ))
-    direction = unit(path[-1] - path[-2])
-    parts.append(make_part(
-        "Workflow_Direction", frustum(0.42, 0.18, 0.0, 10), "teal_bright",
-        tuple(path[-1] + direction * 0.14), matrix=align_y_to(direction),
-    ))
-    return parts
 
 
 def decision_gate() -> list[Part]:
+    # Diamond footprint is reserved for branching/authority, in both 2D and 3D.
     return [
-        make_part("Gate_Frame", torus(0.79, 0.115, 36, 8), "graphite_light", (0, 1.13, 0), rotation=(90, 0, 0)),
-        make_part("Gate_Authority", torus(0.65, 0.038, 36, 6), "amber", (0, 1.13, -0.02), rotation=(90, 0, 0)),
-        make_part("Gate_Pillar_Left", chamfered_box((0.23, 1.52, 0.28), 0.055), "graphite_light", (-0.91, 0.77, 0)),
-        make_part("Gate_Pillar_Right", chamfered_box((0.23, 1.52, 0.28), 0.055), "graphite_light", (0.91, 0.77, 0)),
-        make_part("Gate_Input", tube([(-1.42, 0.74, 0), (-0.66, 0.74, 0)], 0.032, 6), "neutral"),
-        make_part("Gate_Output", tube([(0.66, 0.74, 0), (1.42, 0.74, 0)], 0.032, 6), "amber"),
-        make_part("Gate_Decision", low_sphere(0.095, 5, 10), "amber", (0, 0.74, -0.03)),
+        make_part("Gate_Base", chamfered_box((1.18, 0.22, 1.18), 0.08), "graphite", (0, 0.11, 0), rotation=(0, 45, 0)),
+        make_part("Gate_Surface", chamfered_box((0.98, 0.18, 0.98), 0.07), "teal_glass", (0, 0.27, 0), rotation=(0, 45, 0)),
+        make_part("Gate_Centre", octahedron(0.18), "amber", (0, 0.52, 0)),
+        make_part("Gate_Input", low_sphere(0.07, 4, 8), "neutral", (-0.86, 0.20, 0)),
+        make_part("Gate_Yes", low_sphere(0.07, 4, 8), "amber", (0.86, 0.20, 0)),
+        make_part("Gate_No", low_sphere(0.07, 4, 8), "amber", (0, 0.20, 0.86)),
     ]
 
 
 def action_pulse() -> list[Part]:
-    path = np.array([[-1.38, 0.32, 0.48], [-0.48, 0.68, 0.18], [0.42, 1.00, -0.14], [1.36, 1.35, -0.46]])
-    pulse_position = 0.44 * path[1] + 0.56 * path[2]
+    # An event OVER a path, never a second connector sculpture.
     return [
-        make_part("Action_Rail", tube(path, 0.035, 7), "teal"),
-        make_part("Action_Pulse", low_sphere(0.27, 7, 12), "teal_bright", tuple(pulse_position)),
-        make_part("Action_Origin", low_sphere(0.09, 5, 10), "teal", tuple(path[0])),
-        make_part("Action_Target", low_sphere(0.11, 5, 10), "white", tuple(path[-1])),
-        make_part("Action_Trail", tube([path[1], pulse_position], 0.075, 8), "teal_glass"),
+        make_part("Pulse_Outer", torus(0.48, 0.035, 24, 6), "teal_glass", (0, 0.10, 0)),
+        make_part("Pulse_Middle", torus(0.31, 0.045, 24, 6), "teal", (0, 0.13, 0)),
+        make_part("Pulse_Core", low_sphere(0.17, 5, 10), "teal_bright", (0, 0.20, 0)),
     ]
 
 
 def risk_hotspot() -> list[Part]:
+    # Small overlay attached to the affected step, not its own environment.
     return [
-        make_part("Risk_Context_Base", chamfered_box((2.50, 0.20, 2.20), 0.08), "graphite", (0, 0.10, 0)),
-        make_part("Risk_Context_Layer", chamfered_box((1.90, 0.54, 1.62), 0.09), "glass", (0, 0.46, 0)),
-        make_part("Risk_Condition", chamfered_box((0.64, 0.64, 0.64), 0.08), "amber", (0, 0.94, 0)),
-        make_part("Risk_Field_A", torus(0.86, 0.025, 36, 6), "amber_glass", (0, 1.08, 0)),
-        make_part("Risk_Field_B", torus(1.10, 0.018, 40, 6), "amber", (0, 1.36, 0)),
-        make_part("Risk_Axis", frustum(1.15, 0.023, 0.023, 8), "amber_glass", (0, 1.70, 0)),
-        make_part("Risk_Centre", low_sphere(0.11, 5, 10), "amber", (0, 0.94, -0.36)),
+        make_part("Risk_Field", torus(0.50, 0.035, 24, 6), "amber_glass", (0, 0.11, 0)),
+        make_part("Risk_Body", octahedron(0.34), "amber", (0, 0.48, 0)),
+        make_part("Risk_Mark", chamfered_box((0.075, 0.30, 0.075), 0.018), "white", (0, 0.52, -0.25)),
+        make_part("Risk_Point", low_sphere(0.055, 4, 8), "white", (0, 0.30, -0.25)),
     ]
 
 
 def step_node() -> list[Part]:
-    parts = [
-        make_part("Step_Base", chamfered_box((1.62, 0.28, 1.62), 0.11), "graphite", (0, 0.14, 0)),
-        make_part("Step_Body", chamfered_box((1.34, 1.06, 1.34), 0.16), "graphite_light", (0, 0.78, 0)),
-        make_part("Step_State", chamfered_box((1.02, 0.08, 1.02), 0.04), "teal_glass", (0, 1.35, 0)),
-        make_part("Step_Core", octahedron(0.19), "teal_bright", (0, 1.56, 0)),
+    # The repeated primary unit. Actors/content compose on top; attachments sit beside it.
+    return [
+        make_part("Step_Base", chamfered_box((1.52, 0.20, 1.52), 0.11), "graphite", (0, 0.10, 0)),
+        make_part("Step_Surface", chamfered_box((1.30, 0.18, 1.30), 0.095), "teal_glass", (0, 0.25, 0)),
+        make_part("Step_Inset", chamfered_box((0.76, 0.065, 0.76), 0.05), "glass", (0, 0.37, 0)),
+        make_part("Step_Input", low_sphere(0.065, 4, 8), "teal_bright", (-0.83, 0.23, 0)),
+        make_part("Step_Output", low_sphere(0.065, 4, 8), "teal_bright", (0.83, 0.23, 0)),
+        make_part("Step_Attachment", low_sphere(0.055, 4, 8), "teal", (0, 0.23, 0.83)),
     ]
-    sockets = (
-        (0.0, 2.02, 0.0), (1.10, 1.42, 0.0), (0.68, 0.58, 0.98),
-        (-0.68, 0.58, 0.98), (-1.10, 1.42, 0.0), (-0.68, 0.58, -0.98),
-        (0.68, 0.58, -0.98),
-    )
-    for index, position in enumerate(sockets):
-        parts.append(make_part(f"Step_Stage_{index+1}", chamfered_box((0.24, 0.24, 0.24), 0.045), "teal_glass", position))
-    return parts
 
 
 def record_token() -> list[Part]:
-    axis = align_y_to((1, 0, 0))
+    # A compact identity puck that can visibly travel without hiding the path.
     return [
-        make_part("Record_Core", frustum(1.36, 0.34, 0.34, 12), "teal_glass", (0, 0.92, 0), matrix=axis),
-        make_part("Record_Left", torus(0.38, 0.075, 28, 7), "graphite_light", (-0.70, 0.92, 0), rotation=(0, 0, 90)),
-        make_part("Record_Right", torus(0.38, 0.075, 28, 7), "graphite_light", (0.70, 0.92, 0), rotation=(0, 0, 90)),
-        make_part("Record_Identity", chamfered_box((0.40, 0.15, 0.10), 0.025), "teal_bright", (0, 0.92, -0.33)),
-        make_part("Record_Origin", low_sphere(0.10, 5, 10), "neutral", (-1.06, 0.92, 0)),
-        make_part("Record_Target", low_sphere(0.10, 5, 10), "white", (1.06, 0.92, 0)),
+        make_part("Record_Rim", frustum(0.18, 0.34, 0.34, 12), "graphite_light", (0, 0.10, 0)),
+        make_part("Record_Core", frustum(0.15, 0.25, 0.25, 12), "teal_bright", (0, 0.23, 0)),
+        make_part("Record_Identity", chamfered_box((0.22, 0.055, 0.07), 0.014), "white", (0, 0.32, -0.12)),
     ]
 
 
 def verification_marker() -> list[Part]:
-    parts = [
-        make_part("Verification_Base", chamfered_box((2.45, 0.20, 1.42), 0.08), "graphite", (0, 0.10, 0)),
-        make_part("Verification_Pivot", chamfered_box((0.16, 1.62, 0.16), 0.035), "graphite_light", (0, 0.96, 0)),
-        make_part("Verification_Pass", chamfered_box((0.88, 1.12, 0.13), 0.09), "teal_glass", (-0.63, 1.02, 0)),
-        make_part("Verification_Fail", chamfered_box((0.88, 1.12, 0.13), 0.09), "glass", (0.63, 1.02, 0)),
-        make_part("Verification_Tick_A", tube([(-0.88, 0.99, -0.10), (-0.70, 0.80, -0.10)], 0.045, 6), "teal_bright"),
-        make_part("Verification_Tick_B", tube([(-0.70, 0.80, -0.10), (-0.39, 1.24, -0.10)], 0.045, 6), "teal_bright"),
-        make_part("Verification_Cross_A", tube([(0.42, 0.78, -0.10), (0.84, 1.22, -0.10)], 0.035, 6), "neutral"),
-        make_part("Verification_Cross_B", tube([(0.84, 0.78, -0.10), (0.42, 1.22, -0.10)], 0.035, 6), "neutral"),
+    # Ring terminal with an unmistakable physical check mark.
+    return [
+        make_part("Verification_Base", frustum(0.20, 0.72, 0.72, 10), "graphite", (0, 0.10, 0)),
+        make_part("Verification_Field", frustum(0.15, 0.58, 0.58, 10), "teal_glass", (0, 0.25, 0)),
+        make_part("Verification_Ring", torus(0.40, 0.045, 24, 6), "teal", (0, 0.35, 0)),
+        make_part("Verification_Tick_A", tube([(-0.25, 0.40, -0.02), (-0.07, 0.27, -0.02)], 0.045, 6), "teal_bright"),
+        make_part("Verification_Tick_B", tube([(-0.07, 0.27, -0.02), (0.28, 0.52, -0.02)], 0.045, 6), "teal_bright"),
     ]
-    return parts
 
 
 def outcome_marker() -> list[Part]:
+    # A flag terminates the journey; unlike Verification it makes no pass/fail claim.
     return [
-        make_part("Outcome_Base", chamfered_box((1.92, 0.22, 1.92), 0.09), "graphite", (0, 0.11, 0)),
-        make_part("Outcome_Foundation", chamfered_box((1.52, 0.34, 1.52), 0.10), "teal_glass", (0, 0.40, 0)),
-        make_part("Outcome_Frame", chamfered_box((1.26, 1.48, 1.26), 0.10), "glass", (0, 1.18, 0)),
-        make_part("Outcome_Result", octahedron(0.47), "teal_bright", (0, 1.23, 0)),
-        make_part("Outcome_Seal", torus(0.59, 0.035, 32, 6), "teal", (0, 1.23, 0), rotation=(90, 0, 0)),
+        make_part("Outcome_Base", frustum(0.18, 0.63, 0.63, 10), "graphite", (0, 0.09, 0)),
+        make_part("Outcome_Field", frustum(0.14, 0.50, 0.50, 10), "teal_glass", (0, 0.22, 0)),
+        make_part("Outcome_Post", chamfered_box((0.09, 1.12, 0.09), 0.02), "teal_bright", (-0.15, 0.82, 0)),
+        make_part("Outcome_Flag", chamfered_box((0.52, 0.34, 0.075), 0.035), "teal_bright", (0.14, 1.17, 0)),
+        make_part("Outcome_Result", low_sphere(0.08, 4, 8), "white", (-0.15, 0.27, -0.39)),
     ]
 
 
 def permission_boundary() -> list[Part]:
+    """A normalised unit cage. Runtime scales/repeats it to an authority scope."""
     parts = [
-        make_part("Boundary_Base", chamfered_box((2.75, 0.18, 1.65), 0.07), "graphite", (0, 0.09, 0)),
-        make_part("Boundary_Field", chamfered_box((0.10, 1.46, 1.34), 0.04), "teal_glass", (0, 0.88, 0)),
-        make_part("Boundary_Left", chamfered_box((0.16, 1.72, 0.16), 0.04), "graphite_light", (0, 0.91, -0.76)),
-        make_part("Boundary_Right", chamfered_box((0.16, 1.72, 0.16), 0.04), "graphite_light", (0, 0.91, 0.76)),
-        make_part("Boundary_Top", chamfered_box((0.16, 0.16, 1.68), 0.04), "teal_bright", (0, 1.76, 0)),
-        make_part("Boundary_Before", tube([(-1.22, 0.25, 0), (-0.18, 0.25, 0)], 0.028, 6), "neutral"),
-        make_part("Boundary_After", tube([(0.18, 0.25, 0), (1.22, 0.25, 0)], 0.035, 6), "teal_bright"),
+        make_part("Boundary_Field", chamfered_box((1.50, 0.035, 1.50), 0.02), "teal_glass", (0, 0.04, 0)),
     ]
+    for index, (x, z) in enumerate(((-0.75, -0.75), (0.75, -0.75), (-0.75, 0.75), (0.75, 0.75))):
+        parts.append(make_part(f"Boundary_Post_{index+1}", chamfered_box((0.055, 1.15, 0.055), 0.014), "graphite_light", (x, 0.59, z)))
+    for index, (x, z, sx, sz) in enumerate(((0, -0.75, 1.55, 0.055), (0, 0.75, 1.55, 0.055), (-0.75, 0, 0.055, 1.55), (0.75, 0, 0.055, 1.55))):
+        parts.append(make_part(f"Boundary_Top_{index+1}", chamfered_box((sx, 0.055, sz), 0.014), "teal_bright", (x, 1.16, z)))
     return parts
 
 
@@ -1005,7 +983,7 @@ def main(previews: bool = False) -> None:
 
     manifest = {
         "name": "InnerFlect Mirror V2 Operational Glyph System",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "generator": "tools/glyph-kit/generate_innerflect_v2.py",
         "originalGeometry": True,
         "thirdPartyModels": False,

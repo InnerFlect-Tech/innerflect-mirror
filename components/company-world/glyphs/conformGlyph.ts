@@ -10,8 +10,8 @@ import type { MaterialSet } from './materialCache';
  *
  * The kit is good, original, low-poly work. It is not safe to render as shipped:
  * it carries transmission (a full extra scene pass per object), it bakes colour
- * into materials the state layer must be able to override, and it ships 80
- * primitives across ten models — four platforms plus a core is 71 draw calls
+ * into materials the state layer must be able to override, and V2.1 ships 78
+ * primitives across fifteen models — enough to consume most of the scene budget
  * before a single connection or label exists.
  *
  * All three are fixed here, at load, so the kit stays untouched on disk and
@@ -28,7 +28,9 @@ export type ConformStats = {
 export type ConformResult = { group: Group; stats: ConformStats };
 
 function roleFor(name: string, unknown: Set<string>, id: string): MaterialRole {
-  const role = (MATERIAL_ROLES as Record<string, MaterialRole | undefined>)[name];
+  const role = (MATERIAL_ROLES as Record<string, MaterialRole | undefined>)[
+    name
+  ];
   if (role) return role;
   unknown.add(name || '(unnamed)');
   // `MATERIAL_ROLES satisfies Record<KitMaterialName, MaterialRole>` makes this
@@ -46,7 +48,7 @@ function roleFor(name: string, unknown: Set<string>, id: string): MaterialRole {
 
 /**
  * Clones the source, bakes world transforms in, buckets geometry by material role
- * and merges each bucket. Returns one mesh per role — ten materials, so at most ten
+ * and merges each bucket. Returns one mesh per role — eight roles, so at most eight
  * draw calls for an asset of any complexity.
  *
  * Transmission cannot survive this by construction rather than by a strip step
@@ -73,7 +75,11 @@ export function conformGlyph(
     for (const m of mats) {
       if (!m) continue;
       before.materials.add(m.name || 'unnamed');
-      if ('transmission' in m && typeof m.transmission === 'number' && m.transmission > 0) {
+      if (
+        'transmission' in m &&
+        typeof m.transmission === 'number' &&
+        m.transmission > 0
+      ) {
         before.transmissive++;
       }
     }
@@ -108,7 +114,11 @@ export function conformGlyph(
   return {
     group,
     stats: {
-      before: { meshes: before.meshes, materials: before.materials.size, transmissive: before.transmissive },
+      before: {
+        meshes: before.meshes,
+        materials: before.materials.size,
+        transmissive: before.transmissive,
+      },
       after: { meshes: group.children.length },
       unknown: [...unknown],
     },

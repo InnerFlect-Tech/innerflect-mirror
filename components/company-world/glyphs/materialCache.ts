@@ -1,6 +1,11 @@
 'use client';
 
-import { Color, MeshPhysicalMaterial, MeshStandardMaterial, type Material } from 'three';
+import {
+  Color,
+  MeshPhysicalMaterial,
+  MeshStandardMaterial,
+  type Material,
+} from 'three';
 import { massing, shell } from '@/lib/tokens';
 import type { MaterialRole } from '@/lib/design/materialRoles';
 import { stateTokens, type SceneState } from '../tokens/sceneStates';
@@ -10,11 +15,12 @@ import { stateTokens, type SceneState } from '../tokens/sceneStates';
  *
  * Two problems are solved here, both measured rather than assumed:
  *
- *  1. TRANSMISSION. Eight of the ten kit models use `KHR_materials_transmission`.
+ *  1. TRANSMISSION. Eleven of the fifteen kit models use `KHR_materials_transmission`.
  *     Three renders the ENTIRE scene into a separate target once per transmissive
- *     object — the raw kit measures 229 draw calls with 19 transmissive objects
- *     against a budget of 120; conformed it is 72 with none. Clearcoat over a dark
- *     base reads the same at this scale for none of the passes.
+ *     object. The V2.1 contact sheet contains 78 raw meshes, including 14
+ *     transmissive meshes; conformance reduces it to 53 role meshes with zero
+ *     transmission. Clearcoat over a dark base reads the same at this scale
+ *     without the extra passes.
  *
  *  2. BAKED COLOUR. The kit bakes teal into materials named "Active Teal" and
  *     "Autonomy Teal". The rule is that STATE decides colour, so a Finance domain
@@ -48,23 +54,38 @@ function buildMaterialSet(state: SceneState): MaterialSet {
 
   return {
     structure: new MeshStandardMaterial({
-      color: new Color(massing.darkest), roughness: 0.62, metalness: 0.06, envMapIntensity: 1.1,
+      color: new Color(massing.darkest),
+      roughness: 0.62,
+      metalness: 0.06,
+      envMapIntensity: 1.1,
     }),
     structureLight: new MeshStandardMaterial({
-      color: new Color(massing.mid), roughness: 0.58, metalness: 0.06, envMapIntensity: 1.1,
+      color: new Color(massing.mid),
+      roughness: 0.58,
+      metalness: 0.06,
+      envMapIntensity: 1.1,
     }),
     warm: new MeshStandardMaterial({
-      color: new Color(massing.light), roughness: 0.5, envMapIntensity: 1.1,
+      color: new Color(massing.light),
+      roughness: 0.5,
+      envMapIntensity: 1.1,
     }),
     // A person is not a state, so this never takes the accent.
     human: new MeshStandardMaterial({
-      color: new Color(massing.light), roughness: 0.7, envMapIntensity: 0.9,
+      color: new Color(massing.light),
+      roughness: 0.7,
+      envMapIntensity: 0.9,
     }),
     // Transmission replaced by clearcoat over a dark base.
     glass: new MeshPhysicalMaterial({
-      color: new Color(shell.platform), roughness: 0.24, metalness: 0.2,
-      clearcoat: 0.9, clearcoatRoughness: 0.24, envMapIntensity: 0.9,
-      transparent: true, opacity: 0.45,
+      color: new Color(shell.platform),
+      roughness: 0.24,
+      metalness: 0.2,
+      clearcoat: 0.9,
+      clearcoatRoughness: 0.24,
+      envMapIntensity: 0.9,
+      transparent: true,
+      opacity: 0.45,
     }),
     // `envMapIntensity` was 1.5 on both glass roles, which is a reasonable
     // highlight on a part the size of a screen bezel and a flood on a part the
@@ -76,20 +97,26 @@ function buildMaterialSet(state: SceneState): MaterialSet {
     stateGlass: new MeshPhysicalMaterial({
       color: new Color(token.surface),
       emissive: hot.clone().multiplyScalar(GLASS_OF_SIGNAL),
-      roughness: 0.26, metalness: 0.18,
-      clearcoat: 0.85, clearcoatRoughness: 0.26, envMapIntensity: 0.75,
-      transparent: true, opacity: 0.46,
+      roughness: 0.26,
+      metalness: 0.18,
+      clearcoat: 0.85,
+      clearcoatRoughness: 0.26,
+      envMapIntensity: 0.75,
+      transparent: true,
+      opacity: 0.46,
     }),
     stateMid: new MeshStandardMaterial({
       color: accent.clone().multiplyScalar(0.5),
       emissive: hot.clone().multiplyScalar(MID_OF_SIGNAL),
-      roughness: 0.35, toneMapped: false,
+      roughness: 0.35,
+      toneMapped: false,
     }),
     // The only role allowed past the bloom threshold.
     stateHot: new MeshStandardMaterial({
       color: accent,
       emissive: hot,
-      roughness: 0.15, toneMapped: false,
+      roughness: 0.15,
+      toneMapped: false,
     }),
   };
 }

@@ -55,7 +55,7 @@ export function Glyph({
 
 /**
  * Warm the GLTF cache. Pass only the glyphs a surface actually needs — the home
- * scene uses a handful, so preloading all ten there would be ~400KB of GLB for two
+ * scene uses a handful, so preloading all fifteen there would be needless GLB transfer for two
  * used models.
  */
 export function preloadGlyphs(ids: readonly GlyphId[] = GLYPH_IDS) {

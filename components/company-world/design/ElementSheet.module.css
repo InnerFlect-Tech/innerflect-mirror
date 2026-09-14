@@ -1,0 +1,325 @@
+.root {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  grid-template-areas: 'header header' 'comparison rail';
+  min-height: 100vh;
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+.header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 4.5rem;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+
+.header h1,
+.panelHeading h2 {
+  margin: 0;
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.header h1 {
+  font-size: var(--fs-xl);
+}
+
+.eyebrow {
+  display: block;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+.segmented {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-raised);
+}
+
+.segmented button,
+.ghost {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--fs-xs);
+  cursor: pointer;
+}
+
+.segmented button:hover,
+.ghost:hover {
+  color: var(--text-primary);
+}
+
+.segmented button[aria-pressed='true'] {
+  background: var(--bg-page);
+  color: var(--swatch, var(--text-primary));
+}
+
+.segmented i {
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-right: var(--space-1);
+  border-radius: 50%;
+  background: var(--swatch);
+}
+
+.stateControl {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.ghost {
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-raised);
+}
+
+.comparison {
+  grid-area: comparison;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-3);
+}
+
+.comparison[data-projection='2d'],
+.comparison[data-projection='3d'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+}
+
+.panelHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.panelHeading h2 {
+  font-size: var(--fs-lg);
+}
+
+.panelHeading > span {
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+}
+
+.webgl {
+  min-height: 0;
+}
+
+.webgl canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.symbolGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  align-content: stretch;
+  min-height: 0;
+  overflow: auto;
+  background: var(--border-subtle);
+}
+
+.symbolGrid[data-focused='true'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.symbolGrid button {
+  display: grid;
+  grid-template-rows: minmax(3.5rem, 1fr) auto auto;
+  place-items: center;
+  gap: var(--space-1);
+  min-height: 8.5rem;
+  padding: var(--space-3);
+  border: 0;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.symbolGrid button:hover,
+.symbolGrid button[aria-current='true'] {
+  background: var(--bg-hover);
+}
+
+.symbolGrid svg {
+  width: min(4.5rem, 70%);
+  height: min(4.5rem, 70%);
+  filter: drop-shadow(0 0 0.6rem var(--element-surface));
+}
+
+.symbolGrid b {
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-medium);
+  text-align: center;
+}
+
+.symbolGrid small {
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+}
+
+.rail {
+  grid-area: rail;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  border-left: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  list-style: none;
+}
+
+.rail li + li {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.rail button {
+  display: grid;
+  grid-template-columns: 2.4rem 1.7rem minmax(0, 1fr);
+  grid-template-areas: 'icon number name' 'icon number mapping' 'icon number meta';
+  gap: var(--space-1) var(--space-2);
+  width: 100%;
+  padding: var(--space-3);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rail button:hover,
+.rail button[aria-current='true'] {
+  background: var(--bg-hover);
+}
+
+.rail button[aria-current='true'] {
+  box-shadow: inset 2px 0 0 var(--text-accent);
+}
+
+.rail svg {
+  grid-area: icon;
+  align-self: start;
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.number {
+  grid-area: number;
+  padding-top: 2px;
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+}
+
+.name {
+  grid-area: name;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  font-size: var(--fs-md);
+}
+
+.name b {
+  font-weight: var(--weight-medium);
+}
+
+.name em {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 0 var(--space-1);
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+  font-style: normal;
+}
+
+.mapping {
+  grid-area: mapping;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.meta {
+  grid-area: meta;
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 78rem) {
+  .root {
+    grid-template-columns: minmax(0, 1fr) 19rem;
+  }
+
+  .comparison {
+    grid-template-columns: minmax(0, 1fr);
+    overflow: auto;
+  }
+
+  .panel {
+    min-height: 34rem;
+  }
+}
+
+@media (max-width: 58rem) {
+  .root {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'header' 'comparison' 'rail';
+    height: auto;
+  }
+
+  .header {
+    flex-wrap: wrap;
+  }
+
+  .stateControl {
+    width: 100%;
+    margin-left: 0;
+    overflow-x: auto;
+  }
+
+  .comparison {
+    min-height: 70vh;
+  }
+
+  .rail {
+    border-top: 1px solid var(--border-subtle);
+    border-left: 0;
+  }
+}

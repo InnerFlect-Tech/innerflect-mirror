@@ -1,6 +1,6 @@
 {
   "name": "InnerFlect Mirror V2 Operational Glyph System",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "generator": "tools/glyph-kit/generate_innerflect_v2.py",
   "originalGeometry": true,
   "thirdPartyModels": false,
@@ -48,15 +48,15 @@
         "Mirror Glass",
         "Active Teal"
       ],
-      "parts": 11,
-      "vertices": 1464,
-      "triangles": 488,
+      "parts": 6,
+      "vertices": 804,
+      "triangles": 268,
       "dimensions": {
-        "x": 3.3,
-        "y": 2.78,
-        "z": 3.3
+        "x": 3.0,
+        "y": 1.8,
+        "z": 3.0
       },
-      "bytes": 42864
+      "bytes": 24416
     },
     {
       "id": "domain-platform",
@@ -65,20 +65,19 @@
       "file": "public/models/innerflect-v2/domain-platform.glb",
       "materialNames": [
         "Graphite",
-        "Graphite Light",
         "Smoky Glass",
         "Mirror Glass",
         "Active Teal"
       ],
-      "parts": 7,
-      "vertices": 924,
-      "triangles": 308,
+      "parts": 4,
+      "vertices": 528,
+      "triangles": 176,
       "dimensions": {
-        "x": 3.35,
-        "y": 1.2,
-        "z": 3.0
+        "x": 3.2,
+        "y": 0.4125,
+        "z": 2.72
       },
-      "bytes": 27900
+      "bytes": 16616
     },
     {
       "id": "human-glyph",
@@ -93,11 +92,11 @@
       "vertices": 804,
       "triangles": 268,
       "dimensions": {
-        "x": 1.1216,
-        "y": 2.44,
-        "z": 0.62
+        "x": 0.8145,
+        "y": 1.37,
+        "z": 0.4
       },
-      "bytes": 23344
+      "bytes": 23408
     },
     {
       "id": "agent-glyph",
@@ -105,20 +104,20 @@
       "semantic": "Computational agency that observes, decides within policy, and acts.",
       "file": "public/models/innerflect-v2/agent-glyph.glb",
       "materialNames": [
+        "Graphite",
         "Graphite Light",
-        "Smoky Glass",
-        "Autonomy Teal",
+        "Mirror Glass",
         "Active Teal"
       ],
-      "parts": 9,
-      "vertices": 3012,
-      "triangles": 1004,
+      "parts": 8,
+      "vertices": 1056,
+      "triangles": 352,
       "dimensions": {
-        "x": 2.09,
-        "y": 1.845,
-        "z": 1.475
+        "x": 0.92,
+        "y": 1.6,
+        "z": 0.815
       },
-      "bytes": 78820
+      "bytes": 31252
     },
     {
       "id": "tool-glyph",
@@ -128,19 +127,17 @@
       "materialNames": [
         "Graphite",
         "Graphite Light",
-        "Smoky Glass",
-        "Autonomy Teal",
         "Active Teal"
       ],
-      "parts": 6,
-      "vertices": 900,
-      "triangles": 300,
+      "parts": 4,
+      "vertices": 1296,
+      "triangles": 432,
       "dimensions": {
-        "x": 1.795,
-        "y": 1.74,
-        "z": 1.4205
+        "x": 0.96,
+        "y": 1.0803,
+        "z": 0.96
       },
-      "bytes": 26668
+      "bytes": 34460
     },
     {
       "id": "knowledge-object",
@@ -148,21 +145,20 @@
       "semantic": "Trusted structured company knowledge in use; files are evidence for it.",
       "file": "public/models/innerflect-v2/knowledge-object.glb",
       "materialNames": [
-        "Graphite",
+        "Graphite Light",
         "Human Neutral",
         "Smoky Glass",
-        "Mirror Glass",
         "Active Teal"
       ],
-      "parts": 9,
-      "vertices": 1128,
-      "triangles": 376,
+      "parts": 6,
+      "vertices": 792,
+      "triangles": 264,
       "dimensions": {
-        "x": 1.85,
-        "y": 1.79,
-        "z": 1.62
+        "x": 0.92,
+        "y": 1.28,
+        "z": 0.2125
       },
-      "bytes": 33952
+      "bytes": 23724
     },
     {
       "id": "workflow-line",
@@ -170,18 +166,18 @@
       "semantic": "Work moving through actors and systems; grey becomes autonomous teal.",
       "file": "public/models/innerflect-v2/workflow-line.glb",
       "materialNames": [
-        "Human Neutral",
+        "Autonomy Teal",
         "Active Teal"
       ],
-      "parts": 6,
-      "vertices": 1128,
-      "triangles": 376,
+      "parts": 3,
+      "vertices": 276,
+      "triangles": 92,
       "dimensions": {
-        "x": 3.0998,
-        "y": 1.2618,
-        "z": 1.0922
+        "x": 2.695,
+        "y": 0.3,
+        "z": 0.3
       },
-      "bytes": 31352
+      "bytes": 9392
     },
     {
       "id": "decision-gate",
@@ -189,19 +185,20 @@
       "semantic": "A point where authority, judgement, or explicit approval is required.",
       "file": "public/models/innerflect-v2/decision-gate.glb",
       "materialNames": [
-        "Graphite Light",
+        "Graphite",
         "Human Neutral",
+        "Mirror Glass",
         "Attention Amber"
       ],
-      "parts": 7,
-      "vertices": 3600,
-      "triangles": 1200,
+      "parts": 6,
+      "vertices": 720,
+      "triangles": 240,
       "dimensions": {
-        "x": 2.84,
-        "y": 2.025,
-        "z": 0.28
+        "x": 1.86,
+        "y": 0.7,
+        "z": 1.7644
       },
-      "bytes": 91380
+      "bytes": 22108
     },
     {
       "id": "action-pulse",
@@ -209,20 +206,19 @@
       "semantic": "A discrete autonomous action travelling toward completion.",
       "file": "public/models/innerflect-v2/action-pulse.glb",
       "materialNames": [
-        "Warm White",
         "Mirror Glass",
         "Autonomy Teal",
         "Active Teal"
       ],
-      "parts": 5,
-      "vertices": 1086,
-      "triangles": 362,
+      "parts": 3,
+      "vertices": 1968,
+      "triangles": 656,
       "dimensions": {
-        "x": 2.9302,
-        "y": 1.23,
-        "z": 1.1209
+        "x": 1.03,
+        "y": 0.34,
+        "z": 1.03
       },
-      "bytes": 30552
+      "bytes": 50484
     },
     {
       "id": "risk-hotspot",
@@ -230,20 +226,19 @@
       "semantic": "An identifiable exception, policy conflict, risk, or unsafe condition.",
       "file": "public/models/innerflect-v2/risk-hotspot.glb",
       "materialNames": [
-        "Graphite",
-        "Smoky Glass",
+        "Warm White",
         "Attention Amber",
         "Risk Field"
       ],
-      "parts": 7,
-      "vertices": 3468,
-      "triangles": 1156,
+      "parts": 4,
+      "vertices": 1164,
+      "triangles": 388,
       "dimensions": {
-        "x": 2.5,
-        "y": 2.275,
-        "z": 2.236
+        "x": 1.07,
+        "y": 0.7403,
+        "z": 1.07
       },
-      "bytes": 88688
+      "bytes": 31508
     },
     {
       "id": "step-node",
@@ -252,19 +247,20 @@
       "file": "public/models/innerflect-v2/step-node.glb",
       "materialNames": [
         "Graphite",
-        "Graphite Light",
+        "Smoky Glass",
         "Mirror Glass",
+        "Autonomy Teal",
         "Active Teal"
       ],
-      "parts": 11,
-      "vertices": 1344,
-      "triangles": 448,
+      "parts": 6,
+      "vertices": 828,
+      "triangles": 276,
       "dimensions": {
-        "x": 2.44,
-        "y": 2.14,
-        "z": 2.2
+        "x": 1.79,
+        "y": 0.4025,
+        "z": 1.645
       },
-      "bytes": 39708
+      "bytes": 25192
     },
     {
       "id": "record-token",
@@ -273,20 +269,18 @@
       "file": "public/models/innerflect-v2/record-token.glb",
       "materialNames": [
         "Graphite Light",
-        "Human Neutral",
         "Warm White",
-        "Mirror Glass",
         "Active Teal"
       ],
-      "parts": 6,
-      "vertices": 3108,
-      "triangles": 1036,
+      "parts": 3,
+      "vertices": 420,
+      "triangles": 140,
       "dimensions": {
-        "x": 2.3102,
-        "y": 0.91,
-        "z": 0.91
+        "x": 0.68,
+        "y": 0.3375,
+        "z": 0.68
       },
-      "bytes": 79664
+      "bytes": 12868
     },
     {
       "id": "verification-marker",
@@ -295,21 +289,19 @@
       "file": "public/models/innerflect-v2/verification-marker.glb",
       "materialNames": [
         "Graphite",
-        "Graphite Light",
-        "Human Neutral",
-        "Smoky Glass",
         "Mirror Glass",
+        "Autonomy Teal",
         "Active Teal"
       ],
-      "parts": 8,
-      "vertices": 672,
-      "triangles": 224,
+      "parts": 5,
+      "vertices": 1176,
+      "triangles": 392,
       "dimensions": {
-        "x": 2.45,
-        "y": 1.77,
-        "z": 1.42
+        "x": 1.44,
+        "y": 0.5517,
+        "z": 1.3695
       },
-      "bytes": 22672
+      "bytes": 32772
     },
     {
       "id": "outcome-marker",
@@ -318,20 +310,19 @@
       "file": "public/models/innerflect-v2/outcome-marker.glb",
       "materialNames": [
         "Graphite",
-        "Smoky Glass",
+        "Warm White",
         "Mirror Glass",
-        "Autonomy Teal",
         "Active Teal"
       ],
       "parts": 5,
-      "vertices": 1572,
-      "triangles": 524,
+      "vertices": 648,
+      "triangles": 216,
       "dimensions": {
-        "x": 1.92,
-        "y": 1.92,
-        "z": 1.92
+        "x": 1.26,
+        "y": 1.38,
+        "z": 1.1983
       },
-      "bytes": 42524
+      "bytes": 19856
     },
     {
       "id": "permission-boundary",
@@ -339,21 +330,19 @@
       "semantic": "The authority limit within which an actor may read, decide, or act.",
       "file": "public/models/innerflect-v2/permission-boundary.glb",
       "materialNames": [
-        "Graphite",
         "Graphite Light",
-        "Human Neutral",
         "Mirror Glass",
         "Active Teal"
       ],
-      "parts": 7,
-      "vertices": 732,
-      "triangles": 244,
+      "parts": 9,
+      "vertices": 1188,
+      "triangles": 396,
       "dimensions": {
-        "x": 2.75,
-        "y": 1.84,
-        "z": 1.68
+        "x": 1.555,
+        "y": 1.1725,
+        "z": 1.555
       },
-      "bytes": 23168
+      "bytes": 34744
     }
   ]
 }
