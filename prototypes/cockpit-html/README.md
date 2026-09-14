@@ -44,3 +44,8 @@ but places it inside the current product architecture. It is the human-authority
 summary signals first, a deliberately short pending queue with recommendation/evidence,
 and the operator's explicit authority limits alongside it. Red is reserved for overdue or
 unsafe conditions, amber for attention, and teal for a safe recommendation.
+
+Domains use stable geometric symbols and names rather than permanent category colours:
+`◒ Marketing · ◇ Sales · ▱ Delivery · ▥ Finance · ♙ People · ⌬ Operations`.
+This lets a decision communicate its domain and its operational state simultaneously;
+selection uses neutral contrast so it cannot be mistaken for autonomy.
