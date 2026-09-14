@@ -1,7 +1,7 @@
 'use client';
 
 import * as Dialog from '@radix-ui/react-dialog';
-import { Command } from 'cmdk';
+import { Command, useCommandState } from 'cmdk';
 import { ArrowRight, Search, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -59,6 +59,7 @@ export function CommandCenter() {
               <Search aria-hidden="true" />
               <Command.Input placeholder="Search pages, records and actions…" />
             </div>
+            <CommandStatus />
             <Command.List>
               <Command.Empty>
                 No matching command. Try a page, risk or decision.
@@ -87,5 +88,17 @@ export function CommandCenter() {
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
+  );
+}
+
+function CommandStatus() {
+  const selected = useCommandState((state) => state.value);
+  const count = useCommandState((state) => state.filtered.count);
+  return (
+    <output className="sr-only" aria-live="polite">
+      {count === 0
+        ? 'No matching commands.'
+        : `${count} commands. ${selected ? `${selected} selected.` : ''}`}
+    </output>
   );
 }
