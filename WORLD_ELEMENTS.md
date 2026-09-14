@@ -545,10 +545,14 @@ Numbers are never reused, so a reference to "request 5" always means the same th
    viewport. This is dead-code cleanup, not a visual redesign.
 
 
-16. **Registry-driven ecosystem index.** Add the executable ecosystem registry and board
-    described above. The board is the shared map of both user journeys, the two Shops, the
-    product surfaces and the record-backed engines; it is not a decorative architecture
-    poster and it never becomes a second database.
+16. ✅ **DONE — Registry-driven ecosystem index.** `lib/design/ecosystem.ts` holds
+    `ECOSYSTEM_NODES` (20), `ECOSYSTEM_RELATIONS` (27) and `ECOSYSTEM_PAGES` (18), with
+    `validateRegistry()` enforcing no duplicate ids/hrefs, every relation labelled, and now
+    (this session) a standing gate rather than a function nobody called:
+    `scripts/check-ecosystem-registry.ts` — verified all 27 relations resolve to real
+    nodes and every `state: 'live'` page has its route file on disk. Not yet wired into
+    `npm run check` (`package.json` claimed elsewhere). `EcosystemBoard.tsx` renders it at
+    `/design/ecosystem` (request 17).
 
 17. ✅ **DONE — Ecosystem route and page catalogue.** `app/design/ecosystem/page.tsx`
     exists, verified returning 200, and renders the real `EcosystemBoard`. The registry's
@@ -774,6 +778,25 @@ Numbers are never reused, so a reference to "request 5" always means the same th
       possible fit without prescribing it — the call is between extending the existing
       hand-rolled HTML-button pattern or adopting the library, and needs working code in
       front of whoever decides, not this note alone.
+
+      **Progress (this session, 2026-09-14).** Built the non-visual half without adding
+      `@react-three/a11y` — consistent with `PRODUCT_STRUCTURE.md`'s standing preference
+      against a half-installed library, and it needs no `package.json` edit, which is
+      blocked today anyway. `components/company-world/assets/pickableRecords.ts` exports
+      `listPickableRecords(domain, records)`: every workflow/agent/decision/exception a
+      domain's island draws, as `{ ref, label }`, derived from the same `Domain.workflows`,
+      `Domain.agents` and `worldRecords` maps the geometry builder reads — not a second,
+      independently-authored list. `scripts/check-pickable-records.ts` proves this by
+      construction: every listed ref is cross-checked against the real pick tables
+      `buildIslandGeometry`/`buildAgentGeometry` produce (17 checks, green) — the accessible
+      list cannot silently name a record the pointer path can't also reach, or vice versa.
+
+      **Still open, and not this session's to close:** nothing renders this list as HTML yet.
+      `CompanyWorkspace.tsx` (`components/company/**`) owns the surface where a keyboard user
+      would actually see and activate these buttons — call `listPickableRecords()` there,
+      render one button per entry beside the existing domain-controls fieldset, wire each to
+      `onSelectRecord`. No new decision needed: the data and the record-reachability proof
+      already exist.
 
     Full detail, sources and exact remediation are in `docs/DECISIONS.md` (both entries
     dated 2026-09-14) — not duplicated here per this file's own rule against a second
