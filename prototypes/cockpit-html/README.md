@@ -49,3 +49,11 @@ Domains use stable geometric symbols and names rather than permanent category co
 `◒ Marketing · ◇ Sales · ▱ Delivery · ▥ Finance · ♙ People · ⌬ Operations`.
 This lets a decision communicate its domain and its operational state simultaneously;
 selection uses neutral contrast so it cannot be mistaken for autonomy.
+
+## View configuration
+
+Area scope and page composition live in the right-side `View` drawer rather than the
+primary canvas. Each stable page owns its own module set, and modules can be shown or
+hidden independently. Company exposes the world, area labels, function controls and
+state legend; Decisions exposes its summary, queue and authority panel. The compact
+Company header states only the page and its purpose.
