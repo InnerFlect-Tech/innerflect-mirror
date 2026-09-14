@@ -25,7 +25,7 @@ export function DomainInspector({
 }) {
   const accent = stateColors[domain.state].label;
   const pill =
-    domain.state === 'active' || domain.state === 'healthy'
+    domain.state === 'active'
       ? 'auto'
       : domain.state === 'critical'
         ? 'danger'

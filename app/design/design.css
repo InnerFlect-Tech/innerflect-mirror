@@ -1,46 +1,5 @@
 /* The design routes. Tokens only — a raw hex here would be the very drift these
    surfaces exist to catch. */
-.sheet { display: grid; grid-template-rows: auto 1fr; grid-template-columns: 1fr 340px;
-  grid-template-areas: 'bar bar' 'stage rail'; height: 100vh; background: var(--bg-page); }
-@media (max-width: 900px) {
-  .sheet { grid-template-columns: 1fr; grid-template-areas: 'bar' 'stage' 'rail'; height: auto; }
-  .sheet-stage { height: 60vh; }
-}
-.sheet-bar { grid-area: bar; display: flex; align-items: center; gap: var(--space-5);
-  padding: var(--space-4); border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface); }
-.sheet-bar h1 { margin: 0; font-size: var(--fs-xl); font-weight: var(--weight-bold); letter-spacing: var(--tracking-tight); }
-.eyebrow { display: block; font-size: var(--fs-xs); color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: var(--tracking-eyebrow); }
-.sheet-ctl { display: flex; align-items: center; gap: var(--space-3); margin-left: auto; }
-.seg { display: flex; gap: 2px; padding: 2px; border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md); background: var(--bg-raised); }
-.seg button { font: inherit; font-size: var(--fs-xs); border: 0; cursor: pointer;
-  padding: var(--space-1) var(--space-3); border-radius: var(--radius-sm);
-  background: none; color: var(--text-muted); }
-.seg button:hover { color: var(--text-primary); }
-.seg button[aria-pressed='true'] { background: var(--bg-page); color: var(--sw); }
-.ghost { font: inherit; font-size: var(--fs-xs); cursor: pointer; color: var(--text-muted);
-  background: var(--bg-raised); border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); }
-.ghost:hover { color: var(--text-primary); }
-
-.sheet-stage { grid-area: stage; min-height: 0; position: relative; }
-.sheet-stage canvas { display: block; width: 100%; height: 100%; }
-
-.sheet-rail { grid-area: rail; margin: 0; padding: 0; list-style: none; overflow-y: auto;
-  border-left: 1px solid var(--border-subtle); background: var(--bg-surface); }
-@media (max-width: 900px) { .sheet-rail { border-left: 0; border-top: 1px solid var(--border-subtle); } }
-.sheet-rail button { display: grid; grid-template-columns: 1.8rem 1fr; gap: var(--space-1) var(--space-3);
-  width: 100%; text-align: left; font: inherit; cursor: pointer; color: inherit;
-  background: none; border: 0; border-top: 1px solid var(--border-subtle); padding: var(--space-3) var(--space-4); }
-.sheet-rail button:hover { background: var(--bg-hover); }
-.sheet-rail button[aria-current='true'] { background: var(--bg-hover); box-shadow: inset 2px 0 0 var(--text-accent); }
-.sheet-rail .n { grid-row: 1 / span 3; font-size: var(--fs-xs); color: var(--text-faint); padding-top: 2px; }
-.sheet-rail .nm { display: flex; align-items: center; gap: var(--space-2); font-size: var(--fs-md); }
-.sheet-rail .nm em { font-style: normal; font-size: var(--fs-xs); color: var(--text-faint);
-  border: 1px solid var(--border-subtle); border-radius: var(--radius-xs); padding: 0 var(--space-1); }
-.sheet-rail .df { font-size: var(--fs-sm); color: var(--text-muted); }
-.sheet-rail .meta { font-size: var(--fs-xs); color: var(--text-faint); font-variant-numeric: tabular-nums; }
 
 .floor-page { height: 100vh; display: grid; grid-template-rows: auto 1fr; background: var(--bg-page); }
 .floor-note { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border-subtle);

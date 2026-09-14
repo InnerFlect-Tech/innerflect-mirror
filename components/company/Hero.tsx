@@ -8,7 +8,6 @@ import { LiveActionCount } from './LiveActionCount';
  */
 export const companyHeadline: Record<SceneState, { top: string; lines: [string, string] }> = {
   neutral: { top: 'Company being observed', lines: ['Your company is', 'being observed.'] },
-  healthy: { top: 'Company operating normally', lines: ['Your company is', 'operating normally.'] },
   active: { top: 'Company operating normally', lines: ['Your company is', 'operating normally.'] },
   attention: { top: 'One domain needs judgement', lines: ['Your company is running.', 'One thing needs judgement.'] },
   critical: { top: 'One domain is at risk', lines: ['Your company is running.', 'One thing is at risk.'] },
