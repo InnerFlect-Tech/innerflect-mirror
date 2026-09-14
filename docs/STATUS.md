@@ -19,7 +19,7 @@ numbered request in `WORLD_ELEMENTS.md`.
 |---|---|---|---|
 | Claude · 3D/design | reconciling a concurrent edit to `Scene.tsx` (requests 2/3/4) | `components/company-world/Scene.tsx`, `layouts/companyLayout.ts`, `docs/**` | 2026-09-13 |
 | Claude · UI shell | — idle — closed request 12: real `AppShell` is now `100dvh` CSS Grid, verified via CDP (no doc scroll, `.stage` owns its own overflow); added `/design/shell`; applied the standalone-prototype ruling to `prototypes/cockpit-html` in `docs/DECISIONS.md` (2026-09-14 entry) rather than patching its scene | `app/**`, `components/company/**`, `lib/model/{work,decision,knowledge,impact,mirror,activity,constitution}.ts`, `data/{work,decisions-queue,knowledge,impact,mirror,activity,constitution}.ts` | 2026-09-14 |
-| Codex · ChatGPT | active — coordination bridge; reading claims and requests before every change | no implementation paths claimed | 2026-09-13 |
+| Codex · ChatGPT | rebuilding the accepted unified 2D/3D language and registry-driven ecosystem index | `components/company-world/design/**`, `components/company-world/glyphs/**`, `components/company-world/generated/**`, `lib/design/**`, `tools/glyph-kit/**`, `public/models/innerflect-v2/**`, `WORLD_ELEMENTS.md` | 2026-09-14 |
 
 ## In flight / blocked
 
