@@ -42,6 +42,7 @@ import { ELEMENTS_BY_ID, type ElementDef } from '@/lib/design/elements';
 import { paletteByFamily, validatePlacement, type PlacementTarget } from '@/lib/design/composition';
 import { stateColors } from '@/lib/tokens/state';
 import type { SceneState } from '@/lib/model/state';
+import { ElementSymbol2D } from './ElementSymbol2D';
 import styles from './Lab.module.css';
 
 const STATES: readonly SceneState[] = ['neutral', 'active', 'attention', 'critical'];
@@ -61,10 +62,39 @@ type LabNode = Node<LabNodeData, 'element'>;
  */
 const DRAFT_PREFIX = 'draft:';
 /** Matches `.node` in Lab.module.css; see `mk()` for why this is declared. */
-const NODE_W = 132;
-const NODE_H = 47;
+const NODE_W = 176;
+const NODE_H = 56;
 let seq = 0;
 const draftId = (elementId: string) => `${DRAFT_PREFIX}${elementId}:${++seq}`;
+
+/**
+ * First free slot on a coarse grid.
+ *
+ * The keyboard path has no cursor to take a position from, and placing at a
+ * random x on a fixed y stacked nodes on top of each other the moment you added
+ * a second one — which made the keyboard route visibly worse than the pointer
+ * route for no reason. Scanning for a free cell keeps them legible.
+ */
+function freeSlot(taken: readonly LabNode[]): { x: number; y: number } {
+  const col = NODE_W + 30;
+  const row = NODE_H + 30;
+  for (let r = 0; r < 14; r++) {
+    for (let c = 0; c < 4; c++) {
+      const x = 40 + c * col;
+      const y = 250 + r * row;
+      const clash = taken.some(
+        (n) => Math.abs(n.position.x - x) < col - 10 && Math.abs(n.position.y - y) < row - 10,
+      );
+      if (!clash) return { x, y };
+    }
+  }
+  return { x: 40, y: 250 };
+}
+
+/** How many attachments already dock to this node, so they stack rather than pile up. */
+function attachedCount(nodes: readonly LabNode[], parentId: string): number {
+  return nodes.filter((n) => n.parentId === parentId).length;
+}
 
 /** The colour an element shows in a given state. */
 function colorFor(element: ElementDef, state: SceneState) {
@@ -83,8 +113,10 @@ function ElementNode({ data, selected }: NodeProps<LabNode>) {
   if (!element) {
     return (
       <div className={styles.node} data-unknown="">
-        <b>Unknown element</b>
-        <small>{data.elementId}</small>
+        <span className={styles.meta}>
+          <b>Unknown element</b>
+          <small>{data.elementId}</small>
+        </span>
       </div>
     );
   }
@@ -96,8 +128,15 @@ function ElementNode({ data, selected }: NodeProps<LabNode>) {
       style={{ '--edge': c.edge, '--label': c.label, '--surface': c.surface } as React.CSSProperties}
     >
       <Handle type="target" position={Position.Left} className={styles.port} />
-      <b>{element.name}</b>
-      <small>{element.takesState ? data.state : 'never recoloured'}</small>
+      {/* The canonical 2D projection from the SSOT — the same component
+          `/design/elements` proves, not a lab-local icon. Shape identifies the
+          kind (WORLD_ELEMENTS.md rule 2); only state chooses the accent, and
+          `ElementSymbol2D` already applies the Human Glyph exemption itself. */}
+      <ElementSymbol2D id={element.id} state={data.state} className={styles.glyph} />
+      <span className={styles.meta}>
+        <b>{element.name}</b>
+        <small>{element.takesState ? data.state : 'never recoloured'}</small>
+      </span>
       <Handle type="source" position={Position.Right} className={styles.port} />
     </div>
   );
@@ -190,7 +229,12 @@ export function Lab() {
    * never apply to the mouse and not the keyboard.
    */
   const place = useCallback(
-    (element: ElementDef, target: PlacementTarget, at: { x: number; y: number }) => {
+    (
+      element: ElementDef,
+      target: PlacementTarget,
+      at: { x: number; y: number },
+      parent?: LabNode,
+    ) => {
       const verdict = validatePlacement(element, target);
       if (!verdict.ok) {
         setRejection(verdict.reason);
@@ -198,20 +242,24 @@ export function Lab() {
       }
       setRejection('');
       snapshot();
-      setNodes((current) => [
-        ...current,
-        {
-          id: draftId(element.id),
-          type: 'element',
-          position: at,
-          width: NODE_W,
-          height: NODE_H,
-          data: { elementId: element.id, state: 'neutral' },
-        },
-      ]);
+      const node: LabNode = {
+        id: draftId(element.id),
+        type: 'element',
+        // A docked node's position is relative to its parent. It is placed
+        // below the step rather than at the raw drop point: dropping *onto* a
+        // node rebases to roughly (0,0), which would bury the attachment under
+        // the thing it attached to. Successive attachments stack downwards.
+        position: parent ? { x: 16, y: NODE_H + 12 + attachedCount(nodes, parent.id) * (NODE_H + 8) } : at,
+        width: NODE_W,
+        height: NODE_H,
+        data: { elementId: element.id, state: 'neutral' },
+        ...(parent ? { parentId: parent.id } : {}),
+      };
+      // React Flow requires a parent to appear before its children in the array.
+      setNodes((current) => [...current, node]);
       return true;
     },
-    [setNodes, snapshot],
+    [nodes, setNodes, snapshot],
   );
 
   const onConnect = useCallback(
@@ -248,11 +296,17 @@ export function Lab() {
       const overElement = overNode
         ? ELEMENTS_BY_ID[overNode.data.elementId as keyof typeof ELEMENTS_BY_ID]
         : undefined;
-      place(
-        element,
-        overElement ? { kind: 'node', role: overElement.composition } : { kind: 'canvas' },
-        at,
-      );
+      const target: PlacementTarget = overElement
+        ? { kind: 'node', role: overElement.composition }
+        : { kind: 'canvas' };
+      // An attachment that validated against a node should visibly belong to
+      // that node, not float where the cursor happened to be. `parentId` with
+      // `extent: 'parent'` makes the relationship the contract just approved
+      // the same relationship you can see and drag.
+      const docks =
+        overNode !== undefined &&
+        (element.composition === 'attachment' || element.composition === 'node-overlay');
+      place(element, target, at, docks ? overNode : undefined);
     },
     [flow, nodes, place],
   );
@@ -297,7 +351,7 @@ export function Lab() {
                 draggable
                 className={styles.chip}
                 onDragStart={(e) => e.dataTransfer.setData('application/element-id', el.id)}
-                onClick={() => place(el, { kind: 'canvas' }, { x: 120 + Math.random() * 260, y: 240 })}
+                onClick={() => place(el, { kind: 'canvas' }, freeSlot(nodes))}
                 title={`${el.name} — ${el.composition}, driven by ${el.drivenBy}`}
               >
                 {el.name}

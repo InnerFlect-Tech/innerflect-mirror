@@ -516,6 +516,40 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     own history (V2.1, the three-palette collapse) is entirely instances of skipping that
     step and re-deriving the same answer later at higher cost.
 
+    **⏳ 2D PROJECTION BUILT (2026-09-14, toolchain + a11y session).** `@xyflow/react` added
+    — justified now, not before, because the component importing it landed in the same change
+    (`PRODUCT_STRUCTURE.md:307`, no half-installed libraries).
+    `components/company-world/design/Lab.tsx` + `Lab.module.css` + `app/design/lab/page.tsx`.
+
+    **Met, and verified in the running app rather than only typechecked:**
+    - **2** — palette is `paletteByFamily()`, all 15 elements in 7 family groups, no second list.
+    - **3** — every placement goes through `validatePlacement()`; a refusal renders the
+      contract's *own* sentence, e.g. dropping Human Glyph on bare canvas returns "Human Glyph
+      attaches to a step and cannot stand on its own — drop it onto a Step Node or Decision
+      Gate." Node count verified unchanged after a refusal.
+    - **5** — inspector shows draft id, element, composition role, `drivenBy`, `revealAt`,
+      state and incoming/outgoing counts.
+    - **6** — verified by reading computed tokens, not by eye: a `critical` Step Node is
+      `#d6342a` while a Human Glyph on the same canvas is `#233536`, the neutral token exactly.
+      Driven by `takesState`, so the renderer never asks `id === 'human-glyph'`.
+    - **8** — every lab id is prefixed `draft:`; nothing reads or writes `data/**`.
+    - **7, partly** — pan, zoom, move, connect, delete, reset and undo/redo work; keyboard
+      operation comes from the library. Not yet audited against a screen reader.
+    - **4, partly** — the "only a Decision Gate may branch" guard is implemented and refuses a
+      second outgoing edge on an ordinary step. **Not yet exercised in a test** — simulating a
+      port-to-port drag needs the e2e harness, not a synthetic event.
+
+    **Not met, and not claimed:**
+    - **1** — there is no 3D projection yet. This is the 2D half only, so "toggling preserves
+      every id/position/connection" is untested by construction.
+    - **9** — no mobile WebGL guard and no draw-call/triangle measurement, because there is no
+      3D projection to measure.
+    - Attachments validate correctly but are not visually parented to their step — a dropped
+      Human Glyph sits where the cursor left it rather than docking to the node it attached to.
+
+    **Also found:** the repo's Playwright browsers were never installed on this machine, so
+    `npm run test:e2e` could not run at all. Installed chromium.
+
     **Research done, progress made (this session, 2026-09-14).** Findings and full
     reasoning in `docs/DECISIONS.md`: build on `@xyflow/react` (MIT, ~15kB), not a custom
     canvas — it has purpose-built keyboard/screen-reader support this criterion set
