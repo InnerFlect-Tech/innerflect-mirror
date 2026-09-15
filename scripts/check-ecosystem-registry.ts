@@ -14,7 +14,10 @@
 import {
   validateRegistry,
   nodeShape,
+  hasEntryPoint,
+  ECOSYSTEM_JOURNEYS,
   ECOSYSTEM_NODES,
+  ECOSYSTEM_NODES_BY_ID,
   ECOSYSTEM_RELATIONS,
   ECOSYSTEM_PAGES,
   ECOSYSTEM_SHAPES,
@@ -53,21 +56,19 @@ for (const page of ECOSYSTEM_PAGES) {
   check(`Live page "${page.id}" has its route file on disk (${page.file})`, fs.existsSync(page.file));
 }
 
-// The board draws each node as a shape that says what it is. The shape must be
-// derived from the registry, never hand-assigned, so the one invariant worth
-// enforcing is that `surface` means exactly "this node has entry points".
-const surfacesWithPages = new Set<string>(ECOSYSTEM_PAGES.map((page) => page.surface));
+// The board draws each node as a shape that says what it is. `surfaces` has to
+// mean exactly "this node has a real entry point" — otherwise the board would
+// draw a browser window around something you cannot open.
 const shapeCensus = new Map<string, string[]>();
 for (const node of ECOSYSTEM_NODES) {
   const shape = nodeShape(node);
   shapeCensus.set(shape, [...(shapeCensus.get(shape) ?? []), node.id]);
-  const hasPages = surfacesWithPages.has(node.id);
   check(
     `Node "${node.id}" is drawn as "${shape}"`,
-    hasPages === (shape === 'surface'),
-    hasPages
-      ? 'has entry points, so it must be drawn as a website'
-      : 'has no entry points, so it must not be drawn as a website',
+    hasEntryPoint(node) === (shape === 'surface'),
+    hasEntryPoint(node)
+      ? 'has an entry point, so it must be drawn as a surface'
+      : 'has no entry point, so it must not be drawn as a surface',
   );
 }
 
@@ -75,6 +76,19 @@ for (const node of ECOSYSTEM_NODES) {
 for (const entry of ECOSYSTEM_SHAPES) {
   const ids = shapeCensus.get(entry.id) ?? [];
   check(`Legend "${entry.name}" describes real nodes`, ids.length > 0, `${ids.length}: ${ids.join(', ')}`);
+}
+
+// A journey is an ordered walk through elements that already exist. Every step
+// must resolve, or the lens would dim the whole board and highlight nothing.
+for (const journey of ECOSYSTEM_JOURNEYS) {
+  for (const step of journey.steps) {
+    check(`Journey "${journey.name}" step "${step}" resolves`, Boolean(ECOSYSTEM_NODES_BY_ID[step]));
+  }
+  check(
+    `Journey "${journey.name}" has no repeated step`,
+    new Set(journey.steps).size === journey.steps.length,
+    `${journey.steps.length} steps`,
+  );
 }
 
 console.log(failed ? `\n${failed} check(s) failed` : '\nthe ecosystem registry is a real graph, not a poster');

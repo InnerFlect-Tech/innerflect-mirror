@@ -153,7 +153,7 @@ export const selfBuilderLadder: readonly LadderStep[] = [
   { id: 'review', label: 'Review', detail: 'Read the gap. The declared share is the part of your company you are currently running on memory.', surface: 'open-mirror' },
   { id: 'pattern', label: 'Take a pattern', detail: 'Replace a guessed step with a proven operating pattern.', surface: 'os-shop' },
   { id: 'component', label: 'Take a component', detail: 'Assemble the pattern from open, reusable components.', surface: 'forge-shop' },
-  { id: 'apply', label: 'Apply', detail: 'Change the model through the same typed operation the paid Mirror uses. Same mechanism, no managed delivery.', surface: 'own-os' },
+  { id: 'apply', label: 'Apply', detail: 'Change the model through the same typed operation the paid Mirror uses. Same mechanism, no managed delivery.', surface: 'operating-system' },
 ] as const;
 
 /**
@@ -171,8 +171,8 @@ export type Boundary = {
 };
 
 export const openMirrorBoundaries: readonly Boundary[] = [
-  { id: 'no-effects', limit: 'No operation leaves this browser', because: 'The free edition models the mechanism; running it against a real system needs an authority Open Mirror has no way to hold.', livesIn: 'agent-runtime' },
+  { id: 'no-effects', limit: 'No operation leaves this browser', because: 'The free edition models the mechanism; running it against a real system needs an authority Open Mirror has no way to hold.', livesIn: 'integration-events' },
   { id: 'no-tenant', limit: 'No account, no tenant, no server copy', because: 'A free twin that stores your company is not free — it is paid for in data. Reconstruction stays local and yours.', livesIn: 'data-identity' },
-  { id: 'no-audit', limit: 'No audit trail you could show anyone', because: 'Proof needs a party who can be held to it. That is what a managed engagement is for.', livesIn: 'audit-outcomes' },
+  { id: 'no-audit', limit: 'No audit trail you could show anyone', because: 'Proof needs a party who can be held to it. That is what a managed engagement is for.', livesIn: 'company-graph' },
   { id: 'no-proprietary', limit: 'Open components only', because: 'Proprietary Forge capabilities are part of managed delivery; the open catalogue is genuinely open.', livesIn: 'forge-shop' },
 ] as const;

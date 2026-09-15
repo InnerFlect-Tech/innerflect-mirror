@@ -18,12 +18,14 @@ import {
   ECOSYSTEM_RELATIONS,
   ECOSYSTEM_PAGE_GROUPS,
   ECOSYSTEM_PAGES,
+  ECOSYSTEM_JOURNEYS,
   ECOSYSTEM_RELATION_FAMILIES,
   ECOSYSTEM_SHAPES,
   REPOSITORY_SCOPE,
   nodeShape,
   relationFamily,
   type EcosystemCategoryId,
+  type EcosystemJourneyId,
   type EcosystemNode,
   type EcosystemNodeId,
   type EcosystemNodeShape,
@@ -37,7 +39,7 @@ type Point = { x: number; y: number };
 type DragState = { x: number; y: number; pan: Point };
 type NodeDragState = { id: EcosystemNodeId; x: number; y: number; origin: Point; moved: boolean };
 
-const CANVAS = { width: 2720, height: 1280 };
+const CANVAS = { width: 2700, height: 1100 };
 const CARD_WIDTH = 292;
 const CARD_HEIGHT = 164;
 
@@ -46,7 +48,7 @@ const CARD_HEIGHT = 164;
  * snaps dragged cards back onto it; the half-row step is what lets a short
  * column sit centred against a tall one.
  */
-const GRID = { x0: 56, dx: 374, y0: 64, dy: 114 };
+const GRID = { x0: 56, dx: 374 / 2, y0: 80, dy: 248 };
 
 /** A drag that never left the pointer's starting pixel was a click. */
 const DRAG_THRESHOLD = 3;
@@ -58,8 +60,8 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-function NodeMark({ kind }: { kind: EcosystemNode['kind'] }) {
-  return <span className={styles.nodeMark} data-kind={kind} aria-hidden="true" />;
+function NodeMark({ category }: { category: EcosystemNode['category'] }) {
+  return <span className={styles.nodeMark} data-category={category} aria-hidden="true" />;
 }
 
 const PAGES_BY_SURFACE = ECOSYSTEM_PAGES.reduce<Record<string, typeof ECOSYSTEM_PAGES[number][]>>(
@@ -149,6 +151,8 @@ export function EcosystemBoard() {
   const [positions, setPositions] = useState(INITIAL_POSITIONS);
   const [arranged, setArranged] = useState(false);
   const [copyStatus, setCopyStatus] = useState('Nothing changed');
+  const [journeyId, setJourneyId] = useState<EcosystemJourneyId | null>(null);
+  const [showDependencies, setShowDependencies] = useState(false);
 
   const drag = useRef<DragState | null>(null);
   const nodeDrag = useRef<NodeDragState | null>(null);
@@ -188,7 +192,7 @@ export function EcosystemBoard() {
     const needle = query.trim().toLowerCase();
     return ECOSYSTEM_NODES.filter((node) => {
       const matchesCategory = category === 'all' || node.category === category;
-      const searchable = [node.name, node.summary, node.detail, node.kind].join(' ').toLowerCase();
+      const searchable = [node.name, node.summary, node.detail, node.category].join(' ').toLowerCase();
       return matchesCategory && (!needle || searchable.includes(needle));
     });
   }, [category, query]);
@@ -197,12 +201,37 @@ export function EcosystemBoard() {
     () => new Set(visibleNodes.map((node) => node.id)),
     [visibleNodes],
   );
+  const journey = ECOSYSTEM_JOURNEYS.find((entry) => entry.id === journeyId) ?? null;
+
+  /** The nodes on the chosen path. Everything else dims rather than disappears. */
+  const journeyIds = useMemo(
+    () => (journey ? new Set<string>(journey.steps) : null),
+    [journey],
+  );
+
+  /**
+   * The consecutive hops of the chosen journey, drawn as its own path. A
+   * journey is an ordered walk, so it is the one set of lines the registry
+   * does not already hold as relations.
+   */
+  const journeyHops = useMemo(() => {
+    if (!journey) return [];
+    return journey.steps.slice(0, -1).map((from, index) => ({
+      id: `${journey.id}-${index}`,
+      from,
+      to: journey.steps[index + 1],
+    }));
+  }, [journey]);
+
   const visibleRelations = useMemo(
     () =>
-      ECOSYSTEM_RELATIONS.filter(
-        (relation) => visibleIds.has(relation.from) && visibleIds.has(relation.to),
-      ),
-    [visibleIds],
+      ECOSYSTEM_RELATIONS.filter((relation) => {
+        if (!visibleIds.has(relation.from) || !visibleIds.has(relation.to)) return false;
+        // Structure by default; the rest is detail you ask for.
+        if (relationFamily(relation) === 'dependency' && !showDependencies) return false;
+        return true;
+      }),
+    [visibleIds, showDependencies],
   );
 
   const fitBoard = useCallback(() => {
@@ -431,7 +460,28 @@ export function EcosystemBoard() {
                   ))}
                 </select>
               </label>
+              <fieldset className={styles.journeys}>
+                <legend>Journey</legend>
+                {ECOSYSTEM_JOURNEYS.map((entry) => (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    title={entry.summary}
+                    aria-pressed={journeyId === entry.id}
+                    onClick={() => setJourneyId(journeyId === entry.id ? null : entry.id)}
+                  >
+                    {entry.name}
+                  </button>
+                ))}
+              </fieldset>
               <div className={styles.mapActions}>
+                <button
+                  type="button"
+                  aria-pressed={showDependencies}
+                  onClick={() => setShowDependencies((value) => !value)}
+                >
+                  Detail
+                </button>
                 <button type="button" onClick={() => setZoom((value) => clamp(value - 0.08, 0.42, 1.15))} aria-label="Zoom out">−</button>
                 <span>{Math.round(zoom * 100)}%</span>
                 <button type="button" onClick={() => setZoom((value) => clamp(value + 0.08, 0.42, 1.15))} aria-label="Zoom in">+</button>
@@ -462,18 +512,29 @@ export function EcosystemBoard() {
                   transform: 'translate(' + pan.x + 'px, ' + pan.y + 'px) scale(' + zoom + ')',
                 }}
               >
+                {/* Band headers, so a column's meaning does not live only in the legend. */}
+                {ECOSYSTEM_CATEGORIES.map((band, index) => (
+                  <span
+                    key={band.id}
+                    className={styles.band}
+                    title={band.description}
+                    style={{ top: GRID.y0 + index * GRID.dy - 30, left: GRID.x0 }}
+                  >
+                    {band.name}
+                  </span>
+                ))}
                 <svg
                   className={styles.relations}
                   viewBox={'0 0 ' + CANVAS.width + ' ' + CANVAS.height}
                   aria-hidden="true"
                 >
                   <defs>
-                    {ECOSYSTEM_RELATION_FAMILIES.map((family) => (
+                    {[...ECOSYSTEM_RELATION_FAMILIES.map((f) => f.id), 'journeyPath'].map((family) => (
                       <marker
-                        key={family.id}
-                        id={`ecosystem-arrow-${family.id}`}
+                        key={family}
+                        id={`ecosystem-arrow-${family}`}
                         className={styles.arrow}
-                        data-family={family.id}
+                        data-family={family}
                         markerWidth="8"
                         markerHeight="8"
                         refX="7"
@@ -494,6 +555,23 @@ export function EcosystemBoard() {
                         markerEnd={`url(#ecosystem-arrow-${relationFamily(relation)})`}
                         d={'M ' + (from.x + CARD_WIDTH / 2) + ' ' + (from.y + CARD_HEIGHT / 2) + ' L ' + (to.x + CARD_WIDTH / 2) + ' ' + (to.y + CARD_HEIGHT / 2)}
                         className={styles.relation}
+                        data-dimmed={
+                          journeyIds
+                            ? !(journeyIds.has(relation.from) && journeyIds.has(relation.to))
+                            : undefined
+                        }
+                      />
+                    );
+                  })}
+                  {journeyHops.map((hop) => {
+                    const from = positions[hop.from];
+                    const to = positions[hop.to];
+                    return (
+                      <path
+                        key={hop.id}
+                        className={styles.journeyPath}
+                        markerEnd="url(#ecosystem-arrow-journeyPath)"
+                        d={'M ' + (from.x + CARD_WIDTH / 2) + ' ' + (from.y + CARD_HEIGHT / 2) + ' L ' + (to.x + CARD_WIDTH / 2) + ' ' + (to.y + CARD_HEIGHT / 2)}
                       />
                     );
                   })}
@@ -513,6 +591,8 @@ export function EcosystemBoard() {
                       data-state={node.state}
                       data-shape={shape}
                       data-dragging={draggingId === node.id}
+                      data-dimmed={journeyIds ? !journeyIds.has(node.id) : undefined}
+                      data-step={journey ? journey.steps.indexOf(node.id) + 1 || undefined : undefined}
                       style={{ left: position.x, top: position.y }}
                       onPointerDown={(event) => startNodeDrag(event, node.id)}
                       onPointerMove={moveNodeDrag}
@@ -530,7 +610,7 @@ export function EcosystemBoard() {
                     >
                       {shape === 'surface' && entry && <Chrome href={entry.href} />}
                       <span className={styles.cardTopline}>
-                        <NodeMark kind={node.kind} />
+                        <NodeMark category={node.category} />
                         <span>{node.category}</span>
                         <StateBadge state={node.state} />
                       </span>
@@ -575,7 +655,7 @@ export function EcosystemBoard() {
           <aside className={styles.inspector} aria-live="polite">
             <span className={styles.eyebrow}>Selected concept</span>
             <div className={styles.inspectorTitle}>
-              <NodeMark kind={selected.kind} />
+              <NodeMark category={selected.category} />
               <div>
                 <h2>{selected.name}</h2>
                 <p>{selected.summary}</p>
@@ -583,7 +663,6 @@ export function EcosystemBoard() {
             </div>
             <dl className={styles.facts}>
               <div><dt>Stable id</dt><dd>{selected.id}</dd></div>
-              <div><dt>Kind</dt><dd>{selected.kind}</dd></div>
               <div>
                 <dt>Is a</dt>
                 <dd className={styles.factShape}>

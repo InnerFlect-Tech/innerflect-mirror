@@ -7,41 +7,26 @@
  * authenticated operation path described in the product contract.
  */
 
-export type EcosystemCategoryId =
-  | 'journeys'
-  | 'shops'
-  | 'products'
-  | 'delivery'
-  | 'layers'
-  | 'engine'
-  | 'infrastructure';
-
-export type EcosystemNodeKind =
-  | 'audience'
-  | 'shop'
-  | 'product'
-  | 'workspace'
-  | 'actor'
-  | 'layer'
-  | 'engine'
-  | 'infrastructure';
+/**
+ * One grouping, four values — not the three overlapping taxonomies this file
+ * used to carry (category, kind and shape all said slightly different things
+ * about the same node). These four are the only kinds of thing that are real:
+ * something you can open, the system itself, a layer it is made of, and what
+ * it stands on.
+ */
+export type EcosystemCategoryId = 'surfaces' | 'system' | 'layers' | 'foundations';
 
 export type ImplementationState = 'live' | 'building' | 'planned' | 'external';
 
 export type EcosystemNodeId =
-  | 'self-builder'
-  | 'managed-client'
-  | 'innerflect-team'
   | 'main-website'
   | 'os-shop'
   | 'forge-shop'
   | 'open-mirror'
-  | 'own-os'
-  | 'managed-os'
   | 'mirror'
   | 'studio'
   | 'admin'
-  | 'innerflect-mirror'
+  | 'operating-system'
   | 'assessment'
   | 'knowledge-spine'
   | 'web-intelligence'
@@ -49,33 +34,18 @@ export type EcosystemNodeId =
   | 'operations-system'
   | 'company-graph'
   | 'analytics'
-  | 'operation-catalogue'
-  | 'governance'
   | 'integration-events'
-  | 'agent-runtime'
-  | 'data-identity'
-  | 'audit-outcomes';
+  | 'data-identity';
 
 export type EcosystemRelationKind =
   | 'composed-of'
   | 'runs-on'
-  | 'starts-with'
-  | 'learns-from'
-  | 'assembles-with'
   | 'extends-into'
-  | 'receives'
-  | 'follows-in'
   | 'operates-in'
   | 'runs-through'
   | 'supplies'
   | 'projects'
-  | 'invokes'
-  | 'grounds'
-  | 'authorises'
-  | 'records'
-  | 'updates'
-  | 'stores'
-  | 'proves';
+  | 'grounds';
 
 export type EcosystemSourceAuthority =
   | 'product'
@@ -91,7 +61,6 @@ export type EcosystemSource = {
 export type EcosystemNode = {
   id: EcosystemNodeId;
   name: string;
-  kind: EcosystemNodeKind;
   category: EcosystemCategoryId;
   summary: string;
   detail: string;
@@ -161,14 +130,11 @@ export const REPOSITORY_SCOPE = {
 } as const;
 
 export const ECOSYSTEM_CATEGORIES = [
-  { id: 'journeys', name: 'Journeys', description: 'Who is building or operating an OS.' },
-  { id: 'shops', name: 'Shops', description: 'Patterns and reusable capabilities.' },
-  { id: 'products', name: 'Products', description: 'The surfaces a person enters.' },
-  { id: 'delivery', name: 'Delivery', description: 'People and workspaces around a managed OS.' },
-  { id: 'layers', name: 'Operating layers', description: 'The five capability layers an operating system is made of.' },
-  { id: 'engine', name: 'Engine', description: 'The graph and operation primitives underneath.' },
-  { id: 'infrastructure', name: 'Infrastructure', description: 'Evidence, identity and integration boundaries.' },
-] as const;
+  { id: 'surfaces', name: 'Surfaces', description: 'Something you can open. Every one has a real entry point.' },
+  { id: 'system', name: 'Operating system', description: 'The system itself — one object, whoever owns it.' },
+  { id: 'layers', name: 'Layers', description: 'The five capabilities an operating system is made of.' },
+  { id: 'foundations', name: 'Foundations', description: 'The named things every layer stands on.' },
+] as const satisfies readonly { id: EcosystemCategoryId; name: string; description: string }[];
 
 const source = {
   product: (path: string): EcosystemSource => ({ authority: 'product', path }),
@@ -178,297 +144,189 @@ const source = {
 };
 
 export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
-  {
-    id: 'self-builder',
-    name: 'Self-builder',
-    kind: 'audience',
-    category: 'journeys',
-    summary: 'Builds an operating system from open patterns and components.',
-    detail: 'The free/open entry point: use Mirror to understand work, OS Shop for patterns and Forge Shop for reusable components.',
-    state: 'building',
-    position: { x: 56, y: 292 },
-    source: source.product('PRODUCT_STRUCTURE.md'),
-  },
-  {
-    id: 'managed-client',
-    name: 'Managed client',
-    kind: 'audience',
-    category: 'journeys',
-    summary: 'Asks Innerflect to manage an operating system.',
-    detail: 'Receives managed OS delivery through proprietary Forge capabilities, Studio collaboration and Mirror operations.',
-    state: 'building',
-    position: { x: 56, y: 520 },
-    source: source.product('PRODUCT_STRUCTURE.md'),
-  },
-  {
-    id: 'innerflect-team',
-    name: 'Innerflect team',
-    kind: 'actor',
-    category: 'journeys',
-    summary: 'Operates Innerflect and delivers managed systems.',
-    detail: 'The team uses its own Mirror and Admin to govern integrations, delivery, access and outcomes.',
-    state: 'live',
-    position: { x: 56, y: 748 },
-    source: source.product('PRODUCT_STRUCTURE.md'),
-  },
+  // Surfaces — the seven things that actually have an entry point.
   {
     id: 'main-website',
     name: 'Main website',
-    kind: 'product',
-    category: 'products',
-    summary: 'Innerflect’s public marketing site and shared entry point.',
-    detail: 'Hosted at innerflect.tech, outside this repository. It is where a visitor first lands and where the team signs in before reaching Admin.',
+    category: 'surfaces',
+    summary: 'Innerflect’s public site and the front door to everything.',
+    detail: 'Hosted at innerflect.tech, outside this repository. Where a visitor first lands, where the five offers are sold, and where the team signs in before reaching Admin.',
     state: 'external',
-    position: { x: 430, y: 748 },
+    position: { x: 56, y: 80 },
     source: source.external('innerflect.tech'),
   },
   {
     id: 'os-shop',
     name: 'OS Shop',
-    kind: 'shop',
-    category: 'shops',
+    category: 'surfaces',
     summary: 'Patterns for designing an operating system.',
-    detail: 'A catalogue of playbooks, architectures and proven operating patterns that a self-builder can adapt. A static HTML prototype exists at prototypes/innerflect-platforms/os.html — not yet a real app route.',
+    detail: 'A catalogue of playbooks, architectures and proven operating patterns a self-builder can adapt. Prototyped at prototypes/innerflect-platforms/os.html.',
     state: 'building',
-    position: { x: 430, y: 292 },
+    position: { x: 430, y: 80 },
     source: source.implementation('prototypes/innerflect-platforms/os.html'),
   },
   {
     id: 'forge-shop',
     name: 'Forge Shop',
-    kind: 'shop',
-    category: 'shops',
+    category: 'surfaces',
     summary: 'Reusable design and implementation components.',
-    detail: 'Open components serve self-builders; proprietary capabilities serve managed engagements. A static HTML prototype exists at prototypes/innerflect-platforms/forge.html — not yet a real app route.',
+    detail: 'Open components serve self-builders; proprietary capabilities serve managed engagements. Prototyped at prototypes/innerflect-platforms/forge.html.',
     state: 'building',
-    position: { x: 430, y: 520 },
+    position: { x: 804, y: 80 },
     source: source.implementation('prototypes/innerflect-platforms/forge.html'),
   },
   {
     id: 'open-mirror',
     name: 'Open Mirror',
-    kind: 'product',
-    category: 'products',
-    summary: 'Free/open operational twin for self-builders.',
+    category: 'surfaces',
+    summary: 'The free edition of the operational twin.',
     detail: 'The simpler edition exposes the visual language and the operating model without requiring Innerflect-managed delivery.',
     state: 'building',
-    position: { x: 804, y: 178 },
-    source: source.product('PRODUCT_STRUCTURE.md'),
-  },
-  {
-    id: 'own-os',
-    name: 'Builder-owned OS',
-    kind: 'workspace',
-    category: 'delivery',
-    summary: 'The self-builder’s operating system.',
-    detail: 'An OS assembled from open patterns and components, owned and operated by the builder.',
-    state: 'planned',
-    position: { x: 1178, y: 292 },
-    source: source.product('PRODUCT_STRUCTURE.md'),
-  },
-  {
-    id: 'managed-os',
-    name: 'Managed OS',
-    kind: 'workspace',
-    category: 'delivery',
-    summary: 'The operating system Innerflect manages for a client.',
-    detail: 'A client-specific operating model with controlled access, evidence, integrations, workflows and outcomes.',
-    state: 'planned',
-    position: { x: 1178, y: 520 },
+    position: { x: 1178, y: 80 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
     id: 'mirror',
     name: 'Mirror',
-    kind: 'product',
-    category: 'products',
+    category: 'surfaces',
     summary: 'The operational twin and constrained builder.',
     detail: 'Mirror mode shows reality; Builder mode lets a person redesign it without losing authority, evidence or auditability.',
     state: 'live',
-    position: { x: 804, y: 406 },
+    position: { x: 1552, y: 80 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
     id: 'studio',
     name: 'Studio',
-    kind: 'workspace',
-    category: 'delivery',
+    category: 'surfaces',
     summary: 'Client-facing project and collaboration workspace.',
-    detail: 'Studio follows evidence, decisions, delivery progress and the parts of a managed OS the client can see or change. Live at studio.innerflect.tech, outside this repository.',
+    detail: 'Where a client follows evidence, decisions and delivery progress. Live at studio.innerflect.tech, outside this repository.',
     state: 'external',
-    position: { x: 804, y: 634 },
+    position: { x: 1926, y: 80 },
     source: source.external('studio.innerflect.tech'),
   },
   {
     id: 'admin',
     name: 'Admin',
-    kind: 'workspace',
-    category: 'delivery',
+    category: 'surfaces',
     summary: 'Innerflect’s internal delivery and governance console.',
-    detail: 'Admin is where the Innerflect team runs managed systems, access, integrations, releases and operational controls. Reached by signing in at innerflect.tech/auth/sign-in; it is a live product outside this repository.',
+    detail: 'Where the team runs managed systems, access, integrations and releases. Reached by signing in at innerflect.tech/auth/sign-in; live, outside this repository.',
     state: 'external',
-    position: { x: 804, y: 862 },
+    position: { x: 2300, y: 80 },
     source: source.external('innerflect.tech/auth/sign-in'),
   },
+
+  /*
+   * One operating system, not three. A builder's, a client's and our own are
+   * the same object with a different owner; who owns it is a journey, not a
+   * separate node, so collapsing them took nine lines off the board.
+   */
   {
-    id: 'innerflect-mirror',
-    name: 'Innerflect Mirror',
-    kind: 'product',
-    category: 'products',
-    summary: 'Innerflect’s own operational twin.',
-    detail: 'Innerflect proves the system on itself before using the managed journey for clients.',
+    id: 'operating-system',
+    name: 'Operating system',
+    category: 'system',
+    summary: 'The system itself: five layers, one company.',
+    detail: 'A company-specific operating model with controlled access, evidence, integrations, workflows and outcomes. A self-builder assembles their own from the Shops; Innerflect delivers one for a client, and runs one on itself.',
     state: 'building',
-    position: { x: 1178, y: 748 },
+    position: { x: 1178, y: 328 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
-  {
-    id: 'company-graph',
-    name: 'Company graph',
-    kind: 'engine',
-    category: 'engine',
-    summary: 'One record-backed model of the company.',
-    detail: 'Workflows, actors, records, decisions, tools, knowledge, permissions, exceptions and outcomes share stable ids.',
-    state: 'building',
-    position: { x: 1926, y: 178 },
-    source: source.product('PRODUCT_STRUCTURE.md'),
-  },
-  {
-    id: 'analytics',
-    name: 'Analytics and observability',
-    kind: 'engine',
-    category: 'engine',
-    summary: 'Real tools that measure whether any of this is working.',
-    detail: 'Grafana for operational dashboards and Umami for cookieless web analytics. Named because they are actual software the team runs, not an abstraction: a layer that claims an outcome has to be measured somewhere concrete.',
-    state: 'building',
-    position: { x: 1926, y: 406 },
-    source: source.external('grafana.com, umami.is'),
-  },
-  {
-    id: 'operation-catalogue',
-    name: 'Typed operation catalogue',
-    kind: 'engine',
-    category: 'engine',
-    summary: 'The actions humans and agents are allowed to request.',
-    detail: 'The same typed operation contract serves the UI and integrations; policy decides whether an effect may happen.',
-    state: 'planned',
-    position: { x: 1926, y: 634 },
-    source: source.coordination('WORLD_ELEMENTS.md'),
-  },
+
   /*
    * The five operating layers. Not an invented taxonomy: they are the five
    * entry points Innerflect sells on innerflect.tech, and they are also what
-   * an operating system is actually made of. We run all five on ourselves
-   * (Innerflect Mirror) and deliver the same five to a client (Managed OS) —
-   * that symmetry is the product, so the registry states it outright.
+   * an operating system is actually made of.
    */
   {
     id: 'assessment',
     name: 'Strategic Assessment',
-    kind: 'layer',
     category: 'layers',
     summary: 'The entry offer: map the work before building anything.',
     detail: 'Maps how work, decisions, data and AI opportunities move through an organisation, so real leverage is found before infrastructure is built. Workflow review, AI opportunity map, decision criteria, 90-day roadmap.',
     state: 'live',
-    position: { x: 1552, y: 64 },
+    position: { x: 430, y: 576 },
     source: source.external('innerflect.tech'),
   },
   {
     id: 'knowledge-spine',
     name: 'Knowledge Spine',
-    kind: 'layer',
     category: 'layers',
     summary: 'The knowledge base: one trusted layer for people and agents.',
     detail: 'Structures internal knowledge into a trusted access layer so people, workflows and AI use the right information in context. Source of truth, access logic, retrieval paths, ownership model.',
     state: 'building',
-    position: { x: 1552, y: 292 },
+    position: { x: 804, y: 576 },
     source: source.external('innerflect.tech'),
   },
   {
     id: 'web-intelligence',
     name: 'Web Intelligence',
-    kind: 'layer',
     category: 'layers',
     summary: 'The website as an operating entry point, not a brochure.',
     detail: 'Turns the website into the front door of the system: positioning, intent capture, qualification and CRM handoff connected end to end.',
     state: 'live',
-    position: { x: 1552, y: 520 },
+    position: { x: 1178, y: 576 },
     source: source.external('innerflect.tech'),
   },
   {
     id: 'revenue-loop',
     name: 'Revenue Loop',
-    kind: 'layer',
     category: 'layers',
     summary: 'The selling mechanism: intent that never falls between tools.',
     detail: 'Connects lead intake, ownership, qualification and CRM logic so customer intent does not disappear between tools or teams.',
     state: 'building',
-    position: { x: 1552, y: 748 },
+    position: { x: 1552, y: 576 },
     source: source.external('innerflect.tech'),
   },
   {
     id: 'operations-system',
     name: 'Operations System',
-    kind: 'layer',
     category: 'layers',
     summary: 'The operations mechanism: delivery that is not run from chats.',
     detail: 'Connects onboarding, responsibilities, status logic and client visibility so delivery no longer depends on scattered chats and manual tracking.',
     state: 'building',
-    position: { x: 1552, y: 976 },
+    position: { x: 1926, y: 576 },
     source: source.external('innerflect.tech'),
   },
+
+  // Foundations — every one names a real tool, model or boundary.
   {
-    id: 'governance',
-    name: 'Governance',
-    kind: 'engine',
-    category: 'engine',
-    summary: 'Authority, policy and human control.',
-    detail: 'Governance is a layer over every domain. It makes work human-led, assisted, supervised, autonomous or blocked.',
+    id: 'company-graph',
+    name: 'Company graph',
+    category: 'foundations',
+    summary: 'One record-backed model of the company.',
+    detail: 'Workflows, actors, records, decisions, tools, knowledge, permissions, exceptions and outcomes share stable ids. Everything else writes into this.',
     state: 'building',
-    position: { x: 1926, y: 862 },
+    position: { x: 617, y: 824 },
     source: source.product('PRODUCT_STRUCTURE.md'),
+  },
+  {
+    id: 'analytics',
+    name: 'Analytics and observability',
+    category: 'foundations',
+    summary: 'Where you find out whether any of it is working.',
+    detail: 'Grafana for operational dashboards and Umami for cookieless web analytics. Named because they are actual software the team runs.',
+    state: 'building',
+    position: { x: 991, y: 824 },
+    source: source.external('grafana.com, umami.is'),
   },
   {
     id: 'integration-events',
     name: 'Integrations and events',
-    kind: 'infrastructure',
-    category: 'infrastructure',
-    summary: 'Connections that observe and report work.',
+    category: 'foundations',
+    summary: 'The connected tools that observe and report work.',
     detail: 'Connected tools produce evidence and events; they do not become a second model of the company.',
     state: 'planned',
-    position: { x: 2300, y: 178 },
-    source: source.product('PRODUCT_STRUCTURE.md'),
-  },
-  {
-    id: 'agent-runtime',
-    name: 'Agent runtime',
-    kind: 'infrastructure',
-    category: 'infrastructure',
-    summary: 'Where eligible operations are performed.',
-    detail: 'Agents are workers inside the model. Runtime activity must retain authority, evidence, observable outcome and audit.',
-    state: 'planned',
-    position: { x: 2300, y: 634 },
+    position: { x: 1365, y: 824 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
   {
     id: 'data-identity',
-    name: 'Data, identity and access',
-    kind: 'infrastructure',
-    category: 'infrastructure',
-    summary: 'The boundaries around every read and write.',
+    name: 'Access and identity',
+    category: 'foundations',
+    summary: 'The boundary around every read and write.',
     detail: 'Identity, tenant scope, permissions and revision checks protect the canonical graph and its sensitive records.',
     state: 'planned',
-    position: { x: 2300, y: 406 },
-    source: source.coordination('WORLD_ELEMENTS.md'),
-  },
-  {
-    id: 'audit-outcomes',
-    name: 'Audit and outcomes',
-    kind: 'infrastructure',
-    category: 'infrastructure',
-    summary: 'Proof that an operation happened and mattered.',
-    detail: 'Every effect produces an event, verification and observable result that can be inspected in Outcomes.',
-    state: 'planned',
-    position: { x: 2300, y: 862 },
+    position: { x: 1739, y: 824 },
     source: source.product('PRODUCT_STRUCTURE.md'),
   },
 ];
@@ -481,72 +339,76 @@ const OPERATING_LAYERS = [
   'operations-system',
 ] satisfies readonly EcosystemNodeId[];
 
-/**
- * An operating system is made of the same five layers whoever owns it. Written
- * as a derivation rather than ten hand-typed rows so the two cannot drift: if
- * a sixth layer is ever sold, both the client OS and our own gain it at once.
- */
-const composedOfLayers: readonly EcosystemRelation[] = (
-  [
-    ['managed-os', 'for a client'],
-    ['innerflect-mirror', 'for ourselves'],
-  ] satisfies readonly [EcosystemNodeId, string][]
-).flatMap(([owner, label]) =>
-  OPERATING_LAYERS.map((layer) => ({
-    id: `${owner}-composed-of-${layer}`,
-    from: owner,
+export const ECOSYSTEM_RELATIONS: readonly EcosystemRelation[] = [
+  // Structure: what the system is made of. One owner now, not three.
+  ...OPERATING_LAYERS.map((layer) => ({
+    id: `operating-system-composed-of-${layer}`,
+    from: 'operating-system' as const,
     to: layer,
     kind: 'composed-of' as const,
-    label,
+    label: 'is made of',
   })),
-);
 
-export const ECOSYSTEM_RELATIONS: readonly EcosystemRelation[] = [
-  ...composedOfLayers,
-
-  // What each layer actually stands on.
+  // What each layer stands on. Every target names a real tool or boundary.
   { id: 'assessment-runs-on-graph', from: 'assessment', to: 'company-graph', kind: 'runs-on', label: 'writes into' },
-  { id: 'web-intelligence-runs-on-events', from: 'web-intelligence', to: 'integration-events', kind: 'runs-on', label: 'runs on' },
-  { id: 'revenue-loop-runs-on-operations', from: 'revenue-loop', to: 'operation-catalogue', kind: 'runs-on', label: 'runs on' },
-  { id: 'revenue-loop-runs-on-events', from: 'revenue-loop', to: 'integration-events', kind: 'runs-on', label: 'runs on' },
-  { id: 'operations-system-runs-on-operations', from: 'operations-system', to: 'operation-catalogue', kind: 'runs-on', label: 'runs on' },
-  { id: 'operations-system-runs-on-governance', from: 'operations-system', to: 'governance', kind: 'runs-on', label: 'runs on' },
-  { id: 'operations-system-runs-on-audit', from: 'operations-system', to: 'audit-outcomes', kind: 'runs-on', label: 'proves through' },
   { id: 'knowledge-runs-on-identity', from: 'knowledge-spine', to: 'data-identity', kind: 'runs-on', label: 'scoped by' },
+  { id: 'knowledge-runs-on-graph', from: 'knowledge-spine', to: 'company-graph', kind: 'grounds', label: 'grounds' },
+  { id: 'web-intelligence-runs-on-events', from: 'web-intelligence', to: 'integration-events', kind: 'runs-on', label: 'runs on' },
   { id: 'web-intelligence-runs-on-analytics', from: 'web-intelligence', to: 'analytics', kind: 'runs-on', label: 'measured in' },
+  { id: 'revenue-loop-runs-on-events', from: 'revenue-loop', to: 'integration-events', kind: 'runs-on', label: 'runs on' },
   { id: 'revenue-loop-runs-on-analytics', from: 'revenue-loop', to: 'analytics', kind: 'runs-on', label: 'measured in' },
+  { id: 'operations-system-runs-on-events', from: 'operations-system', to: 'integration-events', kind: 'runs-on', label: 'runs on' },
+  { id: 'operations-system-runs-on-graph', from: 'operations-system', to: 'company-graph', kind: 'runs-on', label: 'writes into' },
 
-  // Where a layer is operated from.
+  // Where a layer or a system is actually operated from.
   { id: 'web-intelligence-is-main-website', from: 'web-intelligence', to: 'main-website', kind: 'operates-in', label: 'operates in' },
+  { id: 'system-runs-through-mirror', from: 'operating-system', to: 'mirror', kind: 'runs-through', label: 'is operated in' },
   { id: 'operations-system-runs-through-studio', from: 'operations-system', to: 'studio', kind: 'runs-through', label: 'shown to a client in' },
+  { id: 'admin-supplies-system', from: 'admin', to: 'operating-system', kind: 'supplies', label: 'supplies' },
+  { id: 'os-shop-extends-system', from: 'os-shop', to: 'operating-system', kind: 'extends-into', label: 'extends into' },
+  { id: 'forge-shop-extends-system', from: 'forge-shop', to: 'operating-system', kind: 'extends-into', label: 'extends into' },
 
-  { id: 'self-builder-starts-open-mirror', from: 'self-builder', to: 'open-mirror', kind: 'starts-with', label: 'starts with' },
-  { id: 'self-builder-learns-os-patterns', from: 'self-builder', to: 'os-shop', kind: 'learns-from', label: 'learns from' },
-  { id: 'self-builder-assembles-forge', from: 'self-builder', to: 'forge-shop', kind: 'assembles-with', label: 'assembles with' },
-  { id: 'os-patterns-extend-own-os', from: 'os-shop', to: 'own-os', kind: 'extends-into', label: 'extends into' },
-  { id: 'forge-components-extend-own-os', from: 'forge-shop', to: 'own-os', kind: 'extends-into', label: 'extends into' },
-  { id: 'managed-client-receives-managed-os', from: 'managed-client', to: 'managed-os', kind: 'receives', label: 'receives' },
-  { id: 'managed-client-follows-forge', from: 'managed-client', to: 'forge-shop', kind: 'follows-in', label: 'runs through' },
-  { id: 'managed-os-runs-through-studio', from: 'managed-os', to: 'studio', kind: 'runs-through', label: 'runs through' },
-  { id: 'managed-os-runs-through-mirror', from: 'managed-os', to: 'mirror', kind: 'runs-through', label: 'runs through' },
-  { id: 'innerflect-operates-admin', from: 'innerflect-team', to: 'admin', kind: 'operates-in', label: 'operates in' },
-  { id: 'innerflect-operates-own-mirror', from: 'innerflect-team', to: 'innerflect-mirror', kind: 'operates-in', label: 'operates in' },
-  { id: 'admin-supplies-managed-os', from: 'admin', to: 'managed-os', kind: 'supplies', label: 'supplies' },
-  { id: 'mirror-projects-company-graph', from: 'mirror', to: 'company-graph', kind: 'projects', label: 'projects' },
-  { id: 'studio-projects-company-graph', from: 'studio', to: 'company-graph', kind: 'projects', label: 'projects' },
-  { id: 'innerflect-mirror-projects-company-graph', from: 'innerflect-mirror', to: 'company-graph', kind: 'projects', label: 'projects' },
-  { id: 'graph-invokes-catalogue', from: 'company-graph', to: 'operation-catalogue', kind: 'invokes', label: 'invokes' },
-  { id: 'knowledge-grounds-graph', from: 'knowledge-spine', to: 'company-graph', kind: 'grounds', label: 'grounds' },
-  { id: 'governance-authorises-operations', from: 'governance', to: 'operation-catalogue', kind: 'authorises', label: 'authorises' },
-  { id: 'operations-record-events', from: 'operation-catalogue', to: 'integration-events', kind: 'records', label: 'records' },
-  { id: 'operations-updates-graph', from: 'operation-catalogue', to: 'company-graph', kind: 'updates', label: 'updates' },
-  { id: 'agent-invokes-operations', from: 'agent-runtime', to: 'operation-catalogue', kind: 'invokes', label: 'invokes' },
-  { id: 'identity-authorises-governance', from: 'data-identity', to: 'governance', kind: 'authorises', label: 'authorises' },
-  { id: 'events-prove-outcomes', from: 'integration-events', to: 'audit-outcomes', kind: 'proves', label: 'proves' },
-  { id: 'graph-stores-knowledge', from: 'company-graph', to: 'knowledge-spine', kind: 'stores', label: 'stores' },
-  { id: 'admin-updates-graph', from: 'admin', to: 'company-graph', kind: 'updates', label: 'updates' },
-  { id: 'mirror-receives-events', from: 'integration-events', to: 'mirror', kind: 'projects', label: 'refreshes' },
-  { id: 'audit-receives-outcomes', from: 'audit-outcomes', to: 'studio', kind: 'updates', label: 'reports into' },
+  // Where the record-backed model surfaces.
+  { id: 'mirror-projects-graph', from: 'mirror', to: 'company-graph', kind: 'projects', label: 'projects' },
+  { id: 'studio-projects-graph', from: 'studio', to: 'company-graph', kind: 'projects', label: 'projects' },
+  { id: 'open-mirror-projects-graph', from: 'open-mirror', to: 'company-graph', kind: 'projects', label: 'projects' },
+  { id: 'events-refresh-mirror', from: 'integration-events', to: 'mirror', kind: 'projects', label: 'refreshes' },
+];
+
+/**
+ * A journey is not an element. It is an ordered walk through elements that
+ * already exist, which is why the three audiences stopped being cards: as
+ * nodes they added three boxes and seven lines and still could not be traced.
+ * As a lens you can follow one path and dim everything else.
+ */
+export type EcosystemJourneyId = 'self-builder' | 'managed-client' | 'innerflect-team';
+
+export type EcosystemJourney = {
+  id: EcosystemJourneyId;
+  name: string;
+  summary: string;
+  steps: readonly EcosystemNodeId[];
+};
+
+export const ECOSYSTEM_JOURNEYS: readonly EcosystemJourney[] = [
+  {
+    id: 'self-builder',
+    name: 'Self-builder',
+    summary: 'Builds an operating system from open patterns and components.',
+    steps: ['main-website', 'open-mirror', 'os-shop', 'forge-shop', 'operating-system'],
+  },
+  {
+    id: 'managed-client',
+    name: 'Managed client',
+    summary: 'Asks Innerflect to build and run the operating system.',
+    steps: ['main-website', 'assessment', 'operating-system', 'studio', 'mirror'],
+  },
+  {
+    id: 'innerflect-team',
+    name: 'Innerflect team',
+    summary: 'Runs the same five layers on itself, and delivers them to clients.',
+    steps: ['main-website', 'admin', 'operating-system', 'mirror', 'company-graph'],
+  },
 ];
 
 export const ECOSYSTEM_PAGE_GROUPS = [
@@ -600,25 +462,26 @@ export const ECOSYSTEM_PAGES: readonly EcosystemPage[] = [
  * - `engine`      the shared machinery underneath every surface.
  * - `infrastructure` the boundaries around every read and write.
  */
-export type EcosystemNodeShape =
-  | 'surface'
-  | 'people'
-  | 'instance'
-  | 'layer'
-  | 'engine'
-  | 'infrastructure';
+export type EcosystemNodeShape = 'surface' | 'system' | 'layer' | 'foundation';
 
 const NODES_WITH_A_SURFACE: ReadonlySet<string> = new Set(
   ECOSYSTEM_PAGES.map((page) => page.surface),
 );
 
+const SHAPE_BY_CATEGORY: Record<EcosystemCategoryId, EcosystemNodeShape> = {
+  surfaces: 'surface',
+  system: 'system',
+  layers: 'layer',
+  foundations: 'foundation',
+};
+
 export function nodeShape(node: EcosystemNode): EcosystemNodeShape {
-  if (NODES_WITH_A_SURFACE.has(node.id)) return 'surface';
-  if (node.kind === 'audience' || node.kind === 'actor') return 'people';
-  if (node.kind === 'layer') return 'layer';
-  if (node.kind === 'engine') return 'engine';
-  if (node.kind === 'infrastructure') return 'infrastructure';
-  return 'instance';
+  return SHAPE_BY_CATEGORY[node.category];
+}
+
+/** `surfaces` has to mean exactly "has a real entry point" — checked, not assumed. */
+export function hasEntryPoint(node: EcosystemNode): boolean {
+  return NODES_WITH_A_SURFACE.has(node.id);
 }
 
 /**
@@ -627,33 +490,17 @@ export function nodeShape(node: EcosystemNode): EcosystemNodeShape {
  * becomes readable: you can see at a glance what a thing is made of versus
  * where its data goes versus who is allowed to act.
  */
-export type EcosystemRelationFamily =
-  | 'journey'
-  | 'composition'
-  | 'projection'
-  | 'authority'
-  | 'action';
+export type EcosystemRelationFamily = 'composition' | 'journey' | 'dependency';
 
 const RELATION_FAMILY: Record<EcosystemRelationKind, EcosystemRelationFamily> = {
-  'starts-with': 'journey',
-  'learns-from': 'journey',
-  'assembles-with': 'journey',
-  'extends-into': 'journey',
-  receives: 'journey',
-  'follows-in': 'journey',
-  'operates-in': 'journey',
-  'runs-through': 'journey',
   'composed-of': 'composition',
   'runs-on': 'composition',
-  projects: 'projection',
-  supplies: 'projection',
-  updates: 'projection',
-  records: 'projection',
-  stores: 'projection',
-  grounds: 'authority',
-  authorises: 'authority',
-  proves: 'authority',
-  invokes: 'action',
+  'extends-into': 'journey',
+  'operates-in': 'journey',
+  'runs-through': 'journey',
+  supplies: 'journey',
+  projects: 'dependency',
+  grounds: 'dependency',
 };
 
 export function relationFamily(relation: EcosystemRelation): EcosystemRelationFamily {
@@ -662,20 +509,16 @@ export function relationFamily(relation: EcosystemRelation): EcosystemRelationFa
 
 export const ECOSYSTEM_RELATION_FAMILIES = [
   { id: 'composition', name: 'Is made of', description: 'What a thing contains, and what it stands on.' },
-  { id: 'journey', name: 'Journey', description: 'The path a person takes through the ecosystem.' },
-  { id: 'projection', name: 'Data', description: 'Records, events and state moving between parts.' },
-  { id: 'authority', name: 'Authority', description: 'What grounds, permits or proves an action.' },
-  { id: 'action', name: 'Invocation', description: 'One part asking another to actually do something.' },
+  { id: 'journey', name: 'Leads to', description: 'How you get from one part of the ecosystem to the next.' },
+  { id: 'dependency', name: 'Depends on', description: 'Records and state moving between parts. Hidden until you ask for detail.' },
 ] as const satisfies readonly { id: EcosystemRelationFamily; name: string; description: string }[];
 
 /** The legend. A shape nobody can read is decoration, not information. */
 export const ECOSYSTEM_SHAPES = [
-  { id: 'surface', name: 'Has a website', description: 'A surface you can open. Its entry points are registered in ECOSYSTEM_PAGES.' },
-  { id: 'people', name: 'People', description: 'An audience we build for, or the Innerflect team operating it.' },
-  { id: 'instance', name: 'An operating system', description: 'A deployed copy of the system for one company — reached through a surface, not its own site.' },
-  { id: 'layer', name: 'Operating layer', description: 'One of the five capabilities an operating system is made of, and one of the five things Innerflect sells.' },
-  { id: 'engine', name: 'Engine', description: 'Shared machinery every surface projects: graph, operations, knowledge, governance.' },
-  { id: 'infrastructure', name: 'Infrastructure', description: 'The boundaries around every read, write, effect and proof.' },
+  { id: 'surface', name: 'You can open it', description: 'A real entry point: a website, an app, a shop.' },
+  { id: 'system', name: 'The operating system', description: 'The system itself — five layers, one company.' },
+  { id: 'layer', name: 'A layer it is made of', description: 'One of the five capabilities, and one of the five things Innerflect sells.' },
+  { id: 'foundation', name: 'What it stands on', description: 'A named tool, model or boundary underneath every layer.' },
 ] as const satisfies readonly { id: EcosystemNodeShape; name: string; description: string }[];
 
 export const ECOSYSTEM_CHANGE_CONTRACT = {

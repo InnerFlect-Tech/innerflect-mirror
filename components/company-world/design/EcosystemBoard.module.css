@@ -147,6 +147,46 @@
   color: var(--text-primary);
 }
 
+/* The journey picker: a lens over the elements, not three more elements. */
+.journeys {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0;
+  padding: 2px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-raised);
+}
+
+.journeys legend {
+  float: left;
+  padding: 0 var(--space-2) 0 var(--space-1);
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+  line-height: 2rem;
+}
+
+.journeys button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+}
+
+.journeys button:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.journeys button[aria-pressed='true'] {
+  background: #e9c46a;
+  color: #10100c;
+}
+
 .mapActions {
   margin-left: auto;
 }
@@ -183,6 +223,20 @@
   background-size: 24px 24px;
 }
 
+/* Band headers on the board itself. Cards can be dragged out of a band —
+   these mark the default organisation, not a container. */
+.band {
+  position: absolute;
+  width: 100%;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
 .relations {
   position: absolute;
   inset: 0;
@@ -193,9 +247,9 @@
 }
 
 /*
- * Relation families, from `relationFamily()`. Seventeen kinds drawn as one
- * grey line said nothing; five families each drawn differently let you read
- * what a thing is made of apart from where its data goes.
+ * Relation families, from `relationFamily()`. Three, not five: structure,
+ * the path between parts, and everything else as one "depends on" that stays
+ * hidden until you ask for detail.
  */
 .relation {
   fill: none;
@@ -217,46 +271,45 @@
   --relation-colour: var(--border-default);
 }
 
-/* projection — data in motion, so it moves visually too. */
-.relation[data-family='projection'] {
+/* dependency — records and state moving between parts. Detail, not structure. */
+.relation[data-family='dependency'] {
   --relation-colour: #6d8fe0;
 
   stroke-dasharray: 7 5;
 }
 
-/* authority — permission and proof, held at arm's length. */
-.relation[data-family='authority'] {
-  --relation-colour: #d8a34d;
-
-  stroke-dasharray: 2 5;
-  stroke-linecap: round;
-}
-
-/* action — one part asking another to actually do something. */
-.relation[data-family='action'] {
-  --relation-colour: #e16d5d;
-
-  stroke-dasharray: 12 4 3 4;
+/*
+ * A journey is an ordered walk through elements, so it is drawn as a walk:
+ * the one set of lines the registry does not hold as relations, because the
+ * three audiences stopped being nodes.
+ */
+.journeyPath {
+  fill: none;
+  stroke: #e9c46a;
+  stroke-width: 3;
+  stroke-dasharray: 10 6;
+  opacity: 0.9;
 }
 
 .arrow path {
   fill: var(--border-default);
 }
 
+.arrow[data-family='journeyPath'] path {
+  fill: #e9c46a;
+}
+
+/* Everything off the chosen path recedes rather than disappearing. */
+.relation[data-dimmed='true'] {
+  opacity: 0.12;
+}
+
 .arrow[data-family='composition'] path {
   fill: #43cec1;
 }
 
-.arrow[data-family='projection'] path {
+.arrow[data-family='dependency'] path {
   fill: #6d8fe0;
-}
-
-.arrow[data-family='authority'] path {
-  fill: #d8a34d;
-}
-
-.arrow[data-family='action'] path {
-  fill: #e16d5d;
 }
 
 .card {
@@ -290,6 +343,30 @@
   transform: translateY(-2px);
 }
 
+/* Off the chosen journey: still there, no longer competing for attention. */
+.card[data-dimmed='true'] {
+  opacity: 0.22;
+}
+
+/* On it: numbered in walking order, so the path can be read without tracing it. */
+.card[data-step]::before {
+  content: attr(data-step);
+  position: absolute;
+  top: -0.7rem;
+  left: -0.7rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: #e9c46a;
+  color: #10100c;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
 /* The card being dragged rides above every other one and stops animating. */
 .card[data-dragging='true'] {
   z-index: 3;
@@ -302,9 +379,8 @@
 
 /*
  * Node shape: what the thing *is*, from `nodeShape()` in lib/design/ecosystem.ts.
- * Colour already carries implementation state, so shape carries substance —
- * a person is not a website and a website is not an engine. Five families,
- * each derived from the registry, never hand-assigned per node.
+ * Colour carries implementation state, so shape carries substance. Four
+ * values, one per real group: open it, the system, a layer, a foundation.
  */
 
 /* surface — a window you can open. Chrome strip is a real element, below. */
@@ -313,22 +389,14 @@
   padding-top: 0;
 }
 
-/*
- * people — a name tag: one fully rounded end, the rest straight so the text
- * still sits on a flat baseline. A person is the one thing here that is not a
- * rectangle, and the state rail becomes the tag's coloured edge.
- */
-.card[data-shape='people'] {
-  padding-left: 3.25rem;
-  border-radius: 4rem var(--radius-md) var(--radius-md) 4rem;
-}
 
 /*
- * instance — one deployed copy of the system, drawn as a stack. Done with
+ * system — the operating system itself, drawn as a stack of the five layers
+ * it is made of. Done with
  * box-shadow rather than a pseudo-element so it cannot fall behind the board's
  * own stacking context, and so hover and selection keep it.
  */
-.card[data-shape='instance'] {
+.card[data-shape='system'] {
   --card-stack:
     0.45rem 0.45rem 0 -1px var(--bg-surface),
     0.45rem 0.45rem 0 0 var(--border-strong),
@@ -337,15 +405,16 @@
 }
 
 /*
- * engine — machinery, marked the way a technical drawing marks a part:
- * square corners with two registration brackets, in the node's state colour.
+ * foundation — a named tool, model or boundary underneath everything, marked
+ * the way a technical drawing marks a part: square corners with two
+ * registration brackets, in the node's state colour.
  */
-.card[data-shape='engine'] {
+.card[data-shape='foundation'] {
   border-radius: 0;
 }
 
-.card[data-shape='engine']::before,
-.card[data-shape='engine']::after {
+.card[data-shape='foundation']::before,
+.card[data-shape='foundation']::after {
   content: '';
   position: absolute;
   width: 0.85rem;
@@ -353,14 +422,14 @@
   border: 0 solid var(--card-edge, var(--border-strong));
 }
 
-.card[data-shape='engine']::before {
+.card[data-shape='foundation']::before {
   top: -1px;
   left: -1px;
   border-top-width: 2px;
   border-left-width: 2px;
 }
 
-.card[data-shape='engine']::after {
+.card[data-shape='foundation']::after {
   right: -1px;
   bottom: -1px;
   border-right-width: 2px;
@@ -374,13 +443,6 @@
 .card[data-shape='layer'] {
   border-bottom: 3px solid var(--card-edge);
   border-radius: var(--radius-lg) var(--radius-lg) var(--radius-xs) var(--radius-xs);
-}
-
-/* infrastructure — a boundary drawn around what it contains. */
-.card[data-shape='infrastructure'] {
-  border-radius: 0;
-  outline: 1px dashed var(--border-strong);
-  outline-offset: 5px;
 }
 
 /* The browser chrome that makes a `surface` unmistakably a website. */
@@ -507,31 +569,22 @@
   background: var(--state-healthy-surface);
 }
 
-.nodeMark[data-kind='audience'] {
-  border-radius: 50%;
-}
-
-.nodeMark[data-kind='shop'] {
-  transform: rotate(45deg);
-}
-
-.nodeMark[data-kind='product'],
-.nodeMark[data-kind='workspace'] {
+.nodeMark[data-category='surfaces'] {
   border-radius: var(--radius-xs);
 }
 
-.nodeMark[data-kind='actor'] {
-  border-radius: 50%;
+.nodeMark[data-category='system'] {
+  border-radius: var(--radius-xs);
   box-shadow: inset 0 -0.28rem 0 var(--state-healthy-edge);
 }
 
-.nodeMark[data-kind='engine'] {
+.nodeMark[data-category='layers'] {
   border-radius: 50%;
-  border-style: dashed;
 }
 
-.nodeMark[data-kind='infrastructure'] {
-  border-radius: 50% 50% var(--radius-xs) var(--radius-xs);
+.nodeMark[data-category='foundations'] {
+  border-radius: 0;
+  border-style: dashed;
 }
 
 .stateBadge {
@@ -620,11 +673,7 @@
   border-radius: var(--radius-xs);
 }
 
-.legendMark[data-shape='people'] {
-  border-radius: 0.5rem var(--radius-xs) var(--radius-xs) 0.5rem;
-}
-
-.legendMark[data-shape='instance'] {
+.legendMark[data-shape='system'] {
   border-radius: var(--radius-xs);
   box-shadow:
     0.22rem 0.22rem 0 -1px var(--bg-raised),
@@ -632,15 +681,15 @@
 }
 
 /* Engine: the same two registration brackets the engine cards carry. */
-.legendMark[data-shape='engine'] {
+.legendMark[data-shape='foundation'] {
   position: relative;
   border-color: transparent;
   border-radius: 0;
   background: none;
 }
 
-.legendMark[data-shape='engine']::before,
-.legendMark[data-shape='engine']::after {
+.legendMark[data-shape='foundation']::before,
+.legendMark[data-shape='foundation']::after {
   content: '';
   position: absolute;
   width: 0.42rem;
@@ -648,14 +697,14 @@
   border: 0 solid var(--border-strong);
 }
 
-.legendMark[data-shape='engine']::before {
+.legendMark[data-shape='foundation']::before {
   top: -1px;
   left: -1px;
   border-top-width: 2px;
   border-left-width: 2px;
 }
 
-.legendMark[data-shape='engine']::after {
+.legendMark[data-shape='foundation']::after {
   right: -1px;
   bottom: -1px;
   border-right-width: 2px;
@@ -665,11 +714,6 @@
 .legendMark[data-shape='layer'] {
   border-bottom: 3px solid var(--border-strong);
   border-radius: 0.4rem 0.4rem var(--radius-xs) var(--radius-xs);
-}
-
-.legendMark[data-shape='infrastructure'] {
-  border-style: dashed;
-  border-radius: 0;
 }
 
 /* Line legend: the same stroke treatments the SVG uses. */
@@ -684,19 +728,9 @@
   border-top-color: #43cec1;
 }
 
-.legendLine[data-family='projection'] {
+.legendLine[data-family='dependency'] {
   border-top-style: dashed;
   border-top-color: #6d8fe0;
-}
-
-.legendLine[data-family='authority'] {
-  border-top-style: dotted;
-  border-top-color: #d8a34d;
-}
-
-.legendLine[data-family='action'] {
-  border-top-style: dashed;
-  border-top-color: #e16d5d;
 }
 
 .factShape {

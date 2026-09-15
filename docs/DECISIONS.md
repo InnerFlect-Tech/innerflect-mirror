@@ -624,3 +624,44 @@ anywhere and has no URL. Porting its actual markup into real `app/shops/os` /
 `app/shops/forge` routes (React, shared design tokens, real navigation) is separate,
 not-yet-started follow-up work; moving the files only stops the design work itself from
 living outside version control.
+
+### The ecosystem board: 26 nodes down to 17, and a journey stops being a node
+
+The board had grown to 26 nodes, 49 relations, 19 relation kinds, 6 shapes and
+three overlapping taxonomies (`category`, `kind`, shape) that each said
+something slightly different about the same node. The user's diagnosis was the
+key: **a journey is not an element — it is a set of elements.**
+
+**Resolved this way:**
+1. **Journeys became a lens.** `self-builder`, `managed-client` and
+   `innerflect-team` stopped being cards. `ECOSYSTEM_JOURNEYS` holds each as an
+   ordered list of node ids; the board picks one, numbers its steps and dims
+   everything else. A journey can now actually be traced, which it could not be
+   when it was three boxes with arrows fanning out.
+2. **One operating system, not three.** `own-os`, `managed-os` and
+   `innerflect-mirror` were the same object with different owners — 18 of the 49
+   edges hung off them. Collapsed to one `operating-system`; who owns it is a
+   journey, not a node.
+3. **Every node must name a real thing.** The test: can you point at a tool, a
+   deliverable or a URL? `operation-catalogue`, `governance`, `agent-runtime`
+   and `audit-outcomes` could not — the user said as much about the first two
+   ("i dont know whats that"). Deleted. `analytics` (Grafana, Umami) stays
+   because it names actual software.
+4. **Engines and infrastructure merged into `foundations`.** The split was an
+   abstraction nobody felt; both meant "underneath".
+5. **Three relation families, not five,** and only structure is drawn by
+   default — `dependency` is behind a `Detail` toggle. Bands are labelled on the
+   board itself so the legend is not required reading.
+
+`kind` was deleted outright: with four categories that map one-to-one onto four
+shapes, a third axis was just drift waiting to happen.
+
+**Net:** 26 → 17 nodes, 49 → 19 lines drawn by default, 6 → 4 shapes, 19 → 8
+relation kinds. Layout transposed to four horizontal bands — surfaces on top,
+what it stands on at the bottom — which reads as the stack it describes.
+
+**Note for the Open Mirror session:** `data/open-mirror.ts` referenced three
+deleted ids. Rather than break it, they were remapped to the nearest surviving
+node: `own-os` → `operating-system`, `agent-runtime` → `integration-events`,
+`audit-outcomes` → `company-graph`. Re-point them if those are the wrong
+anchors — the file is yours, the remap was only to keep it compiling.
