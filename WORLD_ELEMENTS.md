@@ -555,8 +555,28 @@ Numbers are never reused, so a reference to "request 5" always means the same th
       attach, moving with it. Not `extent:'parent'` — that would cage a 176×56 child inside a
       176×56 parent; the relationship wanted is "moves with", not "contained by".
 
-    **Still open:** criterion 4's branch guard is implemented but still not exercised by a
-    test; reduced-motion has nothing to stop yet because the lab animates nothing.
+    **✅ 4 NOW PROVEN, and an SSR bug found doing it (2026-09-14).** `tests/e2e/lab.spec.ts`
+    encodes criteria 1, 3, 4 and 9. Dragging Step Node's source port to Outcome Marker — when
+    Step Node already leads to Decision Gate — is refused with "Step Node already leads
+    somewhere. Only a Decision Gate may branch." and creates no edge. 11/11 assertions pass.
+
+    **The bug the test found, which no typecheck could have:** `seedGraph()` minted ids from a
+    module-level counter, so the server rendered `draft:step-node:1` and the client rendered
+    different ids for the same three nodes. React saw mismatched `data-id` attributes,
+    hydration failed, and **the first click anywhere on the page was silently dropped** — every
+    later click worked, which is exactly what makes this kind of fault look like a flaky test
+    instead of a real defect. Seed ids are now deterministic (`draft:<element>:seed`). Worth
+    remembering as a pattern: any id minted during render must be stable across SSR and client.
+
+    **Known friction for whoever runs e2e next:** `npm run test:e2e` cannot start here.
+    Playwright's `webServer` declines to reuse the running dev server and spawns its own, and
+    vinext's dev-server lock is **global to the user, not per-port or per-directory** — so any
+    already-running dev server (and one is essentially always up while agents work) makes the
+    spawn fail. The assertions above were therefore verified with a direct Playwright script
+    against the running server. The spec is committed and correct; the harness needs either
+    `reuseExistingServer` to actually reuse, or the suite pointed at an already-running server.
+
+    **Still open:** reduced-motion has nothing to stop, because the lab animates nothing.
 
     **Also found:** the repo's Playwright browsers were never installed on this machine, so
     `npm run test:e2e` could not run at all. Installed chromium.

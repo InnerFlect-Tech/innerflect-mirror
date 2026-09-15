@@ -66,6 +66,17 @@ const DRAFT_PREFIX = 'draft:';
 /** Matches `.node` in Lab.module.css; see `mk()` for why this is declared. */
 const NODE_W = 176;
 const NODE_H = 56;
+/**
+ * Ids for nodes a person places. Not used for the seed graph.
+ *
+ * A module-level counter is fine for user placements, which only ever happen on
+ * the client. It is NOT fine for the seed: the server renders the seed once and
+ * the client renders it again, so a counter gives the same three nodes different
+ * ids on each side, React sees mismatched `data-id` attributes, and hydration
+ * fails. The visible symptom was that the first click on the page did nothing —
+ * every later click worked, which is what made it look like a flaky test rather
+ * than the real SSR bug it was.
+ */
 let seq = 0;
 const draftId = (elementId: string) => `${DRAFT_PREFIX}${elementId}:${++seq}`;
 
@@ -148,8 +159,9 @@ const nodeTypes = { element: ElementNode };
 
 /** The seed graph — a minimal, obviously-draft path, not a company. */
 function seedGraph(): { nodes: LabNode[]; edges: Edge[] } {
+  // Stable ids, identical on server and client — see `draftId` above.
   const mk = (elementId: string, x: number, y: number): LabNode => ({
-    id: draftId(elementId),
+    id: `${DRAFT_PREFIX}${elementId}:seed`,
     type: 'element',
     position: { x, y },
     // Explicit dimensions rather than letting the library measure. Measurement
