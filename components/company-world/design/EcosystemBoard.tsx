@@ -616,7 +616,10 @@ export function EcosystemBoard() {
                       </span>
                       <strong>{node.name}</strong>
                       <span className={styles.cardSummary}>{node.summary}</span>
-                      <span className={styles.cardId}>{node.id}</span>
+                      <span className={styles.cardId}>
+                        {node.id}
+                        {node.advised && <b className={styles.advised}>advised</b>}
+                      </span>
                     </button>
                   );
                 })}
@@ -674,6 +677,12 @@ export function EcosystemBoard() {
               <div><dt>Authority</dt><dd>{selected.source.authority}</dd></div>
             </dl>
             <p className={styles.detail}>{selected.detail}</p>
+            {selected.advised && (
+              <p className={styles.advisedNote}>
+                <b>Advised</b>
+                {selected.advised}
+              </p>
+            )}
             {selectedPages.length > 0 && (
               <div className={styles.thumbnails}>
                 {selectedPages.map((page) => (
@@ -705,6 +714,7 @@ export function EcosystemBoard() {
                           aria-hidden="true"
                         />
                         <b>{node.name}</b>
+                        {node.advised && <span className={styles.advised}>advised</span>}
                         <StateBadge state={node.state} />
                       </button>
                       <span className={styles.compositionSummary}>{node.summary}</span>

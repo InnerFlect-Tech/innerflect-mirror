@@ -67,6 +67,18 @@ export type EcosystemNode = {
   state: ImplementationState;
   position: { x: number; y: number };
   source: EcosystemSource;
+  /**
+   * Every layer is independently adoptable — a company can buy or build any
+   * one of them on its own, and none of them requires the others. Without
+   * saying so, the `composed-of` lines read as "you need all five", which
+   * would be wrong about what is actually sold.
+   *
+   * This field names the exception to indifference: the one layer that is
+   * advised alongside whatever else someone picks, and why. Advised is not
+   * required — it stays a recommendation, not a dependency, so it is a note
+   * rather than a relation.
+   */
+  advised?: string;
 };
 
 export type EcosystemRelation = {
@@ -132,7 +144,7 @@ export const REPOSITORY_SCOPE = {
 export const ECOSYSTEM_CATEGORIES = [
   { id: 'surfaces', name: 'Surfaces', description: 'Something you can open. Every one has a real entry point.' },
   { id: 'system', name: 'Operating system', description: 'The system itself — one object, whoever owns it.' },
-  { id: 'layers', name: 'Layers', description: 'The five capabilities an operating system is made of.' },
+  { id: 'layers', name: 'Layers', description: 'The five capabilities an operating system is made of. Each is independently adoptable — start with any one.' },
   { id: 'foundations', name: 'Foundations', description: 'The named things every layer stands on.' },
 ] as const satisfies readonly { id: EcosystemCategoryId; name: string; description: string }[];
 
@@ -231,7 +243,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     name: 'Company operating system',
     category: 'system',
     summary: 'The whole system for one company — all five layers together.',
-    detail: 'A company-specific operating model with controlled access, evidence, integrations, workflows and outcomes. A self-builder assembles their own from the Shops; Innerflect delivers one for a client, and runs one on itself.',
+    detail: 'A company-specific operating model with controlled access, evidence, integrations, workflows and outcomes. All five layers together make the whole, but none of them requires the others — a company can start with any single layer and add the rest later. A self-builder assembles their own from the Shops; Innerflect delivers one for a client, and runs one on itself.',
     state: 'building',
     position: { x: 1178, y: 328 },
     source: source.product('PRODUCT_STRUCTURE.md'),
@@ -261,6 +273,7 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
     state: 'building',
     position: { x: 804, y: 576 },
     source: source.external('innerflect.tech'),
+    advised: 'Advised alongside whatever else you start with: every other layer works better on trusted knowledge. Still optional — each layer runs on its own.',
   },
   {
     id: 'web-intelligence',
@@ -351,6 +364,7 @@ export const ECOSYSTEM_RELATIONS: readonly EcosystemRelation[] = [
     from: 'company-os' as const,
     to: layer,
     kind: 'composed-of' as const,
+    // Not a dependency: the whole is all five, but each layer stands alone.
     label: 'is made of',
   })),
 

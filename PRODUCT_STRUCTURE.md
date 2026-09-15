@@ -166,6 +166,15 @@ Two things that look like domains are deliberately not domains:
 
 Mirror is the Strategic Assessment made continuous: the assessment maps how work, decisions, and data move through the organisation, and the world is that map kept live. Each remaining entry point lights up one region of an existing world rather than adding a new one.
 
+**The five layers are independently adoptable.** All five together make a
+company operating system, but none of them requires the others: a company can
+start with any single layer and add the rest later, in any order. The one
+standing recommendation is **Knowledge Spine** — every other layer works better
+on trusted knowledge, so it is advised alongside whatever someone starts with.
+Advised is not required, and it must never be modelled as a dependency:
+`lib/design/ecosystem.ts` carries it as a note on the node, not as a relation,
+precisely so the ecosystem board cannot draw it as a prerequisite.
+
 Desktop is exploratory. Mobile is a compact Company Pulse focused on health, activity, and exceptions. Healthy systems become quiet; information moves from the periphery to the centre only when necessary.
 
 ## Mirror

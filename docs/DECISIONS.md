@@ -665,3 +665,26 @@ deleted ids. Rather than break it, they were remapped to the nearest surviving
 node: `own-os` → `operating-system`, `agent-runtime` → `integration-events`,
 `audit-outcomes` → `company-graph`. Re-point them if those are the wrong
 anchors — the file is yours, the remap was only to keep it compiling.
+
+### Knowledge Spine is a layer, not its own OS — and every layer stands alone
+
+Two open questions closed by the user in one sentence: *"knowledge base is
+always advised but all can work independently."*
+
+**Resolved this way:**
+1. **Knowledge Spine stays one of the five layers.** It is not modelled as a
+   separate operating system. It is sold as one of the five entry points on
+   innerflect.tech, and that is what it is.
+2. **The five layers are independently adoptable.** None requires the others;
+   a company can start with any one. This needed saying explicitly, because the
+   `composed-of` lines on the ecosystem board read as "you need all five" — the
+   registry was implying a dependency the product does not have.
+3. **"Advised" is a note, not a relation.** Knowledge Spine carries an
+   `advised` field on the node explaining why it is the standing
+   recommendation. Deliberately *not* a `runs-on` or `composed-of` edge: the
+   moment it becomes an edge, the board draws it as a prerequisite and the
+   registry starts lying about what a customer has to buy.
+
+**Rules out:** modelling the recommendation as any kind of relation, and
+promoting Knowledge Spine to a second operating system. Both would make the
+diagram claim a constraint that does not exist.
