@@ -14,6 +14,9 @@ export type OrbitState = { yaw: number; pitch: number; dragging: boolean };
  * drag under a few pixels is treated as a click, so selecting an island still
  * works.
  */
+/** Pointer travel, in pixels, below which a press is still a click. */
+const DRAG_SLOP = 5;
+
 export function useOrbitControl() {
   const orbit = useRef<OrbitState>({ yaw: HOME_YAW, pitch: HOME_PITCH, dragging: false });
   const start = useRef({ x: 0, y: 0, yaw: 0, pitch: 0, moved: 0 });
@@ -24,7 +27,7 @@ export function useOrbitControl() {
   }, []);
 
   /** A drag is not a click. Selection must not fire when the user was rotating. */
-  const wasDrag = useCallback(() => start.current.moved > 5, []);
+  const wasDrag = useCallback(() => start.current.moved > DRAG_SLOP, []);
 
   const bindSurface = useCallback((el: HTMLElement | null) => {
     if (!el) return;
@@ -36,7 +39,12 @@ export function useOrbitControl() {
 
     const down = (e: PointerEvent) => {
       if (e.button !== 0) return;
-      el.setPointerCapture?.(e.pointerId);
+      // Deliberately NOT capturing the pointer here. Capture retargets every
+      // later pointer event to this container, so the <canvas> inside it never
+      // receives the pointerup — and React Three Fiber synthesises its click
+      // from pointerdown + pointerup on the canvas. Capturing on press made
+      // every click on a domain island silently do nothing. Capture starts in
+      // `move`, once the pointer has travelled far enough to be a real drag.
       orbit.current.dragging = true;
       start.current = {
         x: e.clientX,
@@ -52,13 +60,20 @@ export function useOrbitControl() {
       const dx = e.clientX - start.current.x;
       const dy = e.clientY - start.current.y;
       start.current.moved = Math.max(start.current.moved, Math.abs(dx) + Math.abs(dy));
+
+      // Now it is a drag, not a click: take the pointer so rotating off the
+      // edge of the canvas still finishes cleanly.
+      if (start.current.moved > DRAG_SLOP && !el.hasPointerCapture?.(e.pointerId)) {
+        el.setPointerCapture?.(e.pointerId);
+      }
+
       orbit.current.yaw = start.current.yaw - dx * 0.005;
       orbit.current.pitch = clampPitch(start.current.pitch + dy * 0.004);
     };
 
     const up = (e: PointerEvent) => {
       if (!orbit.current.dragging) return;
-      el.releasePointerCapture?.(e.pointerId);
+      if (el.hasPointerCapture?.(e.pointerId)) el.releasePointerCapture?.(e.pointerId);
       orbit.current.dragging = false;
     };
 
