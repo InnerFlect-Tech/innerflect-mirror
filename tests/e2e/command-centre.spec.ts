@@ -24,7 +24,9 @@ test('Command Centre has no automatically detectable accessibility violations', 
 }) => {
   await page.goto('/approvals');
   await page.waitForTimeout(750);
-  await page.getByRole('button', { name: 'Open Command Centre' }).click({ force: true });
+  await page
+    .getByRole('button', { name: 'Open Command Centre' })
+    .click({ force: true });
   await expect(
     page.getByRole('dialog', { name: 'Command Centre' }),
   ).toBeVisible();
@@ -32,6 +34,16 @@ test('Command Centre has no automatically detectable accessibility violations', 
     .include('.command-dialog')
     .analyze();
   expect(results.violations).toEqual([]);
+});
+
+test('human authority journey resolves a decision with an operation result', async ({
+  page,
+}) => {
+  await page.goto('/approvals');
+  await page.waitForTimeout(750);
+  const first = page.locator('.approval-card').first();
+  await first.getByRole('button', { name: 'Approve' }).click({ force: true });
+  await expect(first.getByText('Approved')).toBeVisible();
 });
 
 test('shell remains bounded at supported breakpoints', async ({ page }) => {

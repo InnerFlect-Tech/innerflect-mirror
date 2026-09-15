@@ -18,6 +18,7 @@ import { ActivityLog } from './ActivityLog';
 import { activity } from '@/data/activity';
 import { listPickableRecords } from '@/components/company-world/assets/pickableRecords';
 import { worldRecords } from '@/data/world-records';
+import { useCockpitStore } from '@/lib/store/cockpit';
 
 /**
  * Resolves a picked `RecordRef` against the collection its type actually lives
@@ -86,10 +87,13 @@ export function CompanyWorkspace({
   impact: React.ReactNode;
 }) {
   const isMobile = useIsMobile();
+  const activeModules = useCockpitStore((state) => state.activeModules);
+  const selectedView = useCockpitStore((state) => state.view);
+  const setView = useCockpitStore((state) => state.setView);
+  const visibleDomains = useMemo(() => domains.filter((domain) => activeModules[domain.id] !== false), [domains, activeModules]);
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [pickedRef, setPickedRef] = useState<RecordRef | null>(null);
   const [running, setRunning] = useState(true);
-  const [view, setView] = useState<'visual' | 'practical'>('visual');
   const [toast, setToast] = useState('');
 
   // Nothing is focused on arrival: a healthy company shows the whole world.
@@ -98,7 +102,7 @@ export function CompanyWorkspace({
     domains.find((d) => d.state === 'critical') ??
     domains.find((d) => d.state === 'attention') ??
     domains[0];
-  const selected = domains.find((d) => d.id === focusedId) ?? needsMost;
+  const selected = visibleDomains.find((d) => d.id === focusedId) ?? visibleDomains[0] ?? needsMost;
   // The exact record a click resolved to, if any — a decision, an exception,
   // an agent or a workflow — distinct from `selected`, which is always the
   // domain the camera is framing. See WORLD_ELEMENTS.md request 10.
@@ -133,8 +137,8 @@ export function CompanyWorkspace({
   // `Scene` hands the islands, so the HTML list below and the 3D scene cannot
   // disagree about which records exist.
   const pickable = useMemo(
-    () => domains.map((d) => ({ domain: d, records: listPickableRecords(d, worldRecords) })),
-    [domains],
+    () => visibleDomains.map((d) => ({ domain: d, records: listPickableRecords(d, worldRecords) })),
+    [visibleDomains],
   );
 
   // The keyboard equivalent of clicking a pylon, agent or hotspot. `DomainIsland`
@@ -154,23 +158,23 @@ export function CompanyWorkspace({
         <div className="deck-head">
           <div>
             <span className="eyebrow">Live company floor</span>
-            <h2>{view === 'visual' ? 'See who is working on what' : 'Current operating state'}</h2>
+            <h2>{selectedView === 'mirror' ? 'See who is working on what' : 'Current operating state'}</h2>
           </div>
           <div className="deck-controls">
             <fieldset className="segmented">
               <legend className="sr-only">View</legend>
               <button
                 type="button"
-                aria-pressed={view === 'visual'}
-                className={view === 'visual' ? 'active' : ''}
-                onClick={() => setView('visual')}
+                aria-pressed={selectedView === 'mirror'}
+                className={selectedView === 'mirror' ? 'active' : ''}
+                onClick={() => setView('mirror')}
               >
                 Visual
               </button>
               <button
                 type="button"
-                aria-pressed={view === 'practical'}
-                className={view === 'practical' ? 'active' : ''}
+                aria-pressed={selectedView === 'practical'}
+                className={selectedView === 'practical' ? 'active' : ''}
                 onClick={() => setView('practical')}
               >
                 Practical
@@ -189,11 +193,11 @@ export function CompanyWorkspace({
           </div>
         </div>
 
-        {view === 'visual' ? (
+        {selectedView === 'mirror' ? (
           <div className="floor three-floor">
             {!isMobile && (
               <CompanyWorld
-                domains={domains.map(toWorldDomain)}
+                domains={visibleDomains.map(toWorldDomain)}
                 selectedId={focusedId}
                 onSelect={toggleFocus}
                 onSelectRecord={setPickedRef}
@@ -211,7 +215,7 @@ export function CompanyWorkspace({
             </div>
             <fieldset className="domain-controls">
               <legend className="sr-only">Company domains</legend>
-              {domains.map((d) => (
+              {visibleDomains.map((d) => (
                 <button
                   key={d.id}
                   type="button"
@@ -255,10 +259,10 @@ export function CompanyWorkspace({
           </div>
         ) : (
           <PracticalTable
-            domains={domains}
+              domains={visibleDomains}
             onSelect={(id) => {
               focusDomainOnly(id);
-              setView('visual');
+              setView('mirror');
             }}
           />
         )}

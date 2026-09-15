@@ -10,11 +10,13 @@ type CockpitState = {
   viewDrawerOpen: boolean;
   view: CockpitView;
   selectedRecordId: string | null;
+  activeModules: Record<string, boolean>;
   setCommandOpen: (open: boolean) => void;
   setNavigationOpen: (open: boolean) => void;
   setViewDrawerOpen: (open: boolean) => void;
   setView: (view: CockpitView) => void;
   selectRecord: (id: string | null) => void;
+  toggleModule: (id: string) => void;
 };
 
 /**
@@ -27,9 +29,14 @@ export const useCockpitStore = create<CockpitState>((set) => ({
   viewDrawerOpen: false,
   view: 'mirror',
   selectedRecordId: null,
+  activeModules: { market: true, sales: true, delivery: true, finance: true },
   setCommandOpen: (commandOpen) => set({ commandOpen }),
   setNavigationOpen: (navigationOpen) => set({ navigationOpen }),
   setViewDrawerOpen: (viewDrawerOpen) => set({ viewDrawerOpen }),
   setView: (view) => set({ view }),
   selectRecord: (selectedRecordId) => set({ selectedRecordId }),
+  toggleModule: (id) =>
+    set((state) => ({
+      activeModules: { ...state.activeModules, [id]: !state.activeModules[id] },
+    })),
 }));

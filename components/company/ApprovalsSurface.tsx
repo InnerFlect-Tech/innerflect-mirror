@@ -6,6 +6,7 @@ import { Check, ChevronRight, Clock3, Lightbulb, RotateCcw, ShieldAlert } from '
 import { DECISION_ACTIONS, type Decision, type Priority } from '@/lib/model/decision';
 import { authorityLimits } from '@/data/constitution';
 import { stateColors } from '@/lib/tokens/state';
+import { resolveDecision, type DecisionResolution } from '@/lib/operations/decision';
 
 const PRIORITY_LABEL: Record<Priority, string> = {
   high: 'High priority',
@@ -63,6 +64,11 @@ export function ApprovalsSurface({ decisions }: { decisions: Decision[] }) {
 
   const suggestions = decisions.filter((d) => d.policySuggestion).length;
   const reviewedList = decisions.filter((d) => resolved[d.id]);
+
+  const resolve = async (decision: Decision, resolution: DecisionResolution) => {
+    const result = await resolveDecision(decision, resolution);
+    setResolved((current) => ({ ...current, [decision.id]: result.ok ? (resolution === 'approved' ? 'Approved' : resolution === 'declined' ? 'Declined' : 'Policy proposed') : 'Unavailable' }));
+  };
 
   return (
     <div className="approvals">
@@ -139,10 +145,10 @@ export function ApprovalsSurface({ decisions }: { decisions: Decision[] }) {
                       </output>
                     ) : (
                       <>
-                        <button type="button" className="primary" onClick={() => setResolved((r) => ({ ...r, [d.id]: 'Approved' }))}>
+                        <button type="button" className="primary" onClick={() => void resolve(d, 'approved')}>
                           Approve
                         </button>
-                        <button type="button" onClick={() => setResolved((r) => ({ ...r, [d.id]: 'Declined' }))}>
+                        <button type="button" onClick={() => void resolve(d, 'declined')}>
                           Decline
                         </button>
                       </>

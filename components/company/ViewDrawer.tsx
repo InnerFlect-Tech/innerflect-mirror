@@ -17,11 +17,20 @@ const views: { id: CockpitView; label: string; detail: string }[] = [
   },
 ];
 
+const modules = [
+  { id: 'market', label: 'Market' },
+  { id: 'sales', label: 'Sales' },
+  { id: 'delivery', label: 'Delivery' },
+  { id: 'finance', label: 'Finance' },
+] as const;
+
 export function ViewDrawer() {
   const open = useCockpitStore((state) => state.viewDrawerOpen);
   const setOpen = useCockpitStore((state) => state.setViewDrawerOpen);
   const view = useCockpitStore((state) => state.view);
   const setView = useCockpitStore((state) => state.setView);
+  const activeModules = useCockpitStore((state) => state.activeModules);
+  const toggleModule = useCockpitStore((state) => state.toggleModule);
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -65,6 +74,19 @@ export function ViewDrawer() {
                   <small>{item.detail}</small>
                 </span>
                 {view === item.id && <Check aria-hidden="true" />}
+              </label>
+            ))}
+          </div>
+          <h3 className="drawer-section-title">Company modules</h3>
+          <div className="module-options" aria-label="Active company modules">
+            {modules.map((module) => (
+              <label key={module.id}>
+                <input
+                  type="checkbox"
+                  checked={activeModules[module.id] !== false}
+                  onChange={() => toggleModule(module.id)}
+                />
+                <span>{module.label}</span>
               </label>
             ))}
           </div>
