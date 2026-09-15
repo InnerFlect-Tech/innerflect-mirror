@@ -39,7 +39,12 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { ELEMENTS_BY_ID, type ElementDef } from '@/lib/design/elements';
-import { paletteByFamily, validatePlacement, type PlacementTarget } from '@/lib/design/composition';
+import {
+  paletteByFamily,
+  placementHint,
+  validatePlacement,
+  type PlacementTarget,
+} from '@/lib/design/composition';
 import { stateColors } from '@/lib/tokens/state';
 import type { SceneState } from '@/lib/model/state';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -438,30 +443,41 @@ export function Lab() {
       <aside className={styles.palette}>
         <h2>Palette</h2>
         <p className={styles.hint}>
-          Drag onto the canvas, or activate to place. Every drop is checked against the
-          composition contract.
+          Each element says where it goes. Drag it there, or activate it to place it on the
+          canvas — the rule under each name comes from the composition contract itself, so it
+          is the same answer the drop would give.
         </p>
         {paletteByFamily().map((group) => (
           <section key={group.family}>
             <h3>{group.family}</h3>
-            {group.elements.map((el) => (
-              <button
-                key={el.id}
-                type="button"
-                draggable
-                className={styles.chip}
-                onDragStart={(e) => {
-                  e.dataTransfer.setData('application/element-id', el.id);
-                  setDragging(el);
-                }}
-                onDragEnd={() => setDragging(null)}
-                onClick={() => place(el, { kind: 'canvas' }, freeSlot(nodes))}
-                title={`${el.name} — ${el.composition}, driven by ${el.drivenBy}`}
-              >
-                {el.name}
-                <small>{el.composition}</small>
-              </button>
-            ))}
+            {group.elements.map((el) => {
+              // The rule, before the attempt rather than after it. Derived by
+              // probing the contract, so a chip cannot promise a placement the
+              // drop would refuse — or forbid one it would allow.
+              const hint = placementHint(el);
+              return (
+                <button
+                  key={el.id}
+                  type="button"
+                  draggable={hint.placeable}
+                  disabled={!hint.placeable}
+                  className={styles.chip}
+                  data-unplaceable={hint.placeable ? undefined : ''}
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('application/element-id', el.id);
+                    setDragging(el);
+                  }}
+                  onDragEnd={() => setDragging(null)}
+                  onClick={() =>
+                    hint.placeable && place(el, { kind: 'canvas' }, freeSlot(nodes))
+                  }
+                  title={`${el.name} — driven by ${el.drivenBy}`}
+                >
+                  {el.name}
+                  <small>{hint.where}</small>
+                </button>
+              );
+            })}
           </section>
         ))}
       </aside>

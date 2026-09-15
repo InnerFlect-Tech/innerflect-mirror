@@ -197,3 +197,50 @@ export function validatePalette(): true {
   }
   return true;
 }
+
+export type PlacementHint = {
+  /** Can a person place this at all by dragging or activating it? */
+  placeable: boolean;
+  /** Where it goes — or, when it cannot be placed, why not. */
+  where: string;
+};
+
+const PROBES: readonly { target: PlacementTarget; label: string }[] = [
+  { target: { kind: 'canvas' }, label: 'the canvas' },
+  { target: { kind: 'node', role: 'node' }, label: 'a step' },
+  { target: { kind: 'edge' }, label: 'a connection' },
+];
+
+/**
+ * Where an element may be placed, stated before anyone tries.
+ *
+ * Every rule in this file was only ever legible as a refusal: you dragged
+ * something, dropped it, and the contract told you afterwards. For an element
+ * like Workflow Line — which cannot be dropped anywhere at all, because it is
+ * drawn between ports — that meant the palette offered an affordance the rules
+ * had already ruled out, and the only way to find out was to fail.
+ *
+ * This answers the same question in advance, and answers it by *probing
+ * `validatePlacement` itself* rather than restating the rules. A hand-written
+ * caption would be a second copy of the contract, free to drift the moment a
+ * rule changed; this cannot say anything the contract would not also say,
+ * because it is the contract that says it.
+ */
+export function placementHint(element: ElementDef): PlacementHint {
+  const accepted = PROBES.filter((p) => validatePlacement(element, p.target).ok);
+
+  if (accepted.length === 0) {
+    // Refused everywhere. The contract's own reason is the most honest caption
+    // available — it is the exact sentence the person would have been shown
+    // after trying, now shown instead of the attempt.
+    const verdict = validatePlacement(element, { kind: 'canvas' });
+    return { placeable: false, where: verdict.ok ? '' : verdict.reason };
+  }
+
+  const labels = accepted.map((p) => p.label);
+  const list =
+    labels.length === 1
+      ? labels[0]
+      : `${labels.slice(0, -1).join(', ')} or ${labels[labels.length - 1]}`;
+  return { placeable: true, where: `Drop on ${list}` };
+}
