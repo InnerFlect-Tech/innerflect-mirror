@@ -153,7 +153,7 @@ export const selfBuilderLadder: readonly LadderStep[] = [
   { id: 'review', label: 'Review', detail: 'Read the gap. The declared share is the part of your company you are currently running on memory.', surface: 'open-mirror' },
   { id: 'pattern', label: 'Take a pattern', detail: 'Replace a guessed step with a proven operating pattern.', surface: 'os-shop' },
   { id: 'component', label: 'Take a component', detail: 'Assemble the pattern from open, reusable components.', surface: 'forge-shop' },
-  { id: 'apply', label: 'Apply', detail: 'Change the model through the same typed operation the paid Mirror uses. Same mechanism, no managed delivery.', surface: 'operating-system' },
+  { id: 'apply', label: 'Apply', detail: 'Change the model through the same typed operation the paid Mirror uses. Same mechanism, no managed delivery.', surface: 'company-os' },
 ] as const;
 
 /**

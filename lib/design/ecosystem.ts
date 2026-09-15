@@ -26,7 +26,7 @@ export type EcosystemNodeId =
   | 'mirror'
   | 'studio'
   | 'admin'
-  | 'operating-system'
+  | 'company-os'
   | 'assessment'
   | 'knowledge-spine'
   | 'web-intelligence'
@@ -217,15 +217,20 @@ export const ECOSYSTEM_NODES: readonly EcosystemNode[] = [
   },
 
   /*
-   * One operating system, not three. A builder's, a client's and our own are
-   * the same object with a different owner; who owns it is a journey, not a
-   * separate node, so collapsing them took nine lines off the board.
+   * One of these, not three. A builder's, a client's and our own are the same
+   * object with a different owner; who owns it is a journey, not a separate
+   * node, so collapsing them took nine lines off the board.
+   *
+   * Named "Company operating system", not "Operating system": one of the five
+   * layers below is Operations System, the delivery offer sold on
+   * innerflect.tech. Two near-identical names on one board is a reading bug,
+   * and the sold name is the one that cannot move.
    */
   {
-    id: 'operating-system',
-    name: 'Operating system',
+    id: 'company-os',
+    name: 'Company operating system',
     category: 'system',
-    summary: 'The system itself: five layers, one company.',
+    summary: 'The whole system for one company — all five layers together.',
     detail: 'A company-specific operating model with controlled access, evidence, integrations, workflows and outcomes. A self-builder assembles their own from the Shops; Innerflect delivers one for a client, and runs one on itself.',
     state: 'building',
     position: { x: 1178, y: 328 },
@@ -342,8 +347,8 @@ const OPERATING_LAYERS = [
 export const ECOSYSTEM_RELATIONS: readonly EcosystemRelation[] = [
   // Structure: what the system is made of. One owner now, not three.
   ...OPERATING_LAYERS.map((layer) => ({
-    id: `operating-system-composed-of-${layer}`,
-    from: 'operating-system' as const,
+    id: `company-os-composed-of-${layer}`,
+    from: 'company-os' as const,
     to: layer,
     kind: 'composed-of' as const,
     label: 'is made of',
@@ -362,11 +367,11 @@ export const ECOSYSTEM_RELATIONS: readonly EcosystemRelation[] = [
 
   // Where a layer or a system is actually operated from.
   { id: 'web-intelligence-is-main-website', from: 'web-intelligence', to: 'main-website', kind: 'operates-in', label: 'operates in' },
-  { id: 'system-runs-through-mirror', from: 'operating-system', to: 'mirror', kind: 'runs-through', label: 'is operated in' },
+  { id: 'company-os-runs-through-mirror', from: 'company-os', to: 'mirror', kind: 'runs-through', label: 'is operated in' },
   { id: 'operations-system-runs-through-studio', from: 'operations-system', to: 'studio', kind: 'runs-through', label: 'shown to a client in' },
-  { id: 'admin-supplies-system', from: 'admin', to: 'operating-system', kind: 'supplies', label: 'supplies' },
-  { id: 'os-shop-extends-system', from: 'os-shop', to: 'operating-system', kind: 'extends-into', label: 'extends into' },
-  { id: 'forge-shop-extends-system', from: 'forge-shop', to: 'operating-system', kind: 'extends-into', label: 'extends into' },
+  { id: 'admin-supplies-company-os', from: 'admin', to: 'company-os', kind: 'supplies', label: 'supplies' },
+  { id: 'os-shop-extends-company-os', from: 'os-shop', to: 'company-os', kind: 'extends-into', label: 'extends into' },
+  { id: 'forge-shop-extends-company-os', from: 'forge-shop', to: 'company-os', kind: 'extends-into', label: 'extends into' },
 
   // Where the record-backed model surfaces.
   { id: 'mirror-projects-graph', from: 'mirror', to: 'company-graph', kind: 'projects', label: 'projects' },
@@ -395,19 +400,19 @@ export const ECOSYSTEM_JOURNEYS: readonly EcosystemJourney[] = [
     id: 'self-builder',
     name: 'Self-builder',
     summary: 'Builds an operating system from open patterns and components.',
-    steps: ['main-website', 'open-mirror', 'os-shop', 'forge-shop', 'operating-system'],
+    steps: ['main-website', 'open-mirror', 'os-shop', 'forge-shop', 'company-os'],
   },
   {
     id: 'managed-client',
     name: 'Managed client',
     summary: 'Asks Innerflect to build and run the operating system.',
-    steps: ['main-website', 'assessment', 'operating-system', 'studio', 'mirror'],
+    steps: ['main-website', 'assessment', 'company-os', 'studio', 'mirror'],
   },
   {
     id: 'innerflect-team',
     name: 'Innerflect team',
     summary: 'Runs the same five layers on itself, and delivers them to clients.',
-    steps: ['main-website', 'admin', 'operating-system', 'mirror', 'company-graph'],
+    steps: ['main-website', 'admin', 'company-os', 'mirror', 'company-graph'],
   },
 ];
 
