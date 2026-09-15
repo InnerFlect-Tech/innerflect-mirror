@@ -1,7 +1,22 @@
 /* The design routes. Tokens only — a raw hex here would be the very drift these
    surfaces exist to catch. */
 
-.floor-page { height: 100vh; display: grid; grid-template-rows: auto 1fr; background: var(--bg-page); }
+.floor-page { height: 100vh; display: grid; grid-template-rows: auto auto 1fr; background: var(--bg-page); }
+/* Three rows, not two: the note, the projection switch, then the world. With
+   two rows the switch inherited the 1fr track and stretched to the full height
+   of the page, 39px wide and 823px tall, sitting under the WebGL canvas where
+   it could not be clicked at all. */
 .floor-note { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border-subtle);
   background: var(--bg-surface); font-size: var(--fs-sm); color: var(--text-muted); }
 .floor-note b { color: var(--text-primary); font-weight: var(--weight-medium); }
+
+/* Projection switch on /design/floor. The floor is the one route that proved
+   the world only in 3D; the 2D plan beside it is the same records through the
+   same element registry, so the toggle is a change of projection, not a change
+   of subject. */
+.floor-projection{position:relative;z-index:5;display:flex;gap:0;margin:0;padding:10px 18px;border:0;min-inline-size:0;justify-self:start}
+.floor-projection button{font:inherit;font-size:11px;color:#9fada9;background:rgba(7,12,12,.9);border:1px solid #253632;padding:4px 11px;cursor:pointer}
+.floor-projection button:first-of-type{border-start-start-radius:4px;border-end-start-radius:4px}
+.floor-projection button:last-of-type{border-start-end-radius:4px;border-end-end-radius:4px;margin-inline-start:-1px}
+.floor-projection button[aria-pressed='true']{border-color:#4d7a6f;color:#d6e0dc;background:rgba(77,122,111,.18)}
+.floor-projection button:focus-visible{outline:2px solid #4d7a6f;outline-offset:2px}

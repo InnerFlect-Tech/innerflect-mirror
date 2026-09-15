@@ -7,6 +7,43 @@ Keep entries short: what was decided, why, and what it rules out. Link the commi
 
 ---
 
+## 2026-09-14 — One record → one element, resolved through the SSOT, not per-surface
+
+**Problem:** `ElementSymbol2D` and the glyph kit existed, but only `/design/elements` and
+`/design/lab` used them. Every other surface that wanted to draw an object either had no 2D
+projection at all (`/design/floor` was WebGL-only) or would have had to decide for itself
+which glyph stands for a decision, an exception, an agent. That is how two projections of the
+same company drift into disagreeing about what exists.
+
+**Decided:** one function, `elementForRecord()` in `lib/design/recordElements.ts`, is the only
+way a surface resolves a record to an element. Callers never name a glyph id.
+
+**Deliberately partial, and that is the point.** It maps only the record types the world
+actually draws: `company`, `domain`, `workflow`, `person`, `agent`, `decision`, `exception`.
+`RecordType` has seventeen members and `ELEMENTS` has fifteen elements, but `ELEMENTS` also
+carries a `rendered` flag precisely because an element can be fully modelled and still be a
+glyph nobody renders — `step-node`, `record-token`, `verification-marker`, `outcome-marker`,
+`tool-glyph`, `knowledge-object` and `permission-boundary` are all `rendered: false` today.
+Mapping them anyway would let a 2D projection show objects the 3D world has no counterpart
+for. `undefined` is a real answer here, and callers render nothing for it.
+
+Three elements name two record types in their own `drivenBy` prose — `decision-gate`
+("Decision / Authority"), `action-pulse` ("ExecutionStep / ActivityEvent") and
+`permission-boundary` ("AuthorityLimit / RoleGrant"). Choosing which half is canonical is a
+product decision, not a rendering one, so only the half the world demonstrably draws is
+mapped. `validateRecordElements()` throws if the map ever names an element the registry does
+not define, or one marked `rendered: false`.
+
+**Applied:** `/design/floor` now has both projections. The 2D plan (`WorldPlan2D`) draws every
+domain and every object on it from `listPickableRecords()` — the same function whose output
+`scripts/check-pickable-records.ts` proves against the real 3D pick tables — resolved through
+`elementForRecord()`. So the plan and the floor cannot disagree about which objects exist or
+which glyph stands for one; neither is free to decide. Verified: 4 domains, 52 record buttons,
+exactly the 52 the 3D world draws.
+
+**Rules out:** a surface picking glyph ids directly; a second record→glyph table anywhere;
+drawing an object for a record type the world does not render.
+
 ## 2026-09-14 — `vinext@1.0.0-beta.9` + `@vitejs/plugin-rsc@0.5.34` verified safe to apply
 
 **Closes the "still needs" item this repo's own dependency-advisory note left open:** "someone
