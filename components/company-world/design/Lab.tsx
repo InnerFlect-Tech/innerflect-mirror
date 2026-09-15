@@ -53,6 +53,8 @@ const STATES: readonly SceneState[] = ['neutral', 'active', 'attention', 'critic
 type LabNodeData = {
   elementId: string;
   state: SceneState;
+  /** Set while a palette drag is in flight and this node would accept it. */
+  droppable?: boolean;
   [key: string]: unknown;
 };
 type LabNode = Node<LabNodeData, 'element'>;
@@ -104,6 +106,54 @@ function freeSlot(taken: readonly LabNode[]): { x: number; y: number } {
   return { x: 40, y: 250 };
 }
 
+/**
+ * A node's position on the canvas, with a docked child resolved against its
+ * parent. React Flow stores a child's position relative to its parent, so any
+ * geometry done in canvas space has to rebase first or a docked node appears to
+ * be sitting at the top-left corner of the world.
+ */
+function absolutePosition(nodes: readonly LabNode[], node: LabNode): { x: number; y: number } {
+  const parent = node.parentId ? nodes.find((n) => n.id === node.parentId) : undefined;
+  return parent
+    ? { x: node.position.x + parent.position.x, y: node.position.y + parent.position.y }
+    : { x: node.position.x, y: node.position.y };
+}
+
+/** How far outside a node still counts as aiming at it. */
+const SNAP_PX = 26;
+
+/**
+ * The node a drop is aiming at, decided by geometry rather than by whichever
+ * DOM element happened to be under the cursor.
+ *
+ * Hit-testing the drop target through `event.target` meant a drop had to land
+ * inside a 176×56 box exactly, and every near miss came back as "drop it onto a
+ * Step Node" — an instruction where the person had just expressed the intent
+ * plainly enough. This contains-then-nearest test accepts the obvious aim, and
+ * still returns undefined for a drop that genuinely means the open canvas.
+ */
+function nodeAtPoint(
+  nodes: readonly LabNode[],
+  at: { x: number; y: number },
+): LabNode | undefined {
+  let nearest: { node: LabNode; distance: number } | undefined;
+  // Later nodes render on top, so walk backwards and take the first container.
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    const node = nodes[i];
+    const p = absolutePosition(nodes, node);
+    const w = node.width ?? NODE_W;
+    const h = node.height ?? NODE_H;
+    if (at.x >= p.x && at.x <= p.x + w && at.y >= p.y && at.y <= p.y + h) return node;
+    const dx = Math.max(p.x - at.x, 0, at.x - (p.x + w));
+    const dy = Math.max(p.y - at.y, 0, at.y - (p.y + h));
+    const distance = Math.hypot(dx, dy);
+    if (distance <= SNAP_PX && (!nearest || distance < nearest.distance)) {
+      nearest = { node, distance };
+    }
+  }
+  return nearest?.node;
+}
+
 /** How many attachments already dock to this node, so they stack rather than pile up. */
 function attachedCount(nodes: readonly LabNode[], parentId: string): number {
   return nodes.filter((n) => n.parentId === parentId).length;
@@ -138,6 +188,7 @@ function ElementNode({ data, selected }: NodeProps<LabNode>) {
     <div
       className={styles.node}
       data-selected={selected || undefined}
+      data-droppable={data.droppable ? '' : undefined}
       style={{ '--edge': c.edge, '--label': c.label, '--surface': c.surface } as React.CSSProperties}
     >
       <Handle type="target" position={Position.Left} className={styles.port} />
@@ -199,6 +250,10 @@ export function Lab() {
   // toggle to preserve the selection. One owner, both projections.
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [projection, setProjection] = useState<'2d' | '3d'>('2d');
+  // Which element is currently being dragged from the palette, so the canvas can
+  // show what will accept it. Without this the only way to learn where an
+  // attachment may go is to drop it somewhere and read the refusal.
+  const [dragging, setDragging] = useState<ElementDef | null>(null);
   const isMobile = useIsMobile();
   const [flow, setFlow] = useState<ReactFlowInstance<LabNode, Edge> | null>(null);
   const wrapper = useRef<HTMLDivElement>(null);
@@ -332,11 +387,12 @@ export function Lab() {
       const id = event.dataTransfer.getData('application/element-id');
       const element = ELEMENTS_BY_ID[id as keyof typeof ELEMENTS_BY_ID];
       if (!element || !flow) return;
+      setDragging(null);
       const at = flow.screenToFlowPosition({ x: event.clientX, y: event.clientY });
-      // What was under the cursor decides the target kind, so the same drop can
-      // be legal on a node and illegal on empty canvas.
-      const over = (event.target as HTMLElement).closest('[data-id]');
-      const overNode = over ? nodes.find((n) => n.id === over.getAttribute('data-id')) : undefined;
+      // Geometry, not DOM hit-testing: see `nodeAtPoint`. A drop that lands on a
+      // node — or obviously near one — aims at that node; anything else is the
+      // open canvas.
+      const overNode = nodeAtPoint(nodes, at);
       const overElement = overNode
         ? ELEMENTS_BY_ID[overNode.data.elementId as keyof typeof ELEMENTS_BY_ID]
         : undefined;
@@ -394,7 +450,11 @@ export function Lab() {
                 type="button"
                 draggable
                 className={styles.chip}
-                onDragStart={(e) => e.dataTransfer.setData('application/element-id', el.id)}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData('application/element-id', el.id);
+                  setDragging(el);
+                }}
+                onDragEnd={() => setDragging(null)}
                 onClick={() => place(el, { kind: 'canvas' }, freeSlot(nodes))}
                 title={`${el.name} — ${el.composition}, driven by ${el.drivenBy}`}
               >
@@ -416,7 +476,17 @@ export function Lab() {
           />
         ) : (
         <ReactFlow<LabNode, Edge>
-          nodes={nodes.map((n) => ({ ...n, selected: n.id === selectedId }))}
+          nodes={nodes.map((n) => {
+            const el = ELEMENTS_BY_ID[n.data.elementId as keyof typeof ELEMENTS_BY_ID];
+            // Asked of the contract, never guessed: the highlight and the drop
+            // are answered by the same function, so the canvas cannot offer a
+            // target that the drop would then refuse.
+            const droppable =
+              dragging && el
+                ? validatePlacement(dragging, { kind: 'node', role: el.composition }).ok
+                : false;
+            return { ...n, selected: n.id === selectedId, data: { ...n.data, droppable } };
+          })}
           edges={edges}
           nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}

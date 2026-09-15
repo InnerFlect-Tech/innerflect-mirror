@@ -86,7 +86,13 @@ export function validatePlacement(element: ElementDef, target: PlacementTarget):
       // open canvas or an edge is exactly the "free-standing sculpture"
       // V2.1 retired (docs/DECISIONS.md, 2026-09-14).
       if (target.kind !== 'node') {
-        return reject(`${element.name} attaches to a step and cannot stand on its own — drop it onto a Step Node or Decision Gate.`);
+        // Names the rule, not two examples of it. The rule is role-based —
+        // any `node` accepts an attachment — so listing "a Step Node or
+        // Decision Gate" read as exhaustive while Outcome Marker and
+        // Verification Marker also qualify. Once the lab started highlighting
+        // every valid target during a drag, that message visibly contradicted
+        // what the canvas was showing.
+        return reject(`${element.name} attaches to a step and cannot stand on its own — drop it onto any step on the path.`);
       }
       if (target.role !== 'node' && target.role !== 'root') {
         return reject(`${element.name} attaches to a step, not to ${ROLE_NOUN[target.role]}.`);

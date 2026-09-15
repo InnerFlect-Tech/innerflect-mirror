@@ -69,3 +69,8 @@
 .projection button:first-of-type { border-start-start-radius: 4px; border-end-start-radius: 4px; }
 .projection button:last-of-type { border-start-end-radius: 4px; border-end-end-radius: 4px; margin-inline-start: -1px; }
 .projection button[aria-pressed='true'] { border-color: #4d7a6f; color: #d6e0dc; background: rgba(77,122,111,.18); }
+
+/* What will accept the element currently being dragged. Answered by
+   `validatePlacement`, the same function the drop itself calls, so the canvas
+   can never advertise a target the drop would refuse. */
+.node[data-droppable] { border-color: #4d7a6f; box-shadow: 0 0 0 3px rgba(77, 122, 111, .28); }
