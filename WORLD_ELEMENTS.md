@@ -827,6 +827,31 @@ Numbers are never reused, so a reference to "request 5" always means the same th
     Do not write a `wrangler.json` from memory of an older `vinext`/Workers pairing — verify
     against what the pinned version actually expects, first.
 
+    **⏳ READY TO DEPLOY, BLOCKED ONLY ON CREDENTIALS (2026-09-15).** The three research
+    questions are answered against the pinned version, not from memory:
+
+    - **(a) Config shape.** Nobody should write one. `vinext build` *generates*
+      `dist/server/wrangler.json` — `compatibility_date` 2026-05-15, `nodejs_compat`,
+      `main: index.js`, `assets.directory: ../client`, `observability.enabled`, `no_bundle`.
+      A hand-written root config would be a second, staler source for all of it.
+    - **(b) Where credentials live.** GitHub Actions with repository secrets, not a local
+      `wrangler deploy`. This repository is public and carries a no-secrets rule, and a token
+      in a session's shell history is exactly what that rule exists to prevent.
+      `.github/workflows/deploy.yml` added: checkout → `npm ci` → `npm run check` (the same
+      six gates as a local commit, so deploying cannot bypass them) → `npm run build` →
+      `cloudflare/wrangler-action` against the generated config. Without the secret it checks
+      and builds and says it did not deploy, rather than failing every push.
+    - **(c) Size.** `wrangler deploy --dry-run` passes: 112 modules, **2779 KiB raw / 833 KiB
+      gzipped**, plus 117 static asset files served from `dist/client`. No bindings required.
+      Comfortably inside Workers limits; the GLB kit ships as assets, not in the worker bundle.
+
+    **The only remaining step needs the user.** `wrangler whoami` reports not authenticated,
+    `wrangler login` is an interactive browser OAuth no session can complete, and the
+    Cloudflare MCP available here exposes read tools only (`workers_list` confirms the account
+    is reachable and currently has **0 workers**) — there is no deploy tool on it. Add
+    `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets and the next push
+    to `mirror/core-four-world` deploys. Nothing else is outstanding.
+
 27. **Two accessibility research findings, filed against `docs/DECISIONS.md`, not applied
     as code.** Following request 24's and 13's own "research current practice before
     implementing" instruction:

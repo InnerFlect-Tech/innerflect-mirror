@@ -1,0 +1,70 @@
+name: Deploy
+
+# Push deploys. This repository is public and carries a no-secrets rule, so the
+# credentials live in GitHub repository secrets and never touch a developer's
+# shell, an agent session's environment, or the tree.
+#
+# Nothing here hand-writes a Workers config. `vinext build` generates
+# `dist/server/wrangler.json` itself — compatibility date, nodejs_compat, the
+# asset directory and observability included — and a guessed config is worse
+# than no config (WORLD_ELEMENTS.md request 26).
+
+on:
+  push:
+    branches: [mirror/core-four-world]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Pinned rather than read from .nvmrc: this repository has no .nvmrc,
+          # and a workflow pointing at a missing file fails on every run.
+          # 24.x matches the local toolchain the build is verified against.
+          node-version: '24'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Gate
+        # The same six checks that gate a local commit. A deploy that skipped
+        # them would make the gate advisory.
+        run: npm run check
+
+      - name: Build
+        run: npm run build
+
+      - name: Check credentials
+        id: creds
+        # Through env, never interpolated into the command line: a secret
+        # substituted directly into `run:` is visible to anything that can read
+        # the process list on the runner. Without credentials the job still
+        # checks and builds, and says plainly that it did not deploy — rather
+        # than failing every push and training everyone to ignore a red tick.
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::CLOUDFLARE_API_TOKEN is not set — checked and built, but not deployed."
+          fi
+
+      - name: Deploy to Cloudflare Workers
+        if: steps.creds.outputs.present == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # The generated config, not one kept in the repo.
+          command: deploy --config dist/server/wrangler.json
