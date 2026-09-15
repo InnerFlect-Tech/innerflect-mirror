@@ -9,7 +9,8 @@
  * every workflow-scoped decision/exception the world data declares must
  * appear.
  *
- * Not yet wired into `npm run check` — `package.json` is under active claim.
+ * Wired into `npm run check` as `check:pickable-records` (2026-09-16, once package.json
+ * was released).
  */
 import { domains } from '../data/company';
 import { worldRecords } from '../data/world-records';

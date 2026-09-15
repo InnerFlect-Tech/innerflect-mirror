@@ -2,15 +2,8 @@
  * The composition contract, as a gate — same pattern as check-picks.ts and
  * check-no-fabrication.ts: a claim in a document is not a check.
  *
- * Not yet wired into `npm run check` — `package.json` is under active claim
- * (docs/STATUS.md, 2026-09-14) at the time this was written. Run directly:
- *
- *   npx esbuild scripts/check-composition.ts --bundle --platform=node \
- *     --format=esm --outfile=node_modules/.cache/check-composition.mjs \
- *     --log-level=error --alias:@=. && node node_modules/.cache/check-composition.mjs
- *
- * Whoever next has package.json should add a `check:composition` script
- * alongside the other `check:*` gates and fold it into `npm run check`.
+ * Wired into `npm run check` as `check:composition` (2026-09-16, once package.json
+ * was released).
  */
 import { ELEMENTS, ELEMENTS_BY_ID } from '../lib/design/elements';
 import { paletteByFamily, validatePalette, validatePlacement, type PlacementTarget } from '../lib/design/composition';

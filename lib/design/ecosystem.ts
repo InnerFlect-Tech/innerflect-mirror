@@ -428,7 +428,7 @@ export const ECOSYSTEM_PAGE_GROUPS = [
 export const ECOSYSTEM_PAGES: readonly EcosystemPage[] = [
   { id: 'ecosystem-home', name: 'Innerflect environment', surface: 'environment', group: 'environment', href: '/ecosystem', file: 'app/ecosystem/page.tsx', access: 'public', purpose: 'The navigable index of the complete Innerflect environment.', state: 'planned' },
   { id: 'main-website', name: 'Main website', surface: 'main-website', group: 'environment', href: 'https://innerflect.tech', file: 'https://innerflect.tech', access: 'public', purpose: 'Innerflect’s public marketing site and shared entry point, hosted outside this repository.', state: 'external' },
-  { id: 'open-mirror', name: 'Open Mirror', surface: 'open-mirror', group: 'build', href: '/open-mirror', file: 'app/open-mirror/page.tsx', access: 'public', purpose: 'The free/open operational twin for self-builders.', state: 'planned' },
+  { id: 'open-mirror', name: 'Open Mirror', surface: 'open-mirror', group: 'build', href: '/open-mirror', file: 'app/open-mirror/page.tsx', access: 'public', purpose: 'The free/open operational twin for self-builders.', state: 'live' },
   { id: 'os-shop', name: 'OS Shop', surface: 'os-shop', group: 'build', href: '/shops/os', file: 'app/shops/os/page.tsx', access: 'public', purpose: 'Patterns, playbooks and operating-system architectures. Prototyped at prototypes/innerflect-platforms/os.html; this route does not exist yet.', state: 'building' },
   { id: 'forge-shop', name: 'Forge Shop', surface: 'forge-shop', group: 'build', href: '/shops/forge', file: 'app/shops/forge/page.tsx', access: 'public', purpose: 'Reusable open components and gated proprietary capabilities. Prototyped at prototypes/innerflect-platforms/forge.html; this route does not exist yet.', state: 'building' },
   { id: 'company', name: 'Company', surface: 'mirror', group: 'operate', href: '/', file: 'app/page.tsx', access: 'authenticated', purpose: 'Company health, activity and the operational world.', state: 'live' },
@@ -443,7 +443,7 @@ export const ECOSYSTEM_PAGES: readonly EcosystemPage[] = [
   { id: 'elements', name: 'Elements', surface: 'design-system', group: 'design', href: '/design/elements', file: 'app/design/elements/page.tsx', access: 'development', purpose: 'Every semantic element in paired 2D and 3D isolation.', state: 'live' },
   { id: 'floor', name: 'Floor', surface: 'design-system', group: 'design', href: '/design/floor', file: 'app/design/floor/page.tsx', access: 'development', purpose: 'The production CompanyWorld composition.', state: 'live' },
   { id: 'shell', name: 'Shell', surface: 'design-system', group: 'design', href: '/design/shell', file: 'app/design/shell/page.tsx', access: 'development', purpose: 'The HTML shell and token surface.', state: 'live' },
-  { id: 'lab', name: 'Lab', surface: 'design-system', group: 'design', href: '/design/lab', file: 'app/design/lab/page.tsx', access: 'development', purpose: 'Drag, connect and compare 2D and 3D compositions.', state: 'planned' },
+  { id: 'lab', name: 'Lab', surface: 'design-system', group: 'design', href: '/design/lab', file: 'app/design/lab/page.tsx', access: 'development', purpose: 'Drag, connect and compare 2D and 3D compositions.', state: 'live' },
   { id: 'ecosystem-design', name: 'Ecosystem board', surface: 'design-system', group: 'system', href: '/design/ecosystem', file: 'app/design/ecosystem/page.tsx', access: 'development', purpose: 'The source-backed index and conformance view of the full environment.', state: 'live' },
 ];
 

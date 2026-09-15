@@ -4,12 +4,8 @@
  * in `lib/design/ecosystem.ts`; this is the first thing that actually calls
  * it in CI-shaped form, same as every other `check:*` script.
  *
- * Not yet wired into `npm run check` — `package.json` is under active claim.
- * Run directly:
- *
- *   npx esbuild scripts/check-ecosystem-registry.ts --bundle --platform=node \
- *     --format=esm --outfile=node_modules/.cache/check-ecosystem-registry.mjs \
- *     --log-level=error --alias:@=. && node node_modules/.cache/check-ecosystem-registry.mjs
+ * Wired into `npm run check` as `check:ecosystem-registry` (2026-09-16, once
+ * package.json was released).
  */
 import {
   validateRegistry,
@@ -48,12 +44,31 @@ for (const rel of ECOSYSTEM_RELATIONS) {
   check(`Relation ${rel.id}: to "${rel.to}" resolves`, nodeIds.has(rel.to));
 }
 
-// A page in a 'live' state must actually have a route file — verified in the
-// last few sessions by hand (curl + read); here as a standing check.
+/*
+ * Route state must match the disk, in BOTH directions.
+ *
+ * The one-directional version of this check (live pages must have a file)
+ * missed the opposite error for weeks: another session shipped `/open-mirror`
+ * and `/design/lab` while the registry still called them `planned`, and
+ * nothing complained. A registry that under-claims is as wrong as one that
+ * over-claims — both mean you cannot trust it to tell you what exists.
+ *
+ * `building` and `external` are deliberately exempt: a building surface may be
+ * a prototype living outside `app/` (both Shops are), and an external product
+ * has no route file in this repository at all.
+ */
 const fs = await import('node:fs');
 for (const page of ECOSYSTEM_PAGES) {
-  if (page.state !== 'live') continue;
-  check(`Live page "${page.id}" has its route file on disk (${page.file})`, fs.existsSync(page.file));
+  const onDisk = fs.existsSync(page.file);
+  if (page.state === 'live') {
+    check(`Live page "${page.id}" has its route file (${page.file})`, onDisk);
+  } else if (page.state === 'planned') {
+    check(
+      `Planned page "${page.id}" has no route file yet (${page.file})`,
+      !onDisk,
+      onDisk ? 'the route exists — this is shipped, not planned' : '',
+    );
+  }
 }
 
 // The board draws each node as a shape that says what it is. `surfaces` has to
