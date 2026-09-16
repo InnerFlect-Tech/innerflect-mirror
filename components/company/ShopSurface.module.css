@@ -160,3 +160,22 @@
 .caveatSource code {
   font-family: var(--font-mono), ui-monospace, monospace;
 }
+
+/* Which operating layer this item gives you a head start on. Quiet: it is
+   context for the purchase, not the product being sold. */
+.layer {
+  margin-top: var(--space-1);
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+}
+
+.items h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.items h3 a:hover,
+.items h3 a:focus-visible {
+  color: var(--text-accent);
+  text-decoration: underline;
+}

@@ -9,9 +9,9 @@
 .block { border: 1px solid var(--panel-border, #16211f); border-radius: var(--panel-radius, 10px);
   background: var(--panel-bg, #070d0e); padding: 20px 22px; }
 .block h2 { font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
-  color: #6f7d79; margin: 0 0 12px; font-weight: 600; }
+  color: var(--text-muted); margin: 0 0 12px; font-weight: 600; }
 
-.note { font-size: 12px; line-height: 1.6; color: #6f7d79; margin: 10px 0 0; max-inline-size: 68ch; }
+.note { font-size: 12px; line-height: 1.6; color: var(--text-muted); margin: 10px 0 0; max-inline-size: 68ch; }
 
 /* The gap gauge. Deliberately the first thing on the page and the largest
    number on it: the free edition's proposition is this number, not a feature. */
@@ -23,7 +23,7 @@
 /* Provenance is category, not state, so it is drawn as fill and weight rather
    than hue — the state palette stays reserved for state. */
 .grade { font-size: 10px; letter-spacing: .04em; border-radius: var(--radius-pill, 999px);
-  padding: 2px 8px; white-space: nowrap; border: 1px solid #253632; color: #6f7d79; }
+  padding: 2px 8px; white-space: nowrap; border: 1px solid #253632; color: var(--text-muted); }
 .grade[data-grade='observed'] { background: #16211f; color: #c6d2ce; border-color: #354a46; }
 .grade[data-grade='inferred'] { border-style: dashed; }
 .grade[data-grade='declared'] { border-style: dotted; }
@@ -37,8 +37,8 @@
 .domain[data-state='critical'] { --edge: var(--state-critical-edge); }
 .domain[data-state='neutral'] { --edge: var(--state-neutral-edge); }
 .domain h3 { font-size: 13px; color: #d6e0dc; margin: 0; font-weight: 600; }
-.domain header p { font-size: 11px; line-height: 1.5; color: #6f7d79; margin: 3px 0 0; }
-.domain footer { font-size: 10px; color: #55625f; border-block-start: 1px solid #16211f; padding-block-start: 8px; margin-block-start: auto; }
+.domain header p { font-size: 11px; line-height: 1.5; color: var(--text-muted); margin: 3px 0 0; }
+.domain footer { font-size: 10px; color: var(--text-muted); border-block-start: 1px solid #16211f; padding-block-start: 8px; margin-block-start: auto; }
 
 .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
 .steps li { display: flex; align-items: center; justify-content: space-between; gap: 8px;
@@ -52,20 +52,20 @@
 .ladder li { display: flex; gap: 11px; align-items: flex-start;
   border: 1px solid #16211f; border-radius: var(--card-radius, 8px); background: #0a1214; padding: 12px 13px; }
 .ladder b { font-size: 12px; color: #d6e0dc; display: block; }
-.ladder small { font-size: 10px; color: #55625f; display: block; margin-block-start: 1px; }
-.ladder p { font-size: 11px; line-height: 1.55; color: #6f7d79; margin: 6px 0 0; }
+.ladder small { font-size: 10px; color: var(--text-muted); display: block; margin-block-start: 1px; }
+.ladder p { font-size: 11px; line-height: 1.55; color: var(--text-muted); margin: 6px 0 0; }
 
 .rung { flex: 0 0 auto; inline-size: 20px; block-size: 20px; border-radius: 999px;
   border: 1px solid #253632; display: grid; place-items: center;
-  font-size: 10px; color: #6f7d79; font-variant-numeric: tabular-nums; }
+  font-size: 10px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 
 .boundaries { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
 .boundaries li { border: 1px solid #16211f; border-radius: var(--card-radius, 8px);
   background: #0a1214; padding: 12px 13px; }
 .boundaries b { font-size: 12px; color: #d6e0dc; display: block; font-weight: 600; }
-.boundaries p { font-size: 11px; line-height: 1.55; color: #6f7d79; margin: 5px 0 7px; }
-.boundaries small { font-size: 10px; color: #55625f; }
+.boundaries p { font-size: 11px; line-height: 1.55; color: var(--text-muted); margin: 5px 0 7px; }
+.boundaries small { font-size: 10px; color: var(--text-muted); }
 
 @media (max-width: 640px) {
   .block { padding: 16px 14px; }

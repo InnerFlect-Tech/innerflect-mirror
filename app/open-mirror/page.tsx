@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { PublicNav } from '@/components/company/PublicNav';
 import { SurfaceHead } from '@/components/company/SurfaceHead';
 import { SurfaceSummary } from '@/components/company/SurfaceSummary';
 import { OpenMirrorSurface } from '@/components/company/OpenMirrorSurface';
@@ -33,6 +34,7 @@ export default function OpenMirrorPage() {
 
   return (
     <main data-surface="open-mirror">
+      <PublicNav current="/open-mirror" />
       <SurfaceHead
         eyebrow="Free and open · nothing leaves your browser"
         title="Open Mirror"

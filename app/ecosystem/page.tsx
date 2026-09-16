@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { PublicNav } from '@/components/company/PublicNav';
 import { SurfaceHead } from '@/components/company/SurfaceHead';
 import { SurfaceSummary } from '@/components/company/SurfaceSummary';
 import {
@@ -53,6 +54,7 @@ export default function Page() {
 
   return (
     <main className={styles.page} data-surface="ecosystem">
+      <PublicNav current="/ecosystem" />
       <SurfaceHead
         eyebrow="Innerflect environment · every entry point"
         title="The Innerflect environment"

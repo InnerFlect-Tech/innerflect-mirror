@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { PublicNav } from '@/components/company/PublicNav';
 import { SurfaceHead } from '@/components/company/SurfaceHead';
 import { SurfaceSummary } from '@/components/company/SurfaceSummary';
 import { ShopSurface } from '@/components/company/ShopSurface';
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <main data-surface="shop-os">
+      <PublicNav current="/shops/os" />
       <SurfaceHead eyebrow={shop.eyebrow} title={shop.name} pulse={shop.pulse} />
       <SurfaceSummary
         stats={[

@@ -1,0 +1,67 @@
+/*
+ * The catalogue item page. Written as a stylesheet rather than the inline
+ * styles this page first shipped with — inline styles meant the one link on
+ * it fell through to the browser default, rendering #0000ee on a near-black
+ * ground at 2.04:1. Unreadable, and invisible to review until axe said so.
+ */
+.panel {
+  margin: 0 27px 26px;
+  padding: 22px 24px;
+  border: 1px solid var(--border-default);
+  border-radius: 9px;
+  background: var(--bg-surface);
+}
+
+.panel h2 {
+  margin: 26px 0 8px;
+  color: var(--text-faint);
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.panel h2:first-child {
+  margin-top: 0;
+}
+
+.body {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.body b {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tags li {
+  padding: 3px 11px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+}
+
+.back {
+  display: inline-block;
+  margin-top: 26px;
+  color: var(--text-accent);
+  font-size: var(--fs-sm);
+}
+
+.back:hover,
+.back:focus-visible {
+  text-decoration: underline;
+}

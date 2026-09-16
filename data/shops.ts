@@ -23,6 +23,17 @@ export type ShopItem = {
   price: string;
   summary: string;
   tags: readonly string[];
+  /**
+   * The operating layer this item gives you a head start on.
+   *
+   * Without it the Shops are orphans: a catalogue sitting beside a system it
+   * never refers to. It also settles a real collision — "Knowledge Spine" is
+   * both one of the five layers and an OS Shop blueprint, and those are not
+   * the same object. The layer is the capability a company ends up with; the
+   * blueprint is the pattern you buy to build it. Stating the link makes that
+   * a relationship instead of a name clash.
+   */
+  buildsLayer?: EcosystemNodeId;
 };
 
 export type Shop = {
@@ -63,6 +74,7 @@ export const SHOPS: Record<ShopId, Shop> = {
         summary:
           'Map, structure and govern the knowledge layer that makes organizational AI dependable.',
         tags: ['RAG', 'Governance', '14 modules'],
+        buildsLayer: 'knowledge-spine',
       },
       {
         id: 'research-agent-network',
@@ -72,6 +84,7 @@ export const SHOPS: Record<ShopId, Shop> = {
         summary:
           'A governed scout, verifier and synthesis workflow for reliable recurring intelligence.',
         tags: ['Agents', 'Sources', 'Verification'],
+        buildsLayer: 'knowledge-spine',
       },
       {
         id: 'revenue-signal-loop',
@@ -81,6 +94,7 @@ export const SHOPS: Record<ShopId, Shop> = {
         summary:
           'Connect intent capture, qualification, ownership and follow-up into one visible flow.',
         tags: ['CRM', '8 integrations', 'Handoff'],
+        buildsLayer: 'revenue-loop',
       },
       {
         id: 'approval-circuit',
@@ -90,6 +104,7 @@ export const SHOPS: Record<ShopId, Shop> = {
         summary:
           'Risk-tiered review, escalation and evidence capture for consequential AI actions.',
         tags: ['Approval', 'Audit', 'Policy'],
+        buildsLayer: 'operations-system',
       },
       {
         id: 'quiet-portal',
@@ -99,6 +114,7 @@ export const SHOPS: Record<ShopId, Shop> = {
         summary:
           'A calm operating surface for progress, decisions, evidence and the next useful action.',
         tags: ['Portal', 'Decisions', 'Trust'],
+        buildsLayer: 'operations-system',
       },
       {
         id: 'decision-atlas',
@@ -108,6 +124,7 @@ export const SHOPS: Record<ShopId, Shop> = {
         summary:
           'A typed branching flow that locates a Direction, Systems or Delivery constraint.',
         tags: ['Diagnostic', 'State machine', 'Guided'],
+        buildsLayer: 'assessment',
       },
     ],
     caveat:
@@ -136,6 +153,7 @@ export const SHOPS: Record<ShopId, Shop> = {
         summary:
           'Pointer-responsive product theatre, story sections and an elevated purchase journey.',
         tags: ['Three.js', 'Commerce', '3D'],
+        buildsLayer: 'web-intelligence',
       },
       {
         id: 'atelier-editorial-system',
@@ -145,6 +163,7 @@ export const SHOPS: Record<ShopId, Shop> = {
         summary:
           'An image-led portfolio with cinematic typography, case-study structures and restrained motion.',
         tags: ['Next.js', 'Portfolio', 'Motion'],
+        buildsLayer: 'web-intelligence',
       },
       {
         id: 'release-sequence',
@@ -154,6 +173,7 @@ export const SHOPS: Record<ShopId, Shop> = {
         summary:
           'A conversion-ready launch page with product story, proof, pricing and release motion.',
         tags: ['SaaS', 'Conversion', 'Responsive'],
+        buildsLayer: 'revenue-loop',
       },
       {
         id: 'signal-field',
@@ -163,6 +183,7 @@ export const SHOPS: Record<ShopId, Shop> = {
         summary:
           'A precise opening statement held inside a living field of signals, evidence and context.',
         tags: ['SVG', 'Editorial', 'Accessible'],
+        buildsLayer: 'web-intelligence',
       },
       {
         id: 'proof-ledger',
@@ -172,6 +193,7 @@ export const SHOPS: Record<ShopId, Shop> = {
         summary:
           'An audited evidence component with outcome, baseline, series, source and methodology.',
         tags: ['Case study', 'Data', 'Trust'],
+        buildsLayer: 'operations-system',
       },
       {
         id: 'flowstate-fluid-hero',
@@ -181,6 +203,7 @@ export const SHOPS: Record<ShopId, Shop> = {
         summary:
           'A living fluid field, editorial foreground and complete performance fallback specification.',
         tags: ['WebGL', 'Single HTML', 'Advanced'],
+        buildsLayer: 'web-intelligence',
       },
     ],
     caveat:
@@ -191,4 +214,18 @@ export const SHOPS: Record<ShopId, Shop> = {
 /** Distinct kinds in a shop, in catalogue order — the filter row's real source. */
 export function shopKinds(shop: Shop): string[] {
   return [...new Set(shop.items.map((item) => item.kind))];
+}
+
+/** Resolve a shop + item from route params. Returns null so a bad URL 404s. */
+export function findShopItem(shopId: string, itemId: string) {
+  const shop = (SHOPS as Record<string, Shop>)[shopId];
+  const item = shop?.items.find((entry) => entry.id === itemId);
+  return shop && item ? { shop, item } : null;
+}
+
+/** Every shop/item pair, for static generation and for the surfaces gate. */
+export function allShopItems() {
+  return Object.values(SHOPS).flatMap((shop) =>
+    shop.items.map((item) => ({ shop: shop.id, item: item.id })),
+  );
 }

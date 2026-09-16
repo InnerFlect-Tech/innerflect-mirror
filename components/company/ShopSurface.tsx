@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { shopKinds, type Shop } from '@/data/shops';
 import { ECOSYSTEM_NODES_BY_ID } from '@/lib/design/ecosystem';
 import styles from './ShopSurface.module.css';
@@ -47,21 +48,29 @@ export function ShopSurface({ shop }: { shop: Shop }) {
         </header>
 
         <ul className={styles.items}>
-          {shop.items.map((item) => (
-            <li key={item.id}>
-              <span className={styles.itemKind}>{item.kind}</span>
-              <h3>{item.name}</h3>
-              <p>{item.summary}</p>
-              <ul className={styles.tags}>
-                {item.tags.map((tag) => (
-                  <li key={tag}>{tag}</li>
-                ))}
-              </ul>
-              <span className={styles.price} data-free={item.price === 'Free'}>
-                {item.price}
-              </span>
-            </li>
-          ))}
+          {shop.items.map((item) => {
+            const layer = item.buildsLayer ? ECOSYSTEM_NODES_BY_ID[item.buildsLayer] : null;
+            return (
+              <li key={item.id}>
+                <span className={styles.itemKind}>{item.kind}</span>
+                <h3>
+                  {/* Every prototype card promised "Inspect system →" and went
+                      nowhere. It goes somewhere now. */}
+                  <Link href={`/shops/${shop.id}/${item.id}`}>{item.name}</Link>
+                </h3>
+                <p>{item.summary}</p>
+                <ul className={styles.tags}>
+                  {item.tags.map((tag) => (
+                    <li key={tag}>{tag}</li>
+                  ))}
+                </ul>
+                {layer && <span className={styles.layer}>Builds {layer.name}</span>}
+                <span className={styles.price} data-free={item.price === 'Free'}>
+                  {item.price}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       </section>
 
