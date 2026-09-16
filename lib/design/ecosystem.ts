@@ -440,7 +440,7 @@ export const ECOSYSTEM_PAGE_GROUPS = [
 ] as const;
 
 export const ECOSYSTEM_PAGES: readonly EcosystemPage[] = [
-  { id: 'ecosystem-home', name: 'Innerflect environment', surface: 'environment', group: 'environment', href: '/ecosystem', file: 'app/ecosystem/page.tsx', access: 'public', purpose: 'The navigable index of the complete Innerflect environment.', state: 'planned' },
+  { id: 'ecosystem-home', name: 'Innerflect environment', surface: 'environment', group: 'environment', href: '/ecosystem', file: 'app/ecosystem/page.tsx', access: 'public', purpose: 'The navigable index of the complete Innerflect environment.', state: 'live' },
   { id: 'main-website', name: 'Main website', surface: 'main-website', group: 'environment', href: 'https://innerflect.tech', file: 'https://innerflect.tech', access: 'public', purpose: 'Innerflect’s public marketing site and shared entry point, hosted outside this repository.', state: 'external' },
   { id: 'open-mirror', name: 'Open Mirror', surface: 'open-mirror', group: 'build', href: '/open-mirror', file: 'app/open-mirror/page.tsx', access: 'public', purpose: 'The free/open operational twin for self-builders.', state: 'live' },
   { id: 'os-shop', name: 'OS Shop', surface: 'os-shop', group: 'build', href: '/shops/os', file: 'app/shops/os/page.tsx', access: 'public', purpose: 'Patterns, playbooks and operating-system architectures. Prototyped at prototypes/innerflect-platforms/os.html; this route does not exist yet.', state: 'building' },
