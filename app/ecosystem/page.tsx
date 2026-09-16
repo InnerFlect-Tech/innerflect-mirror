@@ -1,6 +1,9 @@
 import Link from 'next/link';
+import { SurfaceHead } from '@/components/company/SurfaceHead';
+import { SurfaceSummary } from '@/components/company/SurfaceSummary';
 import {
   ECOSYSTEM_JOURNEYS,
+  ECOSYSTEM_NODES,
   ECOSYSTEM_NODES_BY_ID,
   ECOSYSTEM_PAGES,
   ECOSYSTEM_PAGE_GROUPS,
@@ -43,16 +46,32 @@ const STATE_LABEL: Record<string, string> = {
 };
 
 export default function Page() {
+  const open = ECOSYSTEM_PAGES.filter(
+    (page) => page.state === 'live' || page.state === 'external',
+  );
+  const layers = ECOSYSTEM_NODES.filter((node) => node.category === 'layers');
+
   return (
-    <main className={styles.page}>
-      <header className={styles.head}>
-        <h1>The Innerflect environment</h1>
-        <p>
-          Every product, entry point and journey in one index. Each state below is the one the
-          repository can prove — a page marked live has a route in this codebase, and a planned
-          one deliberately does not yet.
-        </p>
-      </header>
+    <main className={styles.page} data-surface="ecosystem">
+      <SurfaceHead
+        eyebrow="Innerflect environment · every entry point"
+        title="The Innerflect environment"
+        pulse="Every product, entry point and journey in one index. Each state below is the one the repository can prove — a page marked live has a route in this codebase, and a planned one deliberately does not yet."
+      />
+      <SurfaceSummary
+        stats={[
+          {
+            value: `${open.length}/${ECOSYSTEM_PAGES.length}`,
+            // Equal today, and that is the claim worth making: nothing is
+            // registered here that you cannot actually open.
+            label: 'Entry points open',
+            tone: open.length === ECOSYSTEM_PAGES.length ? 'good' : 'attention',
+          },
+          { value: String(layers.length), label: 'Operating layers' },
+          { value: String(ECOSYSTEM_JOURNEYS.length), label: 'Ways through' },
+          { value: String(ECOSYSTEM_NODES.length), label: 'Parts in the system' },
+        ]}
+      />
 
       <section aria-labelledby="journeys-heading" className={styles.journeys}>
         <h2 id="journeys-heading">Three ways through</h2>
@@ -94,10 +113,12 @@ export default function Page() {
                 // `check:ecosystem-registry` enforces that a live page has its
                 // route file and a planned one does not; `building` is
                 // deliberately unconstrained, because it means work exists
-                // somewhere (the Shops have a prototype under `prototypes/`)
-                // and not that a route does. Treating `building` as openable
-                // is exactly the mistake this page exists to avoid: it linked
-                // /shops/os and /shops/forge, both of which return 404.
+                // somewhere and not that a route does.
+                //
+                // This rule is why both Shops appeared here the moment they
+                // were built: they were `building` and unlinked while only a
+                // prototype existed, and became linkable when /shops/os and
+                // /shops/forge became real routes. Nobody edited this page.
                 const openable = external || page.state === 'live';
                 return (
                   <li key={page.id} data-state={page.state}>

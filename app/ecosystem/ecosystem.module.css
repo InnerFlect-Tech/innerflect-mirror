@@ -1,24 +1,24 @@
 /* The public environment index. Hand-written against the token scale, like
    every other surface here — no framework, no component library. */
 
+/*
+ * Full-bleed on the same gutter every other surface uses, not the centred
+ * 960px column this page started with. The index of the environment has to
+ * look like the environment: it sits beside /open-mirror and both Shops, and
+ * those are built from `SurfaceHead` + `SurfaceSummary` on this rhythm. The
+ * page header and stat strip are now those shared components, so the `.head`
+ * rules that used to live here are deleted rather than duplicated.
+ */
 .page {
-  max-inline-size: 960px;
-  margin-inline: auto;
-  padding: clamp(24px, 5vw, 56px) clamp(16px, 4vw, 32px) 72px;
+  padding-bottom: 72px;
   color: var(--text-primary);
 }
 
-.head h1 {
-  font-size: clamp(26px, 4vw, 38px);
-  line-height: 1.15;
-  margin: 0 0 12px;
-  font-weight: var(--weight-medium);
-}
-.head p {
-  margin: 0 0 8px;
-  max-inline-size: 62ch;
-  color: var(--text-muted);
-  line-height: 1.6;
+/* The page's own sections only. `SurfaceHead` is itself a <section> and
+   carries its own padding, so a blanket `> section` rule double-indents it. */
+.journeys,
+.group {
+  margin-inline: 27px;
 }
 
 .note { color: var(--text-muted); font-size: var(--fs-sm); line-height: 1.55; margin: 0 0 14px; max-inline-size: 62ch; }
