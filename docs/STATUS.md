@@ -30,18 +30,27 @@ numbered request in `WORLD_ELEMENTS.md`.
   `WORLD_ELEMENTS.md` are all ✅. The file-level cause (neither session had claimed it here
   first) is folded into the single ownership-conflict escalation below rather than repeated.
 
-- **ASSIGNED — dependency advisories.** The user decided: investigate rather than
-  force-upgrade or defer. Findings (`npm audit --json` + `npm view vinext versions`): every
-  one of the 11 advisories' fix path resolves to `vinext@1.0.0-beta.9`
-  (`isSemVerMajor: false`). Installed is `beta.5` — this is four betas behind on the *same*
-  pinned `1.0.0-beta` line, not the major jump the previous note here assumed. That does not
-  make the bump safe, only not the breaking change it was assumed to be. **Still needs:**
-  someone to actually try `vinext@1.0.0-beta.9`, confirm the dev server boots, `npm run
-  check` stays green, and a real page loads, before touching `package.json`. Whoever owns
-  the toolchain — not claimed by any of the three sessions today — should pick this up.
-  (`package.json` itself is now free: Codex released it, and the three orphaned `check:*`
-  scripts were wired into `npm run check` on 2026-09-16.)
-  Recorded in `docs/DECISIONS.md`.
+- **DONE — dependency advisories, 9 → 1.** Picked up 2026-09-25, after sitting unowned.
+  The `vinext` half was already resolved: installed is `1.0.0-beta.9`, so that note was
+  stale. Of the 9 remaining, 8 were taken by non-major bumps — `vite` 8.0.13 → 8.3.1,
+  `@cloudflare/vite-plugin` 1.37.1 → 1.60.0, `wrangler` 4.92.0 → 4.139.0 (which needed
+  `@cloudflare/workers-types` 4 → 5, a types-only major that `tsc` accepts unchanged).
+
+  **The one that cannot be taken, and why Dependabot PR #1 must not be merged as-is:**
+  `react-server-dom-webpack@19.3.0` requires React 19.3, and
+  `@react-three/fiber@9.7.0` declares `react@">=19 <19.3"`. Taking that bump breaks the
+  entire 3D world. It stays open until R3F supports 19.3 — this is a real ceiling, not
+  an oversight.
+
+  Verified the way this note used to ask for: `npm run check` green (204 checks), dev
+  server boots clean, `/`, `/ecosystem` and `/design/floor` all 200, and the 3D scene
+  renders identically to the pre-bump baseline (65 geometries, 23 programs, screenshot
+  compared).
+
+  One trap worth recording: bumping wrangler migrates the local miniflare SQLite state
+  (`_cf_ALARM` gains a column), so *downgrading* afterwards fails to boot with
+  `ERR_RUNTIME_FAILURE`. `rm -rf .wrangler .vinext node_modules/.vite` fixes it — all
+  three are gitignored dev state.
 
 - **RESOLVED — `npm run check` red on `4b943d5`.** Request 20 (the missing
   `onKeyDown={onPanKeyDown}` in `EcosystemBoard.tsx`) landed in `88eaadc`. `npm run check`
@@ -61,14 +70,9 @@ numbered request in `WORLD_ELEMENTS.md`.
   type change is the enforcement mechanism. Whoever owns those three files should take it;
   each diff is a one-line deletion of an already-redundant branch.
 
-- **OPEN — `tsc` is red in the working tree, and not from the Open Mirror work.** Whoever is
-  mid-change on `lib/design/ecosystem.ts` has added an `EcosystemCategoryId` of `'layers'`
-  ("Operating layers") without widening the consumer at `lib/design/ecosystem.ts:543`:
-
-  ```
-  lib/design/ecosystem.ts(543,25): error TS2345: Type '"layers"' is not assignable to
-    '"delivery" | "journeys" | "shops" | "products" | "engine" | "infrastructure"'
-  ```
+- **RESOLVED — `tsc` was red mid-edit on `lib/design/ecosystem.ts`.** That was a
+  transient working-tree state during the category rework; the category type and its
+  consumer landed together. `npm run check` is green on the current tip (204 checks).
 
   It is uncommitted, so it is invisible to everyone but the tree it is in. It also breaks
   `/design/ecosystem` at runtime — `EcosystemBoard.tsx:148` throws
