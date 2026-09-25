@@ -141,7 +141,22 @@ function Thumbnail({ pageId, label }: { pageId: string; label: string }) {
   );
 }
 
-export function EcosystemBoard() {
+/**
+ * `readOnly` is what lets the public index show this same map without shipping
+ * the authoring tools with it.
+ *
+ * The board is two things at once: a picture of how the environment fits
+ * together, and the instrument for changing it (drag, Tidy, Copy proposal,
+ * Reset, the Pages and Sync-contract views). Only the first belongs on
+ * `/ecosystem` — a visitor deciding where to start has no business proposing a
+ * layout change, and `/design/ecosystem` stays `access: 'development'` for the
+ * half that does.
+ *
+ * Read-only removes authoring, never navigation. Pan, wheel-zoom, Fit, Detail,
+ * the journey filters and the inspector all stay, because a map you cannot move
+ * around is a screenshot.
+ */
+export function EcosystemBoard({ readOnly = false }: { readOnly?: boolean } = {}) {
   const [view, setView] = useState<ViewMode>('map');
   const [category, setCategory] = useState<CategoryFilter>('all');
   const [query, setQuery] = useState('');
@@ -406,6 +421,7 @@ export function EcosystemBoard() {
 
   return (
     <main className={styles.root}>
+      {!readOnly && (
       <header className={styles.toolbar}>
         <div className={styles.heading}>
           <span className={styles.eyebrow}>Innerflect environment · shared system map</span>
@@ -433,6 +449,7 @@ export function EcosystemBoard() {
           {copyStatus}
         </div>
       </header>
+      )}
 
       {view === 'map' && (
         <section className={styles.mapShell} aria-label="Interactive ecosystem map">
@@ -486,9 +503,13 @@ export function EcosystemBoard() {
                 <span>{Math.round(zoom * 100)}%</span>
                 <button type="button" onClick={() => setZoom((value) => clamp(value + 0.08, 0.42, 1.15))} aria-label="Zoom in">+</button>
                 <button type="button" onClick={fitBoard}>Fit</button>
-                <button type="button" onClick={tidyBoard} aria-pressed={arranged}>Tidy</button>
-                <button type="button" onClick={copyProposal}>Copy proposal</button>
-                <button type="button" onClick={resetBoard}>Reset</button>
+                {!readOnly && (
+                  <>
+                    <button type="button" onClick={tidyBoard} aria-pressed={arranged}>Tidy</button>
+                    <button type="button" onClick={copyProposal}>Copy proposal</button>
+                    <button type="button" onClick={resetBoard}>Reset</button>
+                  </>
+                )}
               </div>
             </div>
 
@@ -594,7 +615,7 @@ export function EcosystemBoard() {
                       data-dimmed={journeyIds ? !journeyIds.has(node.id) : undefined}
                       data-step={journey ? journey.steps.indexOf(node.id) + 1 || undefined : undefined}
                       style={{ left: position.x, top: position.y }}
-                      onPointerDown={(event) => startNodeDrag(event, node.id)}
+                      onPointerDown={readOnly ? undefined : (event) => startNodeDrag(event, node.id)}
                       onPointerMove={moveNodeDrag}
                       onPointerUp={endNodeDrag}
                       onPointerCancel={endNodeDrag}
@@ -625,7 +646,9 @@ export function EcosystemBoard() {
                 })}
               </div>
               <div className={styles.mapHint}>
-                drag a card to move it · drag the background to pan · wheel to zoom · Tidy snaps to the grid
+                {readOnly
+                  ? 'drag the background to pan · wheel to zoom · select a card to inspect it'
+                  : 'drag a card to move it · drag the background to pan · wheel to zoom · Tidy snaps to the grid'}
               </div>
 
               <div className={styles.legend}>

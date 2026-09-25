@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { PublicNav } from '@/components/company/PublicNav';
 import { SurfaceHead } from '@/components/company/SurfaceHead';
 import { SurfaceSummary } from '@/components/company/SurfaceSummary';
+import { EcosystemBoard } from '@/components/company-world/design/EcosystemBoard';
 import {
   ECOSYSTEM_JOURNEYS,
   ECOSYSTEM_NODES,
@@ -74,6 +75,24 @@ export default function Page() {
           { value: String(ECOSYSTEM_NODES.length), label: 'Parts in the system' },
         ]}
       />
+
+      {/* The same map `/design/ecosystem` draws, in read-only mode.
+          Cards below list what exists; only this shows how the parts hold each
+          other up — that Mirror is made of the company graph, that a Shop feeds
+          the self-builder's own OS. Listing without relating was the gap this
+          page shipped with. The authoring half (drag, Tidy, Copy proposal, the
+          Pages and Sync-contract views) stays on the design route, which is
+          `access: 'development'` for exactly that reason. */}
+      <section aria-labelledby="map-heading" className={styles.map}>
+        <h2 id="map-heading">How it fits together</h2>
+        <p className={styles.note}>
+          Every part of the environment and the relationships between them. Drag the background
+          to pan, scroll to zoom, select any card to read what it is.
+        </p>
+        <div className={styles.mapFrame}>
+          <EcosystemBoard readOnly />
+        </div>
+      </section>
 
       <section aria-labelledby="journeys-heading" className={styles.journeys}>
         <h2 id="journeys-heading">Three ways through</h2>

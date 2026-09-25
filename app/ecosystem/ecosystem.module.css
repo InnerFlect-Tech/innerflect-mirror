@@ -87,3 +87,20 @@
 /* Anything not openable — planned, or being built without a route yet — reads
    as listed rather than offered. */
 .pages > li[data-state='building'] { border-style: dashed; }
+
+/* The read-only map. Bounded height: the board sizes to its own viewport on the
+   design route, where it is the whole page — here it is one section of several,
+   so it gets a frame rather than the screen. */
+.map { margin-inline: 27px; margin-block-start: clamp(34px, 6vw, 56px); }
+.mapFrame {
+  block-size: min(70vh, 640px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+.mapFrame > * { block-size: 100%; }
+
+@media (max-width: 700px) {
+  .mapFrame { block-size: 58vh; }
+}
